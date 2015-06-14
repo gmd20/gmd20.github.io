@@ -1,7 +1,7 @@
 title: gmd20
-description: gmd20's blog
+description: gmd20
 
-url: http://gmd20.github.io/
+url: http://gmd20.github.io
 baseurl: ""
 paginate_path: "blog/page:num/"
 permalink: blog/:title/
