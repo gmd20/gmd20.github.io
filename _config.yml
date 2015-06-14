@@ -1,6 +1,3 @@
-title: gmd20
-description: gmd20
-
 url: http://gmd20.github.io
 baseurl: ""
 paginate_path: "blog/page:num/"
@@ -9,11 +6,3 @@ permalink: blog/:title/
 markdown: redcarpet
 highlighter: pygments
 paginate: 5
-
-navigation:
- - title: Home
-   url: /index.html
- - title: About
-   url: /about
- - title: Contact
-   url: /contact
