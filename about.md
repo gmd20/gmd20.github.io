@@ -1,0 +1,14 @@
+---
+layout: default
+title: About gmd20
+---
+<div class="post">
+	<h1 class="pageTitle">About gmd20</h1>
+	<img src="{{ '/image/face.jpg' | prepend: site.baseurl }}" alt="">
+	<p class="intro">      </p>
+	<p>            </p>
+	<h2>           </h2>
+	<ul>
+    <li><a href="https://gmd20.github.io"> home </a>  test </li>
+  </ul>
+</div>
