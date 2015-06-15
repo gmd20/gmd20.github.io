@@ -5,3 +5,11 @@ paginate: 5
 permalink: blog/:title/
 markdown: redcarpet
 highlighter: pygments
+
+navigation:
+ - title: Home
+   url: /index.html
+ - title: About
+   url: /about
+ - title: Contact
+   url: /contact
