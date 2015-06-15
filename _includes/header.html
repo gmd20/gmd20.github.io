@@ -1,0 +1,14 @@
+    
+    
+    
+    <section class="page-header">
+      <h1 class="project-name">Gmd20.GitHub.io</h1>
+      <h2 class="project-tagline">乱七八糟的记录</h2>
+      
+      {% for link in site.navigation %}{% assign current = nil %}{% if page.url contains link.url %}{% assign current = 'current' %}{% endif %}
+         <a href="{{ link.url | prepend: site.baseurl }}" class="btn">{{ link.title }}</a>
+      {% endfor %}
+
+      <a href="#" class="btn"> GitHub </a>
+      
+    </section>
