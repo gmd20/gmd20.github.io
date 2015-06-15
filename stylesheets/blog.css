@@ -1,10 +1,6 @@
 
-#home {
-
-}
-
-.date {
-
+#home ul {
+ list-style:none;
 }
 
 .pagination {
@@ -19,5 +15,14 @@
 
 }
 
+.posts li .date {
+  color: gray;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-weight: 300;
+  font-size: .8em
+}
 
+.posts li h3 {
+  margin: 0 0 .5em
+}
 
