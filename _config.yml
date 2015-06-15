@@ -1,3 +1,6 @@
+title: gmd20
+description:  persenal blog
+
 url: http://gmd20.github.io
 baseurl: ""
 paginate_path: "blog/page:num/"
