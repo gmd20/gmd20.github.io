@@ -3,7 +3,7 @@
  list-style:none;
 }
 
-.pageTitle {
+#home .pageTitle {
   margin: 2rem auto 1em;
   text-align: center;
   font-size: 3.00rem;
