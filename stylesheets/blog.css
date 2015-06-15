@@ -7,6 +7,7 @@
   margin: 2rem auto 1em;
   text-align: center;
   font-size: 3.00rem;
+  font-weight: bold
 }
 
 .posts li .date {
@@ -22,7 +23,8 @@
 
 .post-link {
    color: #159957;
-   font-size: 2.25rem
+   font-size: 2.25rem;
+   font-weight: bold
 }
 
 .description {
