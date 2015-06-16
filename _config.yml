@@ -16,3 +16,25 @@ navigation:
    url: /about
  - title: Contact
    url: /contact
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  -
+    scope:
+      path: "_posts"
+      type: "posts"
+    values:
+      layout: "post"
+  -
+    scope:
+      path: "_posts/linux"
+      type: "posts"
+    values:
+      layout: "post"
+      category: "linux"
+      
