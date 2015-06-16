@@ -24,17 +24,21 @@ defaults:
       type: "pages"
     values:
       layout: "default"
+      author: "gmd20"
   -
     scope:
-      path: "_posts"
+      path: ""
       type: "posts"
     values:
       layout: "post"
+      author: "gmd20"
   -
     scope:
-      path: "_posts/linux"
+      path: "linux"
       type: "posts"
     values:
       layout: "post"
       category: "linux"
+      author: "gmd20"
+    
       
