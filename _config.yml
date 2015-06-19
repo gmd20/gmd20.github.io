@@ -4,7 +4,7 @@ description:  personal blog
 url: http://gmd20.github.io
 baseurl: ""
 paginate_path: "blog/page:num/"
-paginate: 8
+paginate: 5
 permalink: blog/:title/
 markdown: redcarpet
 highlighter: pygments
