@@ -33,7 +33,7 @@ systemtap的资料就有一个 para-callgraph.stp  ，根据自己的要求做�
  stap para-callgraph.stp   'process("/usr/lib/libTest.so").function("*@*pp")'  'process("/usr/lib/libTest.so").function("Init")' > trace_file.txt
 
 
-```stap
+```
 #! /usr/bin/env stap
 
 function trace(entry_p, extra) {
@@ -76,7 +76,7 @@ probe $1.return { trace(-1, $$return) }
 4. 写个简单的perl脚本来调用c++filt 来做函数名转换
 ----------------------------------------------
 
-```stap
+```
 #!/usr/bin/perl -w
 use strict;
 
