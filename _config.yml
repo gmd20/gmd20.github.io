@@ -5,7 +5,7 @@ url: http://gmd20.github.io
 baseurl: ""
 paginate_path: "blog/page:num/"
 paginate: 5
-#permalink: blog/:title/
+#permalink: blog/:title/   # 和page 分页导航条 paginate 不兼容
 markdown: redcarpet
 highlighter: pygments
 
