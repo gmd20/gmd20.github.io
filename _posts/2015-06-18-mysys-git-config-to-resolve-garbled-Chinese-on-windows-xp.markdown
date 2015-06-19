@@ -1,5 +1,5 @@
 ---
-title: "testt test"
+title: "测试中文标题"
 ---
 
 修改msys  git的配置
