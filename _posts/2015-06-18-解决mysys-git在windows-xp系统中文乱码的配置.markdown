@@ -1,5 +1,5 @@
 ---
-title: "测试中文标题"
+title: "解决mysys-git在windows-xp系统中文乱码的配置"
 ---
 
 修改msys  git的配置
