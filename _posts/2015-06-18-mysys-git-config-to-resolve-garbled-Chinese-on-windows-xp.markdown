@@ -1,3 +1,7 @@
+---
+title:  "mysys git 在windows xp中文乱码的解决"
+---
+
 修改msys  git的配置
 -------------------
 * c:\git\ec\gitconfig

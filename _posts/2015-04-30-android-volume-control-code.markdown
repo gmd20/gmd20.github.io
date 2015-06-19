@@ -1,5 +1,6 @@
-Android 的音量控制代码
-======================
+--
+title:  "Android 的音量控制代码"
+---
 
 本来希望能够控制 电话 铃声和 短信通知铃声，分开设置的。但看上去android的 api没
 有单独控制通知铃声大小的了。 stream_ring 和 stream_notification  是一样的。

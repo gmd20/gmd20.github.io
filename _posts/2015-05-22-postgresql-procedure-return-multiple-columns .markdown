@@ -1,5 +1,6 @@
-Postgresql的存储过程返回表的多个column(row)的例子
-=================================================
+---
+title:  "Postgresql的存储过程返回表的多个column(row)的例子"
+---
 
 postgresql支持的存储过程支持标准的sql语法和自己扩展的pl/pgsql。甚至c的代码，不知道那个怎么写了。
 
