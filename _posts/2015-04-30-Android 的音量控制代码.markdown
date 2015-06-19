@@ -1,0 +1,228 @@
+本来希望能够控制 电话 铃声和 短信通知铃声，分开设置的。但看上去android的 api没
+有单独控制通知铃声大小的了。 stream_ring 和 stream_notification  是一样的。
+文档adjustStreamVolume的说明确实没有提到可以设置stream_notification 的。
+
+android studio 的apk编译， 需要通过  build   -》 Generate Signed Apk   生成。
+先创建一个keystore 文件，随便填个ca机构就可以了，android 只是用来保证作者的唯一
+而已。 防止第3方修改app又不知道。 然后一步步下一步最后就生成apk了。没有签名的
+apk在 手机上没法 安装成功了。
+
+SettingActivity.java
+--------------------
+```java
+package heath.fullvolumecontrol;
+
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+//import android.support.v4.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.os.Build;
+import android.media.AudioManager;
+import android.content.Context;
+import android.widget.Button;
+
+public class SettingActivity extends ActionBarActivity {
+    private AudioManager myAudioManager;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setting);
+        // if (savedInstanceState == null) {
+        //    getSupportFragmentManager().beginTransaction()
+        //            .add(R.id.container, new PlaceholderFragment())
+        //            .commit();
+        // }
+
+        //final Button VolumeRing = (Button)findViewById(R.id.button_ring);
+        //VolumeRing.setOnClickListener(new View.OnClickListener() {
+        //     public void onClick(View v) {
+        //         // Perform action on click
+        //     }
+        // });
+
+        myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_setting, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_exit) {
+            // 閫?鍑哄簲鐢?
+            android.os.Process.killProcess(android.os.Process.myPid());
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    /*
+    public static class PlaceholderFragment extends Fragment {
+
+        public PlaceholderFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+            View rootView = inflater.inflate(R.layout.fragment_setting, container, false);
+            return rootView;
+        }
+    }
+    */
+
+    public void AdjustVolumeRing(View view) {
+        myAudioManager.adjustStreamVolume(
+                AudioManager.STREAM_RING,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+                AudioManager.ADJUST_SAME, // ADJUST_LOWER,  ADJUST_RAISE
+                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+    }
+    public void AdjustVolumeNotification(View view) {
+        myAudioManager.adjustStreamVolume(
+                AudioManager.STREAM_NOTIFICATION,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+                AudioManager.ADJUST_SAME, //ADJUST_LOWER,  ADJUST_RAISE
+                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+
+
+
+        // myAudioManager.setStreamVolume(
+        //        AudioManager.STREAM_NOTIFICATION,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+        //       myAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION),
+        //       AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+
+    }
+    public void AdjustVolumeMusic(View view) {
+        myAudioManager.adjustStreamVolume(
+                AudioManager.STREAM_MUSIC,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+                AudioManager.ADJUST_SAME, //ADJUST_LOWER,  ADJUST_RAISE
+                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+    }
+    public void AdjustVolumeSystem(View view) {
+        myAudioManager.adjustStreamVolume(
+                AudioManager.STREAM_SYSTEM,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+                AudioManager.ADJUST_SAME, //ADJUST_LOWER,  ADJUST_RAISE
+                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+    }
+    public void AdjustVolumeAlarm(View view) {
+        myAudioManager.adjustStreamVolume(
+                AudioManager.STREAM_ALARM,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+                AudioManager.ADJUST_SAME, //ADJUST_LOWER,  ADJUST_RAISE
+                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+    }
+    public void AdjustVolumeVoiceCall(View view) {
+        myAudioManager.adjustStreamVolume(
+                AudioManager.STREAM_VOICE_CALL,  // STREAM_VOICE_CALL, STREAM_SYSTEM, STREAM_RING, STREAM_MUSIC or STREAM_ALARM
+                AudioManager.ADJUST_SAME, //ADJUST_LOWER,  ADJUST_RAISE
+                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+    }
+
+}
+
+
+```
+
+
+activity_setting.xml
+--------------------
+
+```xml
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".SettingActivity">
+
+
+    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="铃声音量"
+        android:id="@+id/button_ring"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:onClick="AdjustVolumeRing"
+        android:nestedScrollingEnabled="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通知音量"
+        android:id="@+id/button_notification"
+        android:layout_below="@+id/button_ring"
+        android:layout_alignParentStart="true"
+        android:onClick="AdjustVolumeNotification" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="音乐音量"
+        android:id="@+id/button_music"
+        android:layout_below="@+id/button_notification"
+        android:layout_alignParentStart="true"
+        android:onClick="AdjustVolumeMusic" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="警告音量"
+        android:id="@+id/button_alarm"
+        android:layout_below="@+id/button_music"
+        android:layout_alignParentStart="true"
+        android:onClick="AdjustVolumeAlarm" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="系统音量"
+        android:id="@+id/button_system"
+        android:layout_below="@+id/button_alarm"
+        android:layout_alignParentStart="true"
+        android:onClick="AdjustVolumeSystem" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通话音量"
+        android:id="@+id/button_voicecall"
+        android:layout_below="@+id/button_system"
+        android:layout_alignParentStart="true"
+        android:onClick="AdjustVolumeVoiceCall" />
+
+
+
+
+</RelativeLayout>
+
+
+```
+
+
