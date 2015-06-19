@@ -1,6 +1,3 @@
-#home {
- width: 80%;
-}
 #home ul {
  list-style:none;
 }
@@ -35,6 +32,9 @@
 
 .pagination {
 
+}
+.next_page .previous_page{
+ 
 }
 
 .footer_container {
