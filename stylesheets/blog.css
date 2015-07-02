@@ -2,7 +2,7 @@
  list-style:none;
 }
 
-#home .pageTitle {
+.pageTitle {
   margin: 2rem auto 1em;
   text-align: center;
   font-size: 3.00rem;
