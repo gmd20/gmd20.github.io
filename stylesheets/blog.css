@@ -42,6 +42,22 @@
 .postNav  .next {
   float: right;
 }
+.contactFrame {
+  display: fex;
+}
+.contact .contactContent {
+  width: 49%
+}
+.contact form {
+  width: 49%
+}
+.contact label input {
+  display: block;
+}
+.contact input {
+  width: 100%
+  margin-bottom: 1rem
+}  
 
 .footer_container {
   border-top: thick solid #dddddd;
