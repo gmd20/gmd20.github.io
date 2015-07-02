@@ -43,7 +43,7 @@
   float: right;
 }
 .contactFrame {
-  display: fex;
+  display: flex;
 }
 .contact .contactContent {
   width: 49%
