@@ -42,8 +42,9 @@
   margin-top: 1rem;
 }
 
-
-
+.postNav  .next {
+  float: right
+}
 
 .button,.button-secondary,.button-tertiary,.button__outline{
   background-color:#2e8b57;
