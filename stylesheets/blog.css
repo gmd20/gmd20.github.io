@@ -54,7 +54,7 @@
 .contactFrame label, .contactFrame input {
   display: block;
 }
-.contactFrame #id, .contactFrame #email, .contactFrame #message {
+.contactFrame #name, .contactFrame #email, .contactFrame #message {
   width: 100%;
   margin-bottom: 1rem;
 }  
