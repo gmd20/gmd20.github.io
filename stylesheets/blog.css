@@ -46,19 +46,18 @@
   display: flex;
 }
 .contactContent {
-  margin: 1rem;
   width: 47%;
 }
 .contactFrame form {
   width: 47%;
-  margin: 1rem;
+  margin-left: 1rem;
 }
 .contactFrame label, .contactFrame input {
   display: block;
 }
 .contactFrame #name, .contactFrame #email, .contactFrame #message {
   width: 100%;
-  margin-bottom: 1rem;
+
 }  
 
 .footer_container {
