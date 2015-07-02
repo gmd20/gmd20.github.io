@@ -4,7 +4,8 @@ title: Contact gmd20
 ---
 
 <div id="contact">
-  <h1 class="pageTitle">Contact Me</h1>
+ <h1 class="pageTitle">Contact Me</h1>
+ <div class="contactFrame">
   <div class="contactContent">
     <p class="intro">This is an example Contact page. If you want to make changes then do so in the <code>contact.html</code> file.</p>
     <p>The form is provided by <a href="http://formspree.io/">Formspree.</a> Follow the directions on their site to set up the form for use.</p>
@@ -18,5 +19,6 @@ title: Contact gmd20
     <label for="message">Message</label>
     <textarea name="message" id="message" cols="30" rows="10" class="full-width"></textarea><br>
     <input type="submit" value="Send" class="button">
-  </form>
+   </form>
+  </div>
 </div>
