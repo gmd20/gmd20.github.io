@@ -45,16 +45,16 @@
 .contactFrame {
   display: flex;
 }
-.contact .contactContent {
+.contactContent {
   width: 49%
 }
-.contact form {
+.contactFrame form {
   width: 49%
 }
-.contact label input {
+.contactFrame label, .contactFrame input {
   display: block;
 }
-.contact input {
+.contactFrame input {
   width: 100%
   margin-bottom: 1rem
 }  
