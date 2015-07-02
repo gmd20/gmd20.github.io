@@ -46,10 +46,11 @@
   display: flex;
 }
 .contactContent {
-  width: 49%
+ font-size: 2rem;
+  width: 47%
 }
 .contactFrame form {
-  width: 49%
+  width: 47%
 }
 .contactFrame label, .contactFrame input {
   display: block;
