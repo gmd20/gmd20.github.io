@@ -2,14 +2,21 @@ react
 -----
     http://facebook.github.io/react/index.html
     管理数据和UI 控件。  数据变化， UI自动更新。 可以通过ajax 修改数据。 写数据到显示界面的映射代码。
+    react 一般推荐的用法是，结合flux架构的使用模式
+    
+flux
+-----
+ https://github.com/facebook/flux
+  一种单数据流向的 action -》 store -》 react component 的 设计模式
 
 
-Semantic UI
------------
-    http://www.semantic-ui.com/
-    控制ui 控件的显示样式
     
 refluxjs
 --------
     https://github.com/spoike/refluxjs
-    管理react的数据呈现。
+    管理react的数据呈现。一种比较流行的flux的实现库，可以和react 一起使用。
+    
+Semantic UI
+-----------
+    http://www.semantic-ui.com/
+    控制ui 控件的显示样式
