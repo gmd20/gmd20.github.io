@@ -6,8 +6,8 @@ react
     
 flux
 -----
- https://github.com/facebook/flux
-  一种单数据流向的 action -》 store -》 react component 的 设计模式
+    https://github.com/facebook/flux
+    一种单数据流向的 action -》 store -》 react component 的 设计模式
 
 
     
