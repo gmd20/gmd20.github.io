@@ -233,7 +233,7 @@ if (MSVC)
   set (BUILD_GOLANG_CMD build_test_cdr.bat)
 elseif (UNIX)
   set (TEST_CDR_BIN ${CMAKE_CURRENT_SOURCE_DIR}/test_cdr)
-  set (BUILD_GOLANG_CMD build_test_cdr.sh)
+  set (BUILD_GOLANG_CMD ${CMAKE_CURRENT_SOURCE_DIR}/build_test_cdr.sh)
 endif()
 
 # BUILD_GOLANG_CMD 命令生成${TEST_CDR_BIN} 文件。
