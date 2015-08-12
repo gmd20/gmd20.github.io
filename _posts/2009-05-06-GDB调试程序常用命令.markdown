@@ -19,6 +19,10 @@ gdb info functions
 gdb info files
 查看函数所在的源代码行数
 gdb info line 函数名字
+(gdb) info line  *0xb6779198
+(gdb) list *0xb6779198
+
+
 
 5。下断点
 ---------
@@ -100,6 +104,13 @@ info args
 info locals
 打印出当前函数中所有局部变量及其值。
 
+14. 查看加载的模块地
+---------------------
+(gdb) info proc mappings   
 
-14。 更多内容 输入 help 看帮助，呵呵。基本上上面这些就已经够用了。
+15. 打印内存
+-------------
+x/64xb   0xb60d3158 
+
+16。 更多内容 输入 help 看帮助，呵呵。基本上上面这些就已经够用了。
 -------------------
