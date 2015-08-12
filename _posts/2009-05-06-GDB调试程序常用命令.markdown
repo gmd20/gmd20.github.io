@@ -47,6 +47,7 @@ $21 = (struct intfconfig_s *) 0x7fff2d15f878
 
 9。查看类型 用ptype
 --------------------
+```
 (gdb) ptype struct intfconfig_s    
 type = struct intfconfig_s {
     newtComponent ipv4Entry;
@@ -62,9 +63,11 @@ type = struct intfconfig_s {
     const char *gw;
     const char *ns;
 }
+```
 
 10。 查看结构的子成员
 --------------------
+```
 (gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->ipv6
 $25 = 0x1bf63740 " \025- \177"
 
@@ -83,6 +86,7 @@ $29 = 0x30687465 <Address 0x30687465 out of bounds>
 $30 = 0x1bf91580 " \027 \033"
 (gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->gw
 $31 = 0x1bf92410 "\004"
+```
 
 11 执行下一句 
 -------------
@@ -108,6 +112,7 @@ info locals
 解析栈上可能的地址。
 
 没有符号时，查看栈上的变量
+```
 (gdb) info frame 
 Stack level 0, frame at 0xbffff480:
  eip = 0x805081a in TiXmlString::append (tinystr.cpp:75); saved eip 0x804e37a
@@ -118,11 +123,11 @@ Stack level 0, frame at 0xbffff480:
  Saved registers:
   ebp at 0xbffff478, eip at 0xbffff47c
   
-(gdb)  x/10x 0xbffff478
+(gdb)  x/10x 0xbffff478 （使用info frame 里面 ebp at 0xbffff478的地址）
 0xbffff478:	0xbffff4c8(ebp)	0x0804e37a(eip)	0xbffff550(参数1）	0xbffff4b4(参数2）
 0xbffff488:	0x00000001 (参数3）	0x00000000	0xb7cd4134	0x00000000
 0xbffff498:	0xbffff400	0x0804dc00
-  
+```
 
 
 14. 查看加载的模块地址
