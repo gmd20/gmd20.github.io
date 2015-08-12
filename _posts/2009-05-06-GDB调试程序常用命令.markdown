@@ -104,13 +104,34 @@ info args
 info locals
 打印出当前函数中所有局部变量及其值。
 
-14. 查看加载的模块地
----------------------
+(gdb) x/12a  0xbffff478
+解析栈上可能的地址。
+
+没有符号时，查看栈上的变量
+(gdb) info frame 
+Stack level 0, frame at 0xbffff480:
+ eip = 0x805081a in TiXmlString::append (tinystr.cpp:75); saved eip 0x804e37a
+ called by frame at 0xbffff4d0
+ source language c++.
+ Arglist at 0xbffff478, args: this=0xbffff550, str=0xbffff4b4 "1", len=1
+ Locals at 0xbffff478, Previous frame's sp is 0xbffff480
+ Saved registers:
+  ebp at 0xbffff478, eip at 0xbffff47c
+  
+(gdb)  x/10x 0xbffff478
+0xbffff478:	0xbffff4c8(ebp)	0x0804e37a(eip)	0xbffff550(参数1）	0xbffff4b4(参数2）
+0xbffff488:	0x00000001 (参数3）	0x00000000	0xb7cd4134	0x00000000
+0xbffff498:	0xbffff400	0x0804dc00
+  
+
+
+14. 查看加载的模块地址
+----------------------
 (gdb) info proc mappings   
 
 15. 打印内存
--------------
-x/64xb   0xb60d3158 
+------------
+x/64x   0xb60d3158 
 
 16。 更多内容 输入 help 看帮助，呵呵。基本上上面这些就已经够用了。
 -------------------
