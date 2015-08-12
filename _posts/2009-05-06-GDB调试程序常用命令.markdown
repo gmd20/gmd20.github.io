@@ -1,0 +1,105 @@
+记得用gcc 加-g 参数编译程序，以便生成的程序中带有调试信息。 
+
+1。gdb载入程序
+-------------
+gdb a.out 
+
+2。运行程序
+----------
+run 加程序需要的参数 
+
+3。设置源代码目录
+----------------
+gdb directory /代码目录
+
+4。查看函数名字用 info
+----------------------
+gdb info functions
+类似的有
+gdb info files
+查看函数所在的源代码行数
+gdb info line 函数名字
+
+5。下断点
+---------
+(gdb) br net.c:911 在源代码的 net.c 文件911行下断点
+Breakpoint 2 at 0x4163fc: file net.c, line 911.
+
+在改函数上下断点
+br 函数名字   
+
+6。 查看寄存器 内容
+------------------
+info regiseter 查看寄存器   简写 i reg 
+
+7.查看堆栈
+---------
+bt 
+
+8.查看变量的值 用 print 加表达式
+------------------------------
+(gdb) print (struct intfconfig_s *) 0x7fff2d15f878 
+$21 = (struct intfconfig_s *) 0x7fff2d15f878
+
+9。查看类型 用ptype
+--------------------
+(gdb) ptype struct intfconfig_s    
+type = struct intfconfig_s {
+    newtComponent ipv4Entry;
+    newtComponent cidr4Entry;
+    newtComponent ipv6Entry;
+    newtComponent cidr6Entry;
+    newtComponent gwEntry;
+    newtComponent nsEntry;
+    const char *ipv4;
+    const char *cidr4;
+    const char *ipv6;
+    const char *cidr6;
+    const char *gw;
+    const char *ns;
+}
+
+10。 查看结构的子成员
+--------------------
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->ipv6
+$25 = 0x1bf63740 " \025- \177"
+
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->ipv4
+$26 = 0x0
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->ipv6Entry
+$27 = (newtComponent) 0x1bf916e0
+
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->ipv4Entry
+$28 = (newtComponent) 0x7fff2d15fb90
+
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->cidr6
+$29 = 0x30687465 <Address 0x30687465 out of bounds>
+
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->cidr4
+$30 = 0x1bf91580 " \027 \033"
+(gdb) print ((struct intfconfig_s *) 0x7fff2d15f878)->gw
+$31 = 0x1bf92410 "\004"
+
+11 执行下一句 
+-------------
+next 
+nexti 
+
+12。运行时修改数据
+------------------
+set
+
+
+
+13.   查看 详细的堆栈内容。 
+--------------------------
+info frame
+会打印出这些信息：栈的层编号，当前的函数名，函数参数值，函数所在文件及行号，函数执行到的语句。
+info args
+打印出当前函数的参数名及其值。
+info locals
+打印出当前函数中所有局部变量及其值。
+
+
+14。 更多内容 输入 help 看帮助，呵呵。基本上上面这些就已经够用了。
+-------------------
