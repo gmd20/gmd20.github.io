@@ -10,16 +10,16 @@
  	comctl32.dll!CToolTipsMgr::HandleRelayedMessage(struct HWND__ *,unsigned int,unsigned int,long,unsigned int)	Unknown
  	comctl32.dll!CToolTipsMgr::ToolTipsWndProc(struct HWND__ *,unsigned int,unsigned int,long)	Unknown
  	comctl32.dll!CToolTipsMgr::s_ToolTipsWndProc(struct HWND__ *,unsigned int,unsigned int,long)	Unknown
- 	user32.dll!__InternalCallWinProc@20()	Unknown
- 	user32.dll!_UserCallWinProcCheckWow@36()	Unknown
- 	user32.dll!_SendMessageWorker@24()	Unknown
- 	user32.dll!_SendMessageW@16()	Unknown
- 	comctl32.dll!_CallNextSubclassProc@20()	Unknown
- 	comctl32.dll!_MasterSubclassProc@16()	Unknown
- 	user32.dll!__InternalCallWinProc@20()	Unknown
- 	user32.dll!_UserCallWinProcCheckWow@36()	Unknown
- 	user32.dll!_DispatchMessageWorker@8()	Unknown
- 	user32.dll!_DispatchMessageW@4()	Unknown
+ 	user32.dll!__InternalCallWinProc@20()	Unknown
+ 	user32.dll!_UserCallWinProcCheckWow@36()	Unknown
+ 	user32.dll!_SendMessageWorker@24()	Unknown
+ 	user32.dll!_SendMessageW@16()	Unknown
+ 	comctl32.dll!_CallNextSubclassProc@20()	Unknown
+ 	comctl32.dll!_MasterSubclassProc@16()	Unknown
+ 	user32.dll!__InternalCallWinProc@20()	Unknown
+ 	user32.dll!_UserCallWinProcCheckWow@36()	Unknown
+ 	user32.dll!_DispatchMessageWorker@8()	Unknown
+ 	user32.dll!_DispatchMessageW@4()	Unknown
  	gvim.exe!00464eeb()	Unknown
 ```
 
