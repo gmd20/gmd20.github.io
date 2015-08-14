@@ -29,9 +29,9 @@ http://vimdoc.sourceforge.net/htmldoc/options.html#'balloonexpr'
 对应的tagbar的代码
 
 ```
-    if has('balloon_eval')    "检查是否编译了这个特性
+    if has('balloon_eval')
         setlocal balloonexpr=TagbarBalloonExpr()
-        set ballooneval      "他这里 打开了 开关
+        set ballooneval
     endif
 
 function! TagbarBalloonExpr() abort
@@ -46,7 +46,7 @@ endfunction
 ```
 
 这个是很鸡肋的功能， 简单的禁用了这个 ballon eval 功能就可以了。
-可以通过这个来设置，不过默认vim是关闭的，  是tagbar给打开了的。
+可以通过这个来设置，不过默认vim是关闭的， 是tagbar 用set ballooneval给打开了的。
 看vimrc的最后加上这一句是有效的。
 ```
 set noballooneval
