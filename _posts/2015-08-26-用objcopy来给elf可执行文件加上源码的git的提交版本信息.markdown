@@ -1,6 +1,7 @@
 objcopy 把一个文件全部内容作为elf格式的section插入
 =================================================
 
+```
 #  git rev-parse HEAD
 0af0d9e7fb4cbecd5b22f00f1a136c9db933b26d
 
@@ -131,37 +132,37 @@ Key to Flags:
 # readelf -p .git_commit_hash  /tmp/test
 String dump of section '.git_commit_hash':
   [     0]  git_commit_hash=0af0d9e7fb4cbecd5b22f00f1a136c9db933b26d
-
+```
 
 把调试符号信息抽取到独立文件
 ============================
-
+```
 # objcopy --only-keep-debug /tmp/test  /tmp/test.debuginfo
 
 # ls -lh /tmp
-总用量 6.3M
 -rw-r--r-- 1 root root   57  8月 26 11:50 git_commit_hash
 -rwxr-xr-x 1 root root 4.8M  8月 26 13:28 test
 -rwxr-xr-x 1 root root 1.5M  8月 26 13:44 test.debuginfo
-
+```
 
 生成不包含调试信息的文件
 ========================
-
+```
 # objcopy --strip-debug /tmp/test /tmp/test.nodebuginfo
-
+```
 
 把调试信息合并到可执行文件
 ==========================
+```
 # objcopy --add-gnu-debuglink=/tmp/test.debuginfo /tmp/test.nodebuginfo
-
+```
 
 
 
 
 把一个文件作为二进制object文件，然后链接到可执行文件使用
 =========================================================
-
+```
 # objcopy -I binary -O elf32-i386 -B i386 /tmp/git_commit_hash  /tmp/git_commit_hash.o
 
 #  file /tmp/git_commit_hash.o
@@ -187,18 +188,22 @@ Key to Flags:
 00000039 D _binary__tmp_git_commit_hash_end
 00000039 A _binary__tmp_git_commit_hash_size
 00000000 D _binary__tmp_git_commit_hash_start
+```
 
 可以看到符号是用文件名加 start/end来表示开始和结尾的
 
-
+```
 # strings /tmp/git_commit_hash.o
 git_commit_hash=0af0d9e7fb4cbecd5b22f00f1a136c9db933b26d
+```
 
 链接使用这个object文件
+```
 g++ -g -std=c++11 -O2 -o clock_gettime_test  /tmp/git_commit_hash.o  main.c -lrt
+```
 
 这样生成的elf格式没有新section 但是有这个符号
-
+```
 # nm clock_gettime_test
 08049d84 d _DYNAMIC
 080489b0 t _GLOBAL__sub_I_main
@@ -207,7 +212,7 @@ g++ -g -std=c++11 -O2 -o clock_gettime_test  /tmp/git_commit_hash.o  main.c -lrt
 08049f25 D _binary__tmp_git_commit_hash_end
 00000039 A _binary__tmp_git_commit_hash_size
 08049eec D _binary__tmp_git_commit_hash_start
-
+```
 
 可以看到 _binary__tmp_git_commit_hash_start 和 _binary__tmp_git_commit_hash_end 符号有正确的添加进可执行文件。
 在c代码里面可以用extern 来引用这个几个符号使用。
@@ -227,10 +232,11 @@ int main(void)
 ```
 
 测试一下
+```
 # g++ -g -std=c++11 -O2 -o clock_gettime_test  /tmp/git_commit_hash.o  main.c -lrt
 # ./clock_gettime_test 
 git_commit_hash=0af0d9e7fb4cbecd5b22f00f1a136c9db933b26d
-
+```
 
 cmake
 =====
