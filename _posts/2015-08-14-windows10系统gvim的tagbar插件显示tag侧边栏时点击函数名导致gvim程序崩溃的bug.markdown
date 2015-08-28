@@ -48,8 +48,12 @@ endfunction
 这个是很鸡肋的功能， 简单的禁用了这个 ballon eval 功能就可以了。
 可以通过这个来设置，不过默认vim是关闭的， 是tagbar 用set ballooneval给打开了的。
 看vimrc的最后加上这一句是有效的。
+
+set noballooneval  " vimrc比插件早加载，后面那些插件里面又打开了，导致设置无效。进入界面再手工设置就可以。用autocmd 设置延时执行？
+set balloondelay=10000000  " 设置一个超长停留时间，鼠标停10000秒才显示 ballon tooltip， 插件里面不改这个，这样基本就禁止tooltip功能了
 ```
 set noballooneval
+set balloondelay=10000000
 ```
 
 更好的办法当然是修复vim 源码中的bug， 让他在 windows 10 不会崩溃。
