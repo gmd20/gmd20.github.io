@@ -9,29 +9,29 @@ key_file_name.pub   对应公钥
 
 会提示输入一个秘密用来加密私钥，以后每次使用私钥时要输入，这样更安全吧。
 也可以不设置秘密这样更方便一些，但别人如果偷走这个私钥文件就可以随意访问了。
-```
-$ ssh-keygen.exe  -t rsa -f widebright  -C "bright"
-Generating public/private rsa key pair.
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-Your identification has been saved in widebright.
-Your public key has been saved in widebright.pub.
-The key fingerprint is:
-SHA256:HSf2csIN228fU8pdUijpEYTMnUfIPcEAQZ19W+BNJ40 bright
-The key's randomart image is:
-+---[RSA 2048]----+
-|         ++O+X==o|
-|          + B+E==|
-|          = =.oo=|
-|         + @ o o |
-|        S * * . o|
-|           + o +o|
-|              =o.|
-|             . .o|
-|                .|
-+----[SHA256]-----+
+ 
+$ ssh-keygen.exe  -t rsa -f widebright  -C "bright"   
+Generating public/private rsa key pair.   
+Enter passphrase (empty for no passphrase):   
+Enter same passphrase again:   
+Your identification has been saved in widebright.  
+Your public key has been saved in widebright.pub.  
+The key fingerprint is:   
+SHA256:HSf2csIN228fU8pdUijpEYTMnUfIPcEAQZ19W+BNJ40 bright  
+The key's randomart image is:   
++---[RSA 2048]----+   
+|         ++O+X==o|   
+|          + B+E==|  
+|          = =.oo=|   
+|         + @ o o |   
+|        S * * . o|   
+|           + o +o|   
+|              =o.|   
+|             . .o|   
+|                .|  
++----[SHA256]-----+  
 
-```
+ 
 
 
 https://git-scm.com/book/zh/v2/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84-Git-%E7%94%9F%E6%88%90-SSH-%E5%85%AC%E9%92%A5
@@ -77,10 +77,10 @@ Host 可以是 域名，或者正则匹配都行
 IdentityFile 指定私钥文件
 
 
-Host 192.168.4.3
-  Hostname 192.168.4.3
-  User  <ssh登录名,  这里git server用时一般为git>
-  IdentityFile ~/.ssh/all_sources_code_git
+Host 192.168.4.3   
+  Hostname 192.168.4.3   
+  User  <ssh登录名,  这里git server用时一般为git>   
+  IdentityFile ~/.ssh/all_sources_code_git   
 
 
 修改完可以   ssh 192.168.4.3  这样测试一下,
