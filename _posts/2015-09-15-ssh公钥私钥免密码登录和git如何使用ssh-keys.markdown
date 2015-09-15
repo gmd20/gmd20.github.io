@@ -1,6 +1,6 @@
 
 1.  生成公钥和私钥对
-===========================
+====================
 ssh-keygen -t rsa -b 4096 -f <key_file_name> -C "your_email@example.com"
 
 会在当前目录生成2个文件
@@ -77,10 +77,10 @@ Host 可以是 域名，或者正则匹配都行
 IdentityFile 指定私钥文件
 
 
->Host 192.168.4.3
->  Hostname 192.168.4.3
->  User  <ssh登录名,  这里git server用时一般为git>
->  IdentityFile ~/.ssh/all_sources_code_git
+Host 192.168.4.3
+  Hostname 192.168.4.3
+  User  <ssh登录名,  这里git server用时一般为git>
+  IdentityFile ~/.ssh/all_sources_code_git
 
 
 修改完可以   ssh 192.168.4.3  这样测试一下,
