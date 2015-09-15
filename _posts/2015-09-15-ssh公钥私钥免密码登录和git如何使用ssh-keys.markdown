@@ -9,7 +9,8 @@ key_file_name.pub   对应公钥
 
 会提示输入一个秘密用来加密私钥，以后每次使用私钥时要输入，这样更安全吧。
 也可以不设置秘密这样更方便一些，但别人如果偷走这个私钥文件就可以随意访问了。
- ```text
+
+```text
 $ ssh-keygen.exe  -t rsa -f widebright  -C "bright"   
 Generating public/private rsa key pair.   
 Enter passphrase (empty for no passphrase):   
