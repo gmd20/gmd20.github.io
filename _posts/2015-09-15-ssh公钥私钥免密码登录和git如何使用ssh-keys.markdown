@@ -9,7 +9,7 @@ key_file_name.pub   对应公钥
 
 会提示输入一个秘密用来加密私钥，以后每次使用私钥时要输入，这样更安全吧。
 也可以不设置秘密这样更方便一些，但别人如果偷走这个私钥文件就可以随意访问了。
- 
+ ```text
 $ ssh-keygen.exe  -t rsa -f widebright  -C "bright"   
 Generating public/private rsa key pair.   
 Enter passphrase (empty for no passphrase):   
@@ -30,7 +30,7 @@ The key's randomart image is:
 |             . .o|   
 |                .|  
 +----[SHA256]-----+  
-
+```
  
 
 
@@ -76,12 +76,12 @@ http://linux.die.net/man/5/ssh_config
 Host 可以是 域名，或者正则匹配都行
 IdentityFile 指定私钥文件
 
-
+ ```text
 Host 192.168.4.3   
   Hostname 192.168.4.3   
   User  <ssh登录名,  这里git server用时一般为git>   
   IdentityFile ~/.ssh/all_sources_code_git   
-
+```
 
 修改完可以   ssh 192.168.4.3  这样测试一下,
 看看是不是能够读入配置文件的用户名这些来登录了.
