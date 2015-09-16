@@ -1,0 +1,93 @@
+varint的整数压缩算法，应该很多地方都见到。
+可以压缩int ，节省空间，适合存储。 thirft的CompactProtocol 其实就是应用varint来压缩整数
+
+但持续的读写，解析应该还是慢很多的吧，所以有的库capnproto  https://capnproto.org/
+就取消这个做法了，而是采用一种特殊 “packing”算法来压缩，说是直接压缩 0 字节。
+
+确实如果很需要考虑带宽的时候可以考虑  LZ4 等压缩算法。
+本来是希望在各程序内容的  IR 字节码采用 varint， 不知道会不会少用一些内存，缓存里面更好一些。
+单看上去varint 有导致分支更多，估计不会有什么作用，反而得不偿失。
+
+
+
+这个thrift 里面代码
+https://github.com/apache/thrift/blob/master/lib/cpp/src/thrift/protocol/TCompactProtocol.tcc
+
+
+```cpp
+/**
+ * Write an i32 as a varint. Results in 1-5 bytes on the wire.
+ */
+template <class Transport_>
+uint32_t TCompactProtocolT<Transport_>::writeVarint32(uint32_t n) {
+  uint8_t buf[5];
+  uint32_t wsize = 0;
+
+  while (true) {
+    if ((n & ~0x7F) == 0) {
+      buf[wsize++] = (int8_t)n;
+      break;
+    } else {
+      buf[wsize++] = (int8_t)((n & 0x7F) | 0x80);
+      n >>= 7;
+    }
+  }
+  trans_->write(buf, wsize);
+  return wsize;
+}
+
+
+
+/**
+ * Read an i64 from the wire as a proper varint. The MSB of each byte is set
+ * if there is another byte to follow. This can read up to 10 bytes.
+ */
+template <class Transport_>
+uint32_t TCompactProtocolT<Transport_>::readVarint64(int64_t& i64) {
+  uint32_t rsize = 0;
+  uint64_t val = 0;
+  int shift = 0;
+  uint8_t buf[10];  // 64 bits / (7 bits/byte) = 10 bytes.
+  uint32_t buf_size = sizeof(buf);
+  const uint8_t* borrowed = trans_->borrow(buf, &buf_size);
+
+  // Fast path.
+  if (borrowed != NULL) {
+    while (true) {
+      uint8_t byte = borrowed[rsize];
+      rsize++;
+      val |= (uint64_t)(byte & 0x7f) << shift;
+      shift += 7;
+      if (!(byte & 0x80)) {
+        i64 = val;
+        trans_->consume(rsize);
+        return rsize;
+      }
+      // Have to check for invalid data so we don't crash.
+      if (UNLIKELY(rsize == sizeof(buf))) {
+        throw TProtocolException(TProtocolException::INVALID_DATA, "Variable-length int over 10 bytes.");
+      }
+    }
+  }
+
+  // Slow path.
+  else {
+    while (true) {
+      uint8_t byte;
+      rsize += trans_->readAll(&byte, 1);
+      val |= (uint64_t)(byte & 0x7f) << shift;
+      shift += 7;
+      if (!(byte & 0x80)) {
+        i64 = val;
+        return rsize;
+      }
+      // Might as well check for invalid data on the slow path too.
+      if (UNLIKELY(rsize >= sizeof(buf))) {
+        throw TProtocolException(TProtocolException::INVALID_DATA, "Variable-length int over 10 bytes.");
+      }
+    }
+  }
+}
+```
+
+
