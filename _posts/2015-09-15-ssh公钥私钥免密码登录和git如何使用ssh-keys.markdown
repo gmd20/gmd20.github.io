@@ -83,6 +83,20 @@ Host 192.168.4.3
   User  <ssh登录名,  这里git server用时一般为git>   
   IdentityFile ~/.ssh/all_sources_code_git   
 ```
+私钥文件的 ~/.ssh/all_sources_code_git 的权限也要正确
+	
+```text
+chmod 700 /root/.ssh/all_sources_code_git
+
+root@debian01:/home/bright/smsc# ls -la /root/.ssh/
+总用量 20
+drwx------  2 root root 4096  9月 17 18:35 .
+drwx------ 13 root root 4096  9月 17 18:35 ..
+-rwx------  1 root root 1766  9月 14 16:53 all_sources_code_git
+-rw-r--r--  1 root root 1671  9月 17 18:35 config
+-rw-r--r--  1 root root 3102  9月 17 18:42 known_hosts
+```	
+
 
 修改完可以   ssh 192.168.4.3  这样测试一下,
 看看是不是能够读入配置文件的用户名这些来登录了.
