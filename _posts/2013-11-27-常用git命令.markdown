@@ -2,6 +2,7 @@
 
 最简单最常用的
 ===========
+```text
 git clone http://192.168.1.100:8080/git/repos/freediameter.git
 git pull                #从远程仓库下载更新到本地
 git branch  -r          #查看远程分支名字
@@ -10,15 +11,18 @@ $ git checkout -b work/issue/92 origin/work/issue/92
 $ git branch
   master
 * work/issue/92
+```
 
 提交所有改动了的文件
 ==================
 
 git commit -p  这个自动让你选择所有修改过的文件，然后提交。 当然用GUI程序集成的功能，commit的时候自动就选了所有改动过的文件，更方便了。用命令行，必须的用-p参数啊，自己用git help commit查看
 类似的有：
+```text
 git add  -p
 git log -p
 git checkout -p
+```
 
 利用回收站保存临时修改
 ====================
@@ -28,8 +32,10 @@ git stash pop  还原到原来的那些文件状态。
 非常方便的，还有一些其他命令可以git help stash 看帮助
 
 利用回收站功能丢弃当前的所有修改
+```text
 git stash
 git stash clear
+```
 
 删除远程分支
 ============
@@ -79,8 +85,10 @@ git checkout -f   force选项可以强制checkout，并且丢弃本地位未提�
 
 重做多个commit的记录，把多个commit合并到一个里面里面
 先用reset回撤到commit e20bec14，但保留文件修改, 然后再重写提交记录，把多个commit的记录换成一个等
+```text
 git reset --soft e20bec14
 git commit -m "重写的commit修改状态"
+```
 
 查看修改历史
 ===========
@@ -107,9 +115,11 @@ $ git format-patch origin
 $ git format-patch  freediameter-1.2   从原始分支freediameter-1.2开始到当前的所有修改
 
 在当前目录下会输出所有的patch，一个commit历史记录一个patch文件。默认用commit 信息里面的第一行来作为文件名
+```text
 0001-add-PDN-Connection-ID-AVP.patch
 0002-add-Dynamic-Address-Flag-AVP.patch
 0003-add-IMSI-Unauthenticated-Flag-AVP.patch
+```
 
 一般工作都是从一个原始分支新建一个分支来工作，然后上面这个输出这个新分支的所有修改的命令比较合适吧。
 
@@ -121,8 +131,10 @@ git format-patch --stdout freediameter-1.2
 3.
 --
 -<n>  指定一个数字，表示最近的几次commit修改
+```text
 git format-patch --stdout -1    最近的1个commit
 git format-patch --stdout -3    最近的3个commit
+```
 
 Extract three topmost commits from the current branch and format them as e-mailable patches:
 $ git format-patch -3
@@ -162,24 +174,26 @@ $ git commit --amend -a
 还有git rebase -i HEAD~10 这样还原大量的修改的，参考下面的两个文档
 
 把提交状态回撤到commit e20bec14，但文件修改保留, 然后重写提交记录，把多个commit的记录换成一个等
+```text
 git reset --soft e20bec14
 git commit -m "重写commit修改状态"
-
+```
 
 
 *重写多个提交记录之前的commit的信息，把修复问题fixup代码合并到多个提交记录之前的commit去（修复之前的commit的bug，又不想单独搞一次commit时），重排多个commi顺序，自由选择commit历史等*
 =======================================================
 这个要使用下面这个命令
-
+```text
 git rebase [-i | --interactive]  <commit_hash|branch>
-
+```
 会启动一个编辑器，让你交互式的自由选择和重写commit的列表，
 把commit之前的pick改成reword就可以重新该commit的信息了。
 参考 git help rebase的文档，这个一个非常强大的命令
 
+```text
 git commit -a --fixup 34bda33
 git rebase --interactive --autosquash master
-
+```
 --fixup 表示这次提交时对之前34bda33 那个commit的存在问题的修复。
 --autosquash 就会自动把这两个关联问题的commit合并成一个commit
 
@@ -192,12 +206,16 @@ git rebase --interactive --autosquash master
 git的设置
 =======
 比如user name都记录到commit 里面
+```text
 git config user.name xxx
 git config user.email xxx@xxx.com
+```
 其实就是修改配置文件，也可以直接去改动吧
+```text
 $(prefix)/etc/gitconfig
 ~/.gitconfig
  $GIT_DIR/config   .git/config
+ ```
 分别对应参数 --system, --global, --local 。
 默认就是--local在当前的代码仓库的 .git/config文件里面设置
 自己git help config看一下
@@ -207,9 +225,11 @@ git的默认编辑器修改
 ================
 git config --global core.editor "vim"
 git是按照设置GIT_EDITOR 环境变量,core.editor 设置，VISUAL 环境变量， EDITOR 环境变量的顺序来选择到底使用那个编辑器来写commit信息的。
+```
 export GIT_EDITOR=vim
 export VISUAL=vim
 export EDITOR=vim
+```
 
 查看历史
 ===============
@@ -222,12 +242,14 @@ git log --pretty=format:"%h %s" --graph
 
 远程分支
 =========
+```text
 git remote -v     查看远程仓库
 git remote add pb git://github.com/paulboone/ticgit.git 添加远程仓库pb
 git fetch pb  从远程仓库pb取内容
 git remote rename pb paul 远程仓库的删除和重命名
 git remote rm paul
 git remote show origin  查看远程仓库内容
+```
 
 选择性的把某个分支上面的某次commit  merge过来
 =========
