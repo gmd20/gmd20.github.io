@@ -1,0 +1,149 @@
+LockNow\app\src\main\java\heath\locknow\MainActivity.java
+=========================================================
+```java
+package heath.locknow;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.Context;
+
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        lockScreen();
+    }
+
+    private void lockScreen()
+    {
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName componentName = new ComponentName(this, MyDeviceAdminReceiver.class);
+
+        boolean active = dpm.isAdminActive(componentName);
+        if (!active) {
+            // http://developer.android.com/reference/android/app/admin/DeviceAdminReceiver.html
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "我自己的LockNow");
+            startActivityForResult(intent, 0);
+        }
+
+        try {
+             dpm.lockNow();
+        }
+        catch (final Exception ex)
+        {
+
+        }
+
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (0 == requestCode) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+
+```
+
+
+\LockNow\app\src\main\java\heath\locknow\MyDeviceAdminReceiver.java
+===================================================================
+```java
+/**
+ * Created by bright on 2015/10/29.
+ */
+
+package heath.locknow;
+
+import android.app.admin.DeviceAdminReceiver;
+
+public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
+}
+
+```
+
+
+
+LockNow\app\src\main\res\xml\my_device_admin.txt
+================================================
+```xml
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-policies>
+    <force-lock />
+  </uses-policies>
+</device-admin>
+```
+
+
+LockNow\app\src\main\AndroidManifest.xml
+========================================
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="heath.locknow" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".MyDeviceAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/my_device_admin" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+
+    </application>
+
+</manifest>
+
+```
