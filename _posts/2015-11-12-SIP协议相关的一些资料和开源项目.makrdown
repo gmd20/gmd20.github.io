@@ -1,5 +1,5 @@
 标准:
-====
+=====
 SIP: Session Initiation Protocol
 https://tools.ietf.org/html/rfc3261
 
@@ -10,7 +10,7 @@ Media Control Channel Framework
 https://tools.ietf.org/html/rfc6230
 
 SIP 服务器：
-=========
+==========
 OpenSIPS   http://www.opensips.org
 kamailio    https://github.com/kamailio/kamailio/tree/master/parser
 好像都是从同一个开源项目衍生出来的
@@ -33,3 +33,4 @@ http://www.pjsip.org/
 ==================
 A Survey of Open Source Products for Building a SIP Communication Platform
 http://www.hindawi.com/journals/am/2011/372591/
+
