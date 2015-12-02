@@ -21,3 +21,14 @@ https://wiki.wireshark.org/Lua
 
 分析tcap协议，计算这个serice response time的对应源码在
 wireshark-1.12.1\epan\dissectors\packet-tcap.c
+
+
+
+2015-12-01  补充。
+--------------
+发现 wireshark的， tcap 这个 统计功能，并不能正确识别出同一个tcap消息request 和reply，
+它匹配出来的session id的reuqest 和reply 事务号，tcap.otid 和tcap.dtid都不是一样！ 计算出来的都是时间都是不对的。
+他tcap消息的匹配有问题，根本用不了。
+后来还是自己写个lua插件，根据 otid 和 dtid来计算 响应时间了。可以看后面的lua插件的文章。
+
+
