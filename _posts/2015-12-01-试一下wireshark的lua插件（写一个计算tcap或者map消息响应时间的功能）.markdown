@@ -17,13 +17,14 @@
 --
 
 print "wireshark tcap response time lua plugin from gmd20"
-local original_m3ua_dissector
+-- local original_m3ua_dissector
+-- local original_sccp_dissector
 local tcap_requests_time_table = {}
 
 -- declare some Fields to be read
 -- local frame_time_f = Field.new("frame.time")
 -- local frame_len_f = Field.new("frame.len")
-local frame_number_f = Field.new("frame.number")
+-- local frame_number_f = Field.new("frame.number")
 local frame_epochtime_f = Field.new("frame.time_epoch")
 local tcap_otid_f = Field.new("tcap.otid")
 local tcap_dtid_f = Field.new("tcap.dtid")
@@ -32,40 +33,53 @@ local tcap_time_proto = Proto("tcap_rsp_time","TCAP response time")
 -- create the fields for our "protocol"
 -- local req_time_F = ProtoField.string("tcap_rsp_time.req_time","request time")
 -- local rsp_time_F = ProtoField.string("tcap_rsp_time.time","response time")
-local req_frame_number_F = ProtoField.string("tcap_rsp_time.req_frame_number","request frame number")
+-- local req_frame_number_F = ProtoField.string("tcap_rsp_time.req_frame_number","request frame number")
 local req_time_F = ProtoField.double("tcap_rsp_time.req_time","request time")
 local rsp_time_F = ProtoField.double("tcap_rsp_time.time","response time")
 -- add the field to the protocol
-tcap_time_proto.fields = {req_frame_number_F,req_time_F,rsp_time_F}
+-- tcap_time_proto.fields = {req_frame_number_F,req_time_F,rsp_time_F}
+tcap_time_proto.fields = {req_time_F,rsp_time_F}
 
 -- create a function to "postdissect" each frame
 function tcap_time_proto.dissector(buffer,pinfo,tree)
   -- we've replaced the original http dissector in the dissector table,
   -- but we still want the original to run, especially because we need to read its data
-  original_m3ua_dissector:call(buffer, pinfo, tree)
+  -- original_m3ua_dissector:call(buffer, pinfo, tree)
+  -- original_sccp_dissector:call(buffer, pinfo, tree)
 
   -- obtain the current values the protocol fields
-  local otid = tcap_otid_f()
-  local dtid = tcap_dtid_f()
+  -- local otid = tcap_otid_f()
+  -- local dtid = tcap_dtid_f()
+  -- if 1 packet contains multiple tcap meesages,
+  -- the return value is an array, see wireshark source code
+  -- wireshark-1.12.1\epan\wslua\wslua_field.c
+  local otid = {tcap_otid_f()}
+  local dtid = {tcap_dtid_f()}
   local epochtime = tonumber(tostring(frame_epochtime_f()))
-  if otid then
-    local otid_s = tostring(otid)
-    tcap_requests_time_table[otid_s] = epochtime
+
+  if #otid ~= 0 then
+    for i, otid_value in pairs(otid) do
+      local otid_s = tostring(otid_value)
+      tcap_requests_time_table[otid_s] = epochtime
+    end
+
     -- local subtree = tree:add(tcap_time_proto,"TCAP response time")
-    -- subtree:add(req_time_F, tostring(otid))
-    -- subtree:add(rsp_time_F, tostring(epochtime))
-  elseif dtid then
-    local dtid_s = tostring(dtid)
-    if tcap_requests_time_table[dtid_s] ~= nil then
-      local req_time = tcap_requests_time_table[dtid_s];
-      local duration = epochtime - req_time
-      if duration >= 0 and duration < 10 then
-        local subtree = tree:add(tcap_time_proto,"TCAP response time")
-        local frame_number = frame_number_f()
-        subtree:add(req_frame_number_F, tostring(frame_number))
-        subtree:add(req_time_F,req_time)
-        -- subtree:add(rsp_time_F,duration)
-        subtree:add(rsp_time_F,duration * 1000) -- wireshark's "io graph"'s auto scale doesn't work
+    -- subtree:add(req_time_F, #otid)
+    -- subtree:add(rsp_time_F, 0)
+  elseif #dtid ~= 0 then
+    for i, dtid_value in pairs(dtid) do
+      local dtid_s = tostring(dtid_value)
+      if tcap_requests_time_table[dtid_s] ~= nil then
+        local req_time = tcap_requests_time_table[dtid_s];
+        local duration = epochtime - req_time
+        if duration >= 0 and duration < 10 then
+          local subtree = tree:add(tcap_time_proto,"TCAP response time")
+          -- local frame_number = frame_number_f()
+          -- subtree:add(req_frame_number_F, tostring(frame_number))
+          subtree:add(req_time_F,req_time)
+          -- subtree:add(rsp_time_F,duration)
+          subtree:add(rsp_time_F,duration * 1000) -- wireshark's "io graph"'s auto scale doesn't work
+        end
       end
     end
   end
@@ -73,13 +87,16 @@ end
 
 -- register our protocol as a postdissector.
 -- our dissector funtion get called on every packet
--- register_postdissector(tcap_time_proto)
+register_postdissector(tcap_time_proto)
 
 -- replace original m3ua dissector,
 -- so our dissector function get called on every tcap message
-local sctp_payload_dissector_table = DissectorTable.get("sctp.ppi")
-original_m3ua_dissector = sctp_payload_dissector_table:get_dissector(3) -- save the original dissector so we can still get to it
-sctp_payload_dissector_table:add(3, tcap_time_proto)                    -- and take its place in the dissector
+-- local sctp_payload_dissector_table = DissectorTable.get("sctp.ppi")
+-- original_m3ua_dissector = sctp_payload_dissector_table:get_dissector(3) -- save the original dissector so we can still get to it
+-- sctp_payload_dissector_table:add(3, tcap_time_proto)                    -- and take its place in the dissector
+-- local mtp3_service_indicator_dissector_table = DissectorTable.get("mtp3.service_indicator")
+-- original_sccp_dissector = mtp3_service_indicator_dissector_table:get_dissector(3) -- save the original dissector so we can still get to it
+-- mtp3_service_indicator_dissector_table:add(3, tcap_time_proto)                    -- and take its place in the dissector
 ```
 
 
@@ -93,6 +110,13 @@ wireshark 启动的时候就会自动加载我们这个脚本。  在wireshark�
 wireshark官方文档的lua插件的例子是个很好的参考。
 https://wiki.wireshark.org/Lua
 https://wiki.wireshark.org/Lua/Dissectors
+
+Wireshark Developer’s Guide 对lua的api接口有一些介绍
+https://www.wireshark.org/docs/wsdg_html_chunked/index.html
+但文档不是很详细，如果有疑问还是要对咬wireshark源码里面的lua接口实现相关的代码。比如
+wireshark-1.12.1\epan\wslua\wslua_field.c
+主要是 wireshark-1.12.1\epan\wslua\ 这个目录下文件。
+
 
 lua插件执行的效果：
 -----------------
