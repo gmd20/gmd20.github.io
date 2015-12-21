@@ -15,6 +15,17 @@ refluxjs
 --------
     https://github.com/spoike/refluxjs
     管理react的数据呈现。一种比较流行的flux的实现库，可以和react 一起使用。
+  
+redux
+------
+ https://github.com/rackt/redux
+ 最近又有人说refluxjs更新不活跃，改用redux了。
+ 同时结合 https://github.com/gaearon/redux-thunk 使用
+
+react-router
+------------
+   https://github.com/rackt/react-router
+   搭配react 使用的前端路由
     
 Semantic UI
 -----------
