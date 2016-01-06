@@ -277,6 +277,35 @@ origin	http://192.168.100.105:8080/git/repos/myproject.git (push)
 git remote set-url origin http://192.168.4.203:8080/git/repos/myproject.git
 
 
+使用内置的git server 来在widnows 和linux 机器之间同步文件 ，使用多个remote仓库
+=========================================================
+
+在windows上面用git命令启动一个简单的git server ， 为 D盘的  smsc 目录提供git 协议访问。
+----------------------------
+git daemon --verbose --base-path=/d  --export-all  --listen=192.168.56.1 D://smsc
+     --base-path=/d ： 告诉服务在再d 盘查找文件的根目录。 这样  git://192.168.56.1/smsc
+                       最终 对应的就是  /d/smsc 目录
+     --export-all ： d盘 的所有git 仓库，解释目录下没有名字为“git-daemon-export-ok ”的文件
+     --listen=192.168.56.1 ： 绑定一个内部ip，只有自己主机和虚拟机可以访问
+     最后一个参数，指定提供服务的目录只限制为 D://smsc， 不要把d盘的其他git仓库也
+     放到服务器上，如果省略就是所有的git 仓库都导出了。不过发现这里的写法只支持
+     windows的文件名语法，奇怪。在windows 命令提示符下面的语法是
+     C:\Git\bin\git.exe daemon --verbose --base-path=D: --export-all  --listen=192.168.56.1 D:/smsc
+
+     启动的git server  默认的 tcp端口是 DEFAULT_GIT_PORT = 9418  可以用 --port  指定
+     默认server是只读的，支持git pull fecth，要支持git push
+     需要配置daemon.receivepack 为true
+
+linux 通过添加多个远程仓库来访问windows上面的 git 服务器
+------------------------------------
+git remote add windows git://192.168.56.1/smsc
+git fetch windows
+git pull windows
+这样 windows下面是自己私有的机器的修改，origin下面是公用服务器的代码。 还能直接用git diff来比较
+windows的私有修改和 origin下面各个分支的差别。
+
+
+
 学习参考：
 =========
 Git Magic
