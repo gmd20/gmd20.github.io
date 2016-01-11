@@ -1,0 +1,46 @@
+x86的call stack可以 esp ebp 和保存在栈上 "返回地址"就可以还原函数调用链了。
+除非你用-fomit-frame-pointer改变了默认行为。
+
+但x86-64寄存器多了之后，很多函数参数都是通过寄存器传递，这个“返回地址”默认
+也不保存在栈上了。一直不清楚这个平台是怎么可以还原函数调用链的。不过听说libunwind
+这个库是可以做到准确还原的。于是就搜索了一下资料。。。。
+
+
+libunwind的库是可以用来解析 x86-64 的call stack的， 很多调试工具也都使用这个库来
+做函数调用链的解析，比如perf， gperftools   等
+
+x86-64的ABI要求ELF文件包含一个专门用于stack unwind的叫做.eh_frame的section
+.eh_frame This section holds the unwind function table. The contents are described
+in Section 4.2.4 of this document.
+
+DWARF 格式里面的 section .eh_frame（ .debug_frame）
+       CIE (Common Information Entry) FDEs (Frame Descriptor Entry).
+       -》return_address_register  -》register columns  的 register rule 指定了
+       怎么样还原 stack的 return addres，到底使用 寄存器还是偏移来计算等等。
+
+
+详细的细节可以参考
+==================
+
+x86-64 的ABI文档 3.7 Stack Unwind Algorithm说了怎么利用这个eh_framex信息来解析堆栈的。
+http://www.x86-64.org/documentation/abi.pdf
+DWARF Debugging Information Format Version 4
+http://www.dwarfstd.org/doc/DWARF4.pdf
+
+
+gcc相关的选项
+=============
+
+-fomit-frame-pointer
+-fno-omit-frame-pointer
+
+-funwind-tables
+-fasynchronous-unwind-tables
+-fno-asynchronous-unwind-tables
+Generate unwind table in DWARF 2 format, if supported by target machine. The table is exact at each instruction boundary, so it can be used for stack unwinding from asynchronous events (such as debugger or garbage collector). x
+
+
+gcc相关的内置函数libc的函数可能用到这个特性的
+C++ exceptions
+backtrace()
+__builtin_return_address
