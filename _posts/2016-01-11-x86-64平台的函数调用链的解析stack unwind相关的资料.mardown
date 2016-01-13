@@ -37,6 +37,7 @@ gcc相关的选项
 -funwind-tables
 -fasynchronous-unwind-tables
 -fno-asynchronous-unwind-tables
+
 Generate unwind table in DWARF 2 format, if supported by target machine. The table is exact at each instruction boundary, so it can be used for stack unwinding from asynchronous events (such as debugger or garbage collector). x
 
 
@@ -44,3 +45,10 @@ gcc相关的内置函数libc的函数可能用到这个特性的
 C++ exceptions
 backtrace()
 __builtin_return_address
+
+
+可以参考源码
+============
+systemtap   里面 unwind.c
+perf    里面 unwind.c
+libunwind 应该也有
