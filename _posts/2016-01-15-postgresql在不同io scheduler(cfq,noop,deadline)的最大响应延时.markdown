@@ -9,6 +9,8 @@ http://www.postgresql.org/message-id/flat/4B6FDD26.9010106@2ndquadrant.com#4B6FD
 What is the recommended I/O scheduler for a database workload in Red Hat Enterprise Linux?
 https://access.redhat.com/solutions/54164
 
+PostgreSQL pain points
+https://lwn.net/Articles/591723/
 
 在自己的机器上面也测试一下看看：
 测试环境：
