@@ -1,5 +1,5 @@
 把这个代码加载需要些heap memory profiler 日志的地方
-```go
+```golang
 import (
 "runtime/pprof"
 )
@@ -123,4 +123,3 @@ Dropped 28 nodes (cum <= 0.40MB)
 
 
 
-(pprof)
