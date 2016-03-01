@@ -1,5 +1,6 @@
 把这个代码加载需要些heap memory profiler 日志的地方
-```golang
+
+```go
 import (
 "runtime/pprof"
 )
@@ -11,7 +12,6 @@ import (
 		pprof.WriteHeapProfile(f)
 		f.Close()
 ```
-
 
 
 
