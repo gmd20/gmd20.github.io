@@ -23,4 +23,10 @@ find /opt/temp -name '*.gz' -mmin +1  -delete
 find /opt/temp -name '*.gz' -mtime +1  -delete 
 
 显示所有最后修改在1分钟之前的目录
-find /opt/smsc/cdr -type d  -mmin +1
+find /opt/temp -type d  -mmin +1
+
+删除所有的空目录
+find /opt/temp  -type d -empty -delete
+
+
+
