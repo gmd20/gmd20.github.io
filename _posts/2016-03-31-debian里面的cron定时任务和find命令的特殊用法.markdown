@@ -19,3 +19,8 @@ find /opt/temp -name '*.gz' -mmin +1  -execdir /opt/collector.sh {} \;  -execdir
 删除所有一分钟之前的gz文件
 find /opt/temp -name '*.gz' -mmin +1  -delete 
 
+删除所有一天之前的gz文件
+find /opt/temp -name '*.gz' -mtime +1  -delete 
+
+显示所有最后修改在1分钟之前的目录
+find /opt/smsc/cdr -type d  -mmin +1
