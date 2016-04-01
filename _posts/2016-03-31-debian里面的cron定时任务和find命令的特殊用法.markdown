@@ -4,17 +4,18 @@ https://debian-handbook.info/browse/zh-CN/stable/sect.task-scheduling-cron-atd.h
 
 设置任务
 --------
+
 ```bash
 export EDITOR=vim
 crontab -u username -e
-···
-
+```
+```text
 # 创建每隔一分钟运行的任务
 */1 * * * * date >> /opt/test/log/cron.log
 
 # 创建每天凌晨4点1分运行的任务
 1 4 * * * date >> /opt/test/log/cron.log
-
+```
 
 find命令的特殊用法
 ==================
