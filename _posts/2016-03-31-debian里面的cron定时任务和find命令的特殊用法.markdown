@@ -26,6 +26,10 @@ find /opt/temp -name '*.gz' -mmin +1  -execdir /opt/collector.sh {} \; -quit
 重复执行两次，这样也能达到只处理两个文件的目的，当然前提是第一次处理的时候就把文件改名了，不然第一个find还是返回一个一样的结果吧
 find /opt/temp  \( -name '*.gz' -mmin +1  -execdir /opt/collector.sh {} \; \) ,  \( -name '*.gz' -mmin +1  -quit \) && find /opt/temp  \( -name '*.gz' -mmin +1  -execdir /opt/collector.sh {} \; \) ,  \( -name '*.gz' -mmin +1  -quit \) 
 
+和上面语句类似的效果， 这里面每查找到一个匹配的文件都先sleep 等待一秒再继续下一个，这样在head 读到两行的关闭pipe的时候 ， find来来不及调用太多fstat操作访问的文件属性，这样可以避免很多没必要的fstat。人为减慢了处理速度
+find /opt/smsc/cdr/ -mmin +2  -name "*.gz" -print -exec sleep 1 \; | head -n 2 | xargs -r -L 1 /opt/cdr_collector.sh
+
+
 删除所有最后修改时间为一分钟之前的gz文件
 find /opt/temp -name '*.gz' -mmin +1  -delete 
 
