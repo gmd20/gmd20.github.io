@@ -297,12 +297,72 @@ git daemon --verbose --base-path=/d  --export-all  --listen=192.168.56.1 D://sms
      需要配置daemon.receivepack 为true
 
 linux 通过添加多个远程仓库来访问windows上面的 git 服务器
-------------------------------------
+---------------------------------------------------
 git remote add windows git://192.168.56.1/smsc
 git fetch windows
 git pull windows
 这样 windows下面是自己私有的机器的修改，origin下面是公用服务器的代码。 还能直接用git diff来比较
 windows的私有修改和 origin下面各个分支的差别。
+
+
+
+windows和linux换行相关的配置
+============================
+```text
+# text源码文件出现混合的windows换行crlf和linux换行lf时报告错误
+core.safecrlf = true
+
+# text源码文件默认使用linux方式换行
+core.eol=lf
+
+# 不要git在checkout时自动把文件换行转成当前系统的换行
+core.autocrlf=false
+
+
+#指定特定后缀名的文件的换行
+Here is an example that will make Git normalize .txt, .vcproj and .sh files, ensure that .vcproj files have CRLF and .sh files have LF in the working directory, and prevent .jpg files from being normalized regardless of their content.
+
+*.txt		text
+*.vcproj	eol=crlf
+*.sh		eol=lf
+*.jpg		-text
+
+# 这个跟core.autocrlf=true类似，但会自动转换所有text文件的换行，需要配置上面这些文件扩展名和eol属性的设定。“core.autocrlf=true” 支持在checkout 时才做转换。 下面这个应该在checkin时也做转换。
+If you want to interoperate with a source code management system that enforces end-of-line normalization, or you simply want all text files in your repository to be normalized, you should instead set the text attribute to "auto" for all files.
+
+*	text=auto
+
+
+参考git文档 https://git-scm.com/docs/gitattributes  ，可以使用下面的步骤来统一转换。
+
+When text=auto normalization is enabled in an existing repository, any text files containing CRLFs should be normalized. If they are not they will be normalized the next time someone tries to change them, causing unfortunate misattribution. From a clean working directory:
+
+$ echo "* text=auto" >>.gitattributes
+$ rm .git/index     # Remove the index to force Git to
+$ git reset         # re-scan the working directory
+$ git status        # Show files that will be normalized
+$ git add -u
+$ git add .gitattributes
+$ git commit -m "Introduce end-of-line normalization"
+
+
+If any files that should not be normalized show up in git status, unset their text attribute before running git add -u.
+manual.pdf	-text
+
+Conversely, text files that Git does not detect can have normalization enabled manually.
+weirdchars.txt	text
+
+
+git add itself does not touch the files in the work tree, the next checkout would, so the safety triggers;
+
+git apply to update a text file with a patch does touch the files in the work tree, but the operation is about text files and CRLF conversion is about fixing the line ending inconsistencies, so the safety does not trigger;
+
+git diff itself does not touch the files in the work tree, it is often run to inspect the changes you intend to next git add. To catch potential problems early, safety triggers.
+```
+
+
+
+
 
 
 
