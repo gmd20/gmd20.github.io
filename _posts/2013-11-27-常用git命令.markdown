@@ -216,6 +216,7 @@ $(prefix)/etc/gitconfig
 ~/.gitconfig
  $GIT_DIR/config   .git/config
  ```
+ 
 分别对应参数 --system, --global, --local 。
 默认就是--local在当前的代码仓库的 .git/config文件里面设置
 自己git help config看一下
@@ -233,12 +234,14 @@ export EDITOR=vim
 
 查看历史
 ===============
+```text
 git log -p -2   显示最近两次commit的内容差异diff
 
 git log --stat  显示commit历史的修改行数
 
 字符图形显示log的继承关系
 git log --pretty=format:"%h %s" --graph
+```
 
 远程分支
 =========
@@ -257,16 +260,20 @@ git  cherry-pick  dfd484f12
 
 格式化代码源文件
 ==============
+```text
 git stripspace
 可以把代码行尾的空格删掉，还有空白行删掉，很好用的命令
 git diff  --check 可以检查这种“空格错误”
 --check
 Warn if changes introduce whitespace errors. What are considered whitespace errors is controlled by core.whitespace configuration. By default, trailing whitespaces (including lines that solely consist of whitespaces) and a space character that is immediately followed by a tab character inside the initial indent of the line are considered whitespace errors. Exits with non-zero status if problems are found. Not compatible with --exit-code.
+```
 
 打包git目录树的所有文件
 =======================
+```text
 git archive --format=zip -o  webrtc_latest.zip HEAD
 可以方便的把git的目录打包到一个压缩包里面，可以指定某个branch之类的。
+```
 
 更改远程服务器地址
 ================
@@ -279,7 +286,7 @@ git remote set-url origin http://192.168.4.203:8080/git/repos/myproject.git
 
 使用内置的git server 来在widnows 和linux 机器之间同步文件 ，使用多个remote仓库
 =========================================================
-
+```text
 在windows上面用git命令启动一个简单的git server ， 为 D盘的  smsc 目录提供git 协议访问。
 ----------------------------
 git daemon --verbose --base-path=/d  --export-all  --listen=192.168.56.1 D://smsc
@@ -303,7 +310,7 @@ git fetch windows
 git pull windows
 这样 windows下面是自己私有的机器的修改，origin下面是公用服务器的代码。 还能直接用git diff来比较
 windows的私有修改和 origin下面各个分支的差别。
-
+```
 
 
 windows和linux换行相关的配置
