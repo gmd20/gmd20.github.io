@@ -15,10 +15,10 @@ $ git branch
 
 提交所有改动了的文件
 ==================
-
+```text
 git commit -p  这个自动让你选择所有修改过的文件，然后提交。 当然用GUI程序集成的功能，commit的时候自动就选了所有改动过的文件，更方便了。用命令行，必须的用-p参数啊，自己用git help commit查看
 类似的有：
-```text
+
 git add  -p
 git log -p
 git checkout -p
@@ -26,39 +26,47 @@ git checkout -p
 
 利用回收站保存临时修改
 ====================
+```text
 git stash save  保存当前已经修改的但还没有提交的文件的状态。
 然后去做其他的修改，checkout 到另外branch 等等
 git stash pop  还原到原来的那些文件状态。
 非常方便的，还有一些其他命令可以git help stash 看帮助
 
 利用回收站功能丢弃当前的所有修改
-```text
+
 git stash
 git stash clear
 ```
 
 删除远程分支
 ============
+```text
 git push origin --delete <branchName>
 
 git log 输出里面 commit右边sha-1  hash值标识一个commit改动，但一般使用前面几个就个标识一个commit了，看文档一般用前面4位。应该这个sha-1前4位出现冲突的情况都比较少才能这样用吧
 git checkout -b fixes 1b6d
+```
 
 修改分支名字
 ============
-，如果新的分支名字已经存在要用-M ,不然-m
+```text
+如果新的分支名字已经存在要用-M ,不然-m
 git branch -m  work/issue93  work/issue/93
+```
 
 rebase调整分支的继承结构
 =======================
+```text
 以前 work/issue/92是从master 继承而来的。
 做了下面这个命令之后，work/issue/92分支会变成从 origin/freediameter-1.1继承而来。
 当前branch所有的修改也合并过去。
 git rebase origin/freediameter-1.1
 git push -f   参数覆盖远程分支上面已经存在的work/issue/92 分支
+```
 
 丢弃所有未commit和已经commit的修改
 ====================
+```text
 $ git reset  --hard HEAD
 做完这个所有被修改的文件，没有提交的都被丢弃。还原回最初的状态。
 git help reset，自己reset的帮助，可以用来撤销前面几次的commit记录，merge 记录，add 记录等。文档举例很有参考价值。
@@ -85,13 +93,14 @@ git checkout -f   force选项可以强制checkout，并且丢弃本地位未提�
 
 重做多个commit的记录，把多个commit合并到一个里面里面
 先用reset回撤到commit e20bec14，但保留文件修改, 然后再重写提交记录，把多个commit的记录换成一个等
-```text
+
 git reset --soft e20bec14
 git commit -m "重写的commit修改状态"
 ```
 
 查看修改历史
 ===========
+```text
 git log --oneline --decorate --graph
 
 查看某次commit修改了那些内容
@@ -101,18 +110,23 @@ git show a0a394bc5fd6
 
 git reflog
 查看分支历史，比git log 看起来方便一些。
+```
 
 制作patch
 =========
+```text
 git  diff可以查看当前没提交的修改，应该也是可以用来制作patch的在 Windows的 GUI里面，就很容易用图形界面的查看diff。不过git format-patch  好处是可以包含commit的历史记录
+```
 
 1.
 --
+```text
 把所有当前分支的修改，但修改不再origin分支里面的
 Extract all commits which are in the current branch but not in the origin branch:
 $ git format-patch origin
 
 $ git format-patch  freediameter-1.2   从原始分支freediameter-1.2开始到当前的所有修改
+```
 
 在当前目录下会输出所有的patch，一个commit历史记录一个patch文件。默认用commit 信息里面的第一行来作为文件名
 ```text
@@ -125,22 +139,25 @@ $ git format-patch  freediameter-1.2   从原始分支freediameter-1.2开始到�
 
 2.
 --
+```text
 --stdout 把所有的输出到打印标准输出，不创建多个patch文件了。我比较喜欢这种方式
 git format-patch --stdout freediameter-1.2
-
+```
 3.
 --
--<n>  指定一个数字，表示最近的几次commit修改
 ```text
+-<n>  指定一个数字，表示最近的几次commit修改
+
 git format-patch --stdout -1    最近的1个commit
 git format-patch --stdout -3    最近的3个commit
-```
 
 Extract three topmost commits from the current branch and format them as e-mailable patches:
 $ git format-patch -3
+```
 
 4.
 --
+```text
 用 git am命令可以应用这个patch文件。 相当于patch -p<n>命令吧，不过专门针对git patch，可能历史记录更好吧。
 Extract commits between revisions R1 and R2, and apply them on top of the current branch using git am to cherry-pick them:
 $ git format-patch -k --stdout R1..R2 | git am -3 -k
@@ -157,9 +174,11 @@ A suffix ~<n> to a revision parameter means the commit object that is the <n>th 
 原文有个图示，解释的比较清楚，<rev>^加数字是多继承的第几个parent节点，<rev>~是前面的第几代parent
 所下面这个命令在单继承树上等价于 git format-patch -2 命令
 $ git format-patch HEAD~2
+```
 
 修改最后一次提交的信息
 ========================
+```text
 $ git commit --amend
 会启动一个编辑器窗口，让你重写上次commit信息，但要配置editor才行，参考最后面的editor配置。Windows的git可以用他内置的 vim。
 刚提交，但你期望你输入的是一条不同的信息？那么键入：
@@ -174,7 +193,7 @@ $ git commit --amend -a
 还有git rebase -i HEAD~10 这样还原大量的修改的，参考下面的两个文档
 
 把提交状态回撤到commit e20bec14，但文件修改保留, 然后重写提交记录，把多个commit的记录换成一个等
-```text
+
 git reset --soft e20bec14
 git commit -m "重写commit修改状态"
 ```
@@ -185,21 +204,21 @@ git commit -m "重写commit修改状态"
 这个要使用下面这个命令
 ```text
 git rebase [-i | --interactive]  <commit_hash|branch>
-```
+
 会启动一个编辑器，让你交互式的自由选择和重写commit的列表，
 把commit之前的pick改成reword就可以重新该commit的信息了。
 参考 git help rebase的文档，这个一个非常强大的命令
 
-```text
+
 git commit -a --fixup 34bda33
 git rebase --interactive --autosquash master
-```
+
 --fixup 表示这次提交时对之前34bda33 那个commit的存在问题的修复。
 --autosquash 就会自动把这两个关联问题的commit合并成一个commit
 
  如果是重排commit顺序和丢掉一些commit，那个更简单了，修改那个 列表就可以了，
 参考git help rebase的文档INTERACTIVE MODE的章节。
-
+```
 
 
 
@@ -216,17 +235,19 @@ $(prefix)/etc/gitconfig
 ~/.gitconfig
  $GIT_DIR/config   .git/config
  ```
- 
+```text
 分别对应参数 --system, --global, --local 。
 默认就是--local在当前的代码仓库的 .git/config文件里面设置
 自己git help config看一下
 git config --list 可以查看当前设置
+```
 
 git的默认编辑器修改
 ================
+```text
 git config --global core.editor "vim"
 git是按照设置GIT_EDITOR 环境变量,core.editor 设置，VISUAL 环境变量， EDITOR 环境变量的顺序来选择到底使用那个编辑器来写commit信息的。
-```
+
 export GIT_EDITOR=vim
 export VISUAL=vim
 export EDITOR=vim
@@ -256,7 +277,9 @@ git remote show origin  查看远程仓库内容
 
 选择性的把某个分支上面的某次commit  merge过来
 =========
+```text
 git  cherry-pick  dfd484f12
+```
 
 格式化代码源文件
 ==============
@@ -277,12 +300,12 @@ git archive --format=zip -o  webrtc_latest.zip HEAD
 
 更改远程服务器地址
 ================
-
+```text
 git remote -v
 origin	http://192.168.100.105:8080/git/repos/myproject.git (fetch)
 origin	http://192.168.100.105:8080/git/repos/myproject.git (push)
 git remote set-url origin http://192.168.4.203:8080/git/repos/myproject.git
-
+```
 
 使用内置的git server 来在widnows 和linux 机器之间同步文件 ，使用多个remote仓库
 =========================================================
