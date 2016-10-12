@@ -183,6 +183,12 @@ namespace BingWallpaper
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.ShowInTaskbar = false;
+            this.ShowIcon = false;
+            this.Size = new Size(1, 1);
+            this.Opacity = 0.01;
+        
             try
             {
                 DateTime t = File.GetCreationTime(@"D:\BingWallpaper.jpg");
