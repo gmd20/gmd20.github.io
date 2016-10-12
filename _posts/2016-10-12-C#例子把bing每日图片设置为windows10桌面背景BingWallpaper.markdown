@@ -1,6 +1,6 @@
 
-Wallpaper.cs
-============
+Wallpaper.cs 微软设置桌面背景的参考代码
+====================================
 ```c#
 ﻿using System;
 using System.Collections.Generic;
@@ -149,8 +149,8 @@ namespace BingWallpaper
 
 
 
-Form1.cs
-========
+Form1.cs  使用webbrowser控件下载网页也解析背景图片 用webclient下载
+================================================================
 ```c#
 using System;
 using System.Collections.Generic;
@@ -224,6 +224,78 @@ namespace BingWallpaper
             {
                 HtmlElement bgDiv = webBrowser1.Document.GetElementById("bgDiv");
                 if (bgDiv == null)
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+using System.Net;
+using System.Threading;
+using System.Text.RegularExpressions;
+using System.IO;
+
+
+//  windows 10 锁屏界面的 Windows聚焦 图片在这个目录，也可以遍历今天的最新图片来设置背景？？
+//  C:\Users\<用户>\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets
+
+
+namespace BingWallpaper
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.ShowInTaskbar = false;
+            this.ShowIcon = false;
+            this.Size = new Size(1, 1);
+            this.Opacity = 0.01;
+
+            try
+            {
+                DateTime t = File.GetLastWriteTime(@"D:\BingWallpaper.jpg");
+                if (t.Day == DateTime.Now.Day)
+                {
+                    Application.Exit();
+                }
+            }
+            catch
+            {
+
+            }
+            //webBrowser1.Url = new Uri("http://cn.bing.com");
+            webBrowser1.Navigate("http://cn.bing.com");
+            timer1.Interval = 60000;
+            timer1.Start();    
+        }
+
+        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            Thread myThread = new Thread(new ThreadStart(DownloadBingWallpaper));
+            myThread.Start();
+            BeginInvoke(new MethodInvoker(delegate
+            {
+                Hide();
+            }));
+        }
+
+        private void DownloadBingWallpaper()
+        {
+            Thread.Sleep(3000);
+            this.Invoke(new MethodInvoker(delegate
+            {
+                HtmlElement bgDiv = webBrowser1.Document.GetElementById("bgDiv");
+                if (bgDiv == null)
                 {
                     goto END;
                 }
@@ -248,19 +320,22 @@ namespace BingWallpaper
                 {
                     webClient.DownloadFile(imgUrl, @"D:\BingWallpaper.jpg");
                     Wallpaper.SetDesktopWallpaper(@"D:\BingWallpaper.jpg", WallpaperStyle.Fill);
+                    Application.Exit();
                 } catch {
                   
                 }
 
             END:
-               // this.Close();
-                Application.Exit();
+                // this.Close();
+                timer1.Stop();
+                timer1.Start();
             }));
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Application.Exit();
+            webBrowser1.Refresh();
+            //webBrowser1.Navigate("http://cn.bing.com");
         }
     }
 }
