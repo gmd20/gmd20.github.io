@@ -170,8 +170,9 @@ using System.IO;
 
 
 // Bing本来获取图片的json  API，直接用这个request的结果解析图片地址可能更简单一些
+// n是图片高数，idx是索引吧
 // http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US
-// http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US
+// http://www.bing.com/HPImageArchive.aspx?format=js&n=8&idx=1
 // 这个bash shell好像也能工作
 // https://github.com/thejandroman/bing-wallpaper/blob/master/bing-wallpaper.sh
 // #!/usr/bin/env bash
@@ -196,6 +197,7 @@ using System.IO;
 //   done
 //  另有windows 10 锁屏界面的 Windows聚焦 图片在这个目录，也可以遍历今天的最新图片来设置背景？？
 //  C:\Users\<用户>\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets
+
 
 
 namespace BingWallpaper
