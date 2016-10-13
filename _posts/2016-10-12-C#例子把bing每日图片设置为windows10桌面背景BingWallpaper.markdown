@@ -202,6 +202,7 @@ namespace BingWallpaper
 
             }
             //webBrowser1.Url = new Uri("http://cn.bing.com");
+            webBrowser1.ScriptErrorsSuppressed = true;
             webBrowser1.Navigate("http://cn.bing.com");
             timer1.Interval = 60000;
             timer1.Start();    
@@ -262,8 +263,10 @@ namespace BingWallpaper
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            webBrowser1.Refresh();
-            //webBrowser1.Navigate("http://cn.bing.com");
+            //webBrowser1.Refresh();
+            // webBrowser1.GoHome();
+            webBrowser1.Stop();
+            webBrowser1.Navigate("http://cn.bing.com");           
         }
     }
 }
