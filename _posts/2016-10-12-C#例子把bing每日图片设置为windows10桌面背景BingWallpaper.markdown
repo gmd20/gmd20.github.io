@@ -168,7 +168,33 @@ using System.Text.RegularExpressions;
 using System.IO;
 
 
-//  windows 10 锁屏界面的 Windows聚焦 图片在这个目录，也可以遍历今天的最新图片来设置背景？？
+
+// Bing本来获取图片的json  API，直接用这个request的结果解析图片地址可能更简单一些
+// http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US
+// http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US
+// 这个bash shell好像也能工作
+// https://github.com/thejandroman/bing-wallpaper/blob/master/bing-wallpaper.sh
+// #!/usr/bin/env bash
+//
+//   PICTURE_DIR="$HOME/Pictures/bing-wallpapers/"
+//
+//   mkdir -p $PICTURE_DIR
+//
+//   urls=( $(curl -sL http://www.bing.com | \
+//       grep -Eo "url:'.*?'" | \
+//       sed -e "s/url:'\([^']*\)'.*/http:\/\/bing.com\1/" | \
+//       sed -e "s/\\\//g") )
+//
+//   for p in ${urls[@]}; do
+//       filename=$(echo $p|sed -e "s/.*\/\(.*\)/\1/")
+//       if [ ! -f $PICTURE_DIR/$filename ]; then
+//           echo "Downloading: $filename ..."
+//           curl -Lo "$PICTURE_DIR/$filename" $p
+//       else
+//           echo "Skipping: $filename ..."
+//       fi
+//   done
+//  另有windows 10 锁屏界面的 Windows聚焦 图片在这个目录，也可以遍历今天的最新图片来设置背景？？
 //  C:\Users\<用户>\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets
 
 
