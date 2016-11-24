@@ -2,6 +2,7 @@ http://www.infoq.com/cn/Dockers/presentations/
 
 容器技术栈，开源项目
 ====================
+```
 资源调度 Mesos Swarm Kubernetes
 服务编排 Compose Kubernetes marathon
 监控  cAdvisor Sysdig Datadog
@@ -15,7 +16,7 @@ http://www.infoq.com/cn/Dockers/presentations/
 网络  VXLAN IPSEC HAProxy
 容器系统  Red Hat， Ubuntu， CoreOS， RancherOS
 资源 AWS VMware OpenStack
-
+```
 
 
 
@@ -31,7 +32,7 @@ http://www.infoq.com/cn/presentations/thinking-on-the-container-technology?utm_s
 http://www.infoq.com/cn/presentations/platform-architecture-and-combatof-zhihu-container-platform
 
 知乎采用Mesos+Docker容器方式构建弹性计算平台，配合Consul和Haproxy进行服务发现及负载均衡，并结合持续集成系统提升业务的整体开发效率。目前，知乎绝大部分业务都已经平稳的运行在该平台之上。
-
+```
 知乎使用 mesos （http://mesos.apache.org/） 管理容器。
 没有容器 配置一个haproxy作为入口，haproxy可以提供详细统计、流量的熔断保护、
 
@@ -40,7 +41,7 @@ docker stop命令， 会发送SIGTERM通知容器进程退出。
 服务发现用consul（https://www.consul.io/） service注册 基于Key-value
 docker exec 模拟ssh 登录
 docker register的分布式优化和负载均衡
-
+```
 
 2. 新浪微博混合云DCP平台的设计难点与业务上云实践
 ================================================
@@ -48,7 +49,7 @@ http://www.infoq.com/cn/presentations/sina-weibo-hybrid-cloud-dcp-platform
 
 随着公有云的逐渐成熟，Container技术的兴起，一时间各大型企业纷纷开始升级内部运维系统，提供自动化能力的同时，更注重弹性调度。新浪微博14年就开始尝试应用Docker，并逐步Docker化Web类业务。截止目前，已构建好一套基于私有云+公有云的弹性调度平台，内称混合云DCP，上线以来G95%的Web类业务全部迁入此平台。本次分享包括但不限于以下内容： 1. 混合云DCP平台的架构设计与难点解析 2. 业务Docker化中遇到的问题及解决方案 3. 降低成本，解析基于公有云的弹性方案 4. 业务迁移至DCP及上云实践 
 
-
+```
 热点峰值应对--自动化扩容
  公有云： 主要aliyun ，还有用到其他云 AWS ， VPC 的 VM池。
  用Compose（https://docs.docker.com/compose/） 和Swarm （https://github.com/docker/swarmkit）管理docker
@@ -57,7 +58,7 @@ http://www.infoq.com/cn/presentations/sina-weibo-hybrid-cloud-dcp-platform
 
  微博内部网络和 阿里云 之间必须使用 专线 ，平常1G专线，春节用10G专线。redis等数据同步用到
 2015年10上线，4000+ 容器
-
+```
 
 3. 京东618大促，15万个Docker实例背后的技术挑战
 ===============================================
@@ -70,28 +71,28 @@ http://www.infoq.com/cn/presentations/jingdong-618-docker-instance-behind-techni
 ==================================================
  http://www.infoq.com/cn/presentations/cloud-processing-services-based-on-docker
 又拍云在云处理服务升级过程中进行了容器化以及微服务化实践，过程中遇到了许多新的挑战，例如经常迁移的微服务如何做高效的负载均衡、动态发现、健康检查；如何在不影响线上业务的情况下做弹性伸缩、服务更新、故障处理；如何对服务进行快速灵活的权限控制、速率控制、参数检查等。这里主要分享我们团队在微服务化过程中为解决以上问题所做的一些工作。特别的，将着重介绍我们是如何利用 ngx_lua 实现动态的服务路由来很好地实现动态扩容、zero downtime 更新与自动容错的。 
-
+```
 负载均衡用nginx。
 consul 注册的服务变化之后，自己实现居于 ngx_lua的动态负载均衡 
-
+```
 
 5. 携程基于容器的持续交付设计&实现
 ==================================
 http://www.infoq.com/cn/presentations/design-and-implementation-of-the-continuous-delivery-of-ctrip
 本次将介绍携程如何设计基于容器的持续交付，以容器镜像作为发布单元，实现开发、测试、生产环境的一致性，打造全新的灰度发布&扩容模式；分享Kubernetes与Mesos的取舍、网络模型的选择、Windows Server Container POC、运维监控等实战经验。
-
+```
 Chronos/Mesos  的动态调度  
 pychronos
-
+```
 
 6.同程旅游5000个Docker实例上的CI实践
 =====================================
 http://www.infoq.com/cn/presentations/ci-practice-on-ly-travel-5000-docker-instances
 
 同程旅游在引入Docker容器部署后在持续集成时带来了一些新的想法的同时也来新的挑战，如何的一个有数千个容器的实例的环境中做好CI，又如何通过容器的引入让开发真正的DevOps起来，其中涉及到基于容器的压缩式发布流程，容器的开发自扩容管理，Docker Image管理（量大、多版本等等），运维与开发在新的CI中的分工等。同程旅游将以上种种集成为一个管理平台，本次分享将会详细介绍同程旅游的基于容器的CI实践，重点谈坑和经验。 
-
+```
 web应用，mysql redis，mongodb等都运行在 docker。 cpu 利用率由20% 提高到 80%
-
+```
 
 
 
@@ -111,10 +112,10 @@ http://www.infoq.com/cn/presentations/technology-evolution-of-kubernetes-in-firs
 9. 面向容器平台的存储系统
 =========================
 http://www.infoq.com/cn/presentations/storage-system-for-container-platform
-
+```
 有容云  
 comet ， docker volume plugin
-
+```
 
 
 10.  网易蜂巢Docker云计算平台架构演化
@@ -122,17 +123,17 @@ comet ， docker volume plugin
 http://www.infoq.com/cn/presentations/netease-docker-cloud-computing-platform-architecture-evolution
 
 网易蜂巢是基于Docker 容器打造的云计算平台，以提高开发效率，降低研发成本为核心目标，提供极佳的用户体验，极速的性能，全面助力开发者开发云端应用。网易云之前多年稳定运行、支撑了众多重量级网易互联网产品（门户/新闻客户端、云音乐、考拉等）的线上业务运行。为了支持公有云的建设，我们对平台整体架构进行了优化演变，包括机房建设，基础设施，编排系统，容器服务，镜像仓库，管理服务等，同时也面临更多高难度的技术及工程复杂度的挑战，本分享主要介绍蜂巢云服务构架的演化过程及工程实践经验分享。
-
+```
 openstack构建aaS， PaaS
 云网络基于openFow的浮动ip
 云硬盘基于iscsi实现
 Ceph
-
+```
 
 11. Kubernetes在企业中的场景运用及管理实践
 ==========================================
 http://www.infoq.com/cn/presentations/application-and-management-practice-of-kubernetes-in-enterprise
-
+```
 时速云
 
 网络- Flannel：   https://github.com/coreos/flannel  
@@ -144,7 +145,7 @@ http://www.infoq.com/cn/presentations/application-and-management-practice-of-kub
 
 存储-  docker的volume plugin很多
 etcd：用于服务发现的键值存储系统    https://github.com/coreos/etcd
-
+```
 
 12.  知乎 Docker 弹性计算平台的架构和实践
 ========================================
@@ -158,6 +159,7 @@ http://www.infoq.com/cn/presentations/zhihua-docker-elastic-computing-platform-a
 13 云端基于Docker微服务应用的架构实践
 =====================================
 http://www.infoq.com/cn/presentations/docker-micro-service-application-architecture-practice
+```
 阿里云 工程师分享
 
 容器编排 docker compose 
@@ -165,7 +167,7 @@ http://www.infoq.com/cn/presentations/docker-micro-service-application-architect
 阿里云 集成 
 docker volumne plugin  支持不同的存储类型
 服务注册 Spring Cloud
-
+```
 
 14 同程Docker 大规模应用之路
 ================================
