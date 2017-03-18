@@ -86,18 +86,19 @@ nodogsplash
 
 查看的网页，可能不限于这些
 ========================
-https://blogs.windows.com/msedgedev/2015/06/09/http-strict-transport-security-comes-to-internet-explorer-11-on-windows-8-1-and-windows-7/#pocTdcHEsSV4ih1O.97
-https://msdn.microsoft.com/windows/hardware/drivers/mobilebroadband/captive-portals
-http://stackoverflow.com/questions/18891706/ios7-and-captive-portals-changes-to-apple-request-url
-http://www.chromium.org/chromium-os/chromiumos-design-docs/network-portal-detection
-http://blog.csdn.net/innost/article/details/20863901
-https://mp.weixin.qq.com/wiki/10/0ef643c7147fdf689e0a780d8c08ab96.html
-https://developer.android.google.cn/reference/android/net/CaptivePortal.html
-http://serverfault.com/questions/811005/captive-portal-issue-with-chrome-on-android
-https://support.apple.com/en-us/HT204497
-http://blog.erratasec.com/2010/09/apples-secret-wispr-request.html#.VxkmrJMrIy5
-https://www.reddit.com/r/Windows10/comments/4p6r9r/windows_10_captive_portal_detection/
-http://blog.superuser.com/2011/05/16/windows-7-network-awareness/
+[https://blogs.windows.com/msedgedev/2015/06/09/http-strict-transport-security-comes-to-internet-explorer-11-on-windows-8-1-and-windows-7/#pocTdcHEsSV4ih1O.97] (https://blogs.windows.com/msedgedev/2015/06/09/http-strict-transport-security-comes-to-internet-explorer-11-on-windows-8-1-and-windows-7/#pocTdcHEsSV4ih1O.97)
+[https://msdn.microsoft.com/windows/hardware/drivers/mobilebroadband/captive-portals](https://msdn.microsoft.com/windows/hardware/drivers/mobilebroadband/captive-portals)
+[http://stackoverflow.com/questions/18891706/ios7-and-captive-portals-changes-to-apple-request-url](http://stackoverflow.com/questions/18891706/ios7-and-captive-portals-changes-to-apple-request-url)
+[http://www.chromium.org/chromium-os/chromiumos-design-docs/network-portal-detection](http://www.chromium.org/chromium-os/chromiumos-design-docs/network-portal-detection)
+[http://blog.csdn.net/innost/article/details/20863901](http://blog.csdn.net/innost/article/details/20863901)
+[https://mp.weixin.qq.com/wiki/10/0ef643c7147fdf689e0a780d8c08ab96.html] (https://mp.weixin.qq.com/wiki/10/0ef643c7147fdf689e0a780d8c08ab96.html)
+[https://developer.android.google.cn/reference/android/net/CaptivePortal.html](https://developer.android.google.cn/reference/android/net/CaptivePortal.html)
+[http://serverfault.com/questions/811005/captive-portal-issue-with-chrome-on-android](http://serverfault.com/questions/811005/captive-portal-issue-with-chrome-on-android)
+[https://support.apple.com/en-us/HT204497] (https://support.apple.com/en-us/HT204497)
+[http://blog.erratasec.com/2010/09/apples-secret-wispr-request.html#.VxkmrJMrIy5](http://blog.erratasec.com/2010/09/apples-secret-wispr-request.html#.VxkmrJMrIy5)
+[https://www.reddit.com/r/Windows10/comments/4p6r9r/windows_10_captive_portal_detection/](https://www.reddit.com/r/Windows10/comments/4p6r9r/windows_10_captive_portal_detection/)
+[http://blog.superuser.com/2011/05/16/windows-7-network-awareness/](http://blog.superuser.com/2011/05/16/windows-7-network-awareness/)
+
 
 
   
