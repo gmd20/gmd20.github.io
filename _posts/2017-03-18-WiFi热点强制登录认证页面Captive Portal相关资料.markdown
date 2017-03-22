@@ -5,7 +5,7 @@
 
 Captive Portal的原理
 ===================
-Captive Portal这个东西应该是随着wifi的流行，很多公共场所都有这种需求，才慢慢形成的一个概念。但好像各大手机厂商和操作系统都还没有形成一个统一的标准（好像有个Hotspot 2.0 IEEE 802.11u 的标准，但不知道各个无线路由器和手机支持的怎么样。微软的文档还提到一个 Wireless Internet Service Provider roaming (WISPr) 不知道是自己的协议还是其他厂商也都支持的。）。大概的实现都是类似这样子的，系统/浏览器 检查到网络不正常了或者在wifi刚连接的时候，他就假设这个后面的网关是要求登录验证的，假设这个网络是不正常的，然后运行一个“网络探测/网络诊断”的逻辑，简单的说就是去尝试访问一个指定的http服务器的指定页面，如果这页面返回的结果(网页内容或者http status code)跟自己预期的不一样，就认为这个返回的页面是中间的网关人为纂改了得http内容，认为这个返回的页面网关提供的“强制登陆页面captive portal”，就直接显示这个内容让用户进行登录认证操作。
+Captive Portal这个东西应该是随着wifi的流行，很多公共场所都有这种需求，才慢慢形成的一个概念。但好像各大手机厂商和操作系统都还没有形成一个统一的标准（好像有个Hotspot 2.0 IEEE 802.11u 的标准，好像新的ios 和三星手机和windows 10都支持。微软的文档还提到一个 Wireless Internet Service Provider roaming (WISPr) 但好像被抛弃了。）。大概的实现都是类似这样子的，系统/浏览器 检查到网络不正常了或者在wifi刚连接的时候，他就假设这个后面的网关是要求登录验证的，假设这个网络是不正常的，然后运行一个“网络探测/网络诊断”的逻辑，简单的说就是去尝试访问一个指定的http服务器的指定页面，如果这页面返回的结果(网页内容或者http status code)跟自己预期的不一样，就认为这个返回的页面是中间的网关人为纂改了得http内容，认为这个返回的页面网关提供的“强制登陆页面captive portal”，就直接显示这个内容让用户进行登录认证操作。
 但具体到哥哥操作系统略有差异：
 
 * Windows 7/ Windows 10 微软家族
@@ -14,7 +14,9 @@ Captive Portal这个东西应该是随着wifi的流行，很多公共场所都�
   还能返回一个特定格式的xml，让手机直接显示比较好看的页面或者安装APP等，系统可以提供“Handling the hotspot authentication event”事件通知
   让第三方APP来处理这个验证请求？可能一些“wifi万能密码“的之类的应用会监控处理这种事件？
   可以自己查看文章后面提供的微软msdn里面captive portal说明文档。
-  
+  windows 10 里面可以通过修改注册表的HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NlaSvc\Parameters\Internet 项下面的
+  参数来配置是否“主动探测网络”和“具体的网址，dns”和探测时间间隔等。
+ 
 * 苹果iOS
   iOS也会在网络探测里面访问一个固定的网页地址（http://captive.apple.com/hotspotdetect.html），用以判断是否captive portal页面。
   但好像网上说不同ios版本这个网址稍微有所差异，有人说http请求里面的头部会有 User Agent 'CaptiveNetworkSupport' 标志。
