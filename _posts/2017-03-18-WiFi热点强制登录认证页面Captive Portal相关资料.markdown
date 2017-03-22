@@ -99,7 +99,7 @@ nodogsplash
 [http://blog.erratasec.com/2010/09/apples-secret-wispr-request.html#.VxkmrJMrIy5](http://blog.erratasec.com/2010/09/apples-secret-wispr-request.html#.VxkmrJMrIy5)
 [https://www.reddit.com/r/Windows10/comments/4p6r9r/windows_10_captive_portal_detection/](https://www.reddit.com/r/Windows10/comments/4p6r9r/windows_10_captive_portal_detection/)
 [http://blog.superuser.com/2011/05/16/windows-7-network-awareness/](http://blog.superuser.com/2011/05/16/windows-7-network-awareness/)
-
+[http://community.arubanetworks.com/t5/Technology-Blog/RFC-7710-Captive-Portal-Identification-Using-DHCP-or-Router/ba-p/255737](http://community.arubanetworks.com/t5/Technology-Blog/RFC-7710-Captive-Portal-Identification-Using-DHCP-or-Router/ba-p/255737)
 
 
   
