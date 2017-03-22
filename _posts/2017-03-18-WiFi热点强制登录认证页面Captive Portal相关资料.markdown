@@ -16,9 +16,10 @@ Captive Portal这个东西应该是随着wifi的流行，很多公共场所都�
   可以自己查看文章后面提供的微软msdn里面captive portal说明文档。
   
 * 苹果iOS
-  iOS也会在网络探测里面访问一个固定的网页地址，用以判断是否captive portal页面。但好像网上说不同ios版本这个网址稍微有所差异，有人说http请求
-  里面的头部会有 User Agent 'CaptiveNetworkSupport' 标志。好像ios也有类似上面说的windows phone的 “网络认证”事件通知给第三方APP来处理认证
-  的接口。但ios的资料没仔细看，没找到官方的文档。
+  iOS也会在网络探测里面访问一个固定的网页地址（http://captive.apple.com/hotspotdetect.html），用以判断是否captive portal页面。
+  但好像网上说不同ios版本这个网址稍微有所差异，有人说http请求里面的头部会有 User Agent 'CaptiveNetworkSupport' 标志。
+  好像ios也有类似上面说的windows phone的 “网络认证”事件通知给第三方APP来处理认证的接口，让app选择哪个热点之类的。
+  但ios的资料没仔细看，没找到官方的文档。
   
 * Android
   Android会访问 http://connectivitycheck.android.com/generate_204  这样的页面来判断，看看返回的http status code是不是204.
