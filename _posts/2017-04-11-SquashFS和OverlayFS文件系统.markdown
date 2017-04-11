@@ -1,3 +1,4 @@
+
 squashfs 是压缩只读文件系统，类似的文件系统有很多，但这个好像比较流行一些吧。
 overlayfs 把另外一个可写的目录和这个只读目录合并起来实现“copy-on-write”机制的可写目录。
 
@@ -31,8 +32,10 @@ unsquashfs
 [The Overlay Filesystem](http://windsock.io/the-overlay-filesystem/)
 
 [内核帮助文档overlayfs.txt](https://www.kernel.org/doc/Documentation/filesystems/overlayfs.txt)
+
 [内核帮助文档squashfs.txt](https://www.kernel.org/doc/Documentation/filesystems/squashfs.txt)
 
 [wiki OverlayFS](https://en.wikipedia.org/wiki/OverlayFS)
+
 [wiki SquashFS](https://en.wikipedia.org/wiki/SquashFS)
 
