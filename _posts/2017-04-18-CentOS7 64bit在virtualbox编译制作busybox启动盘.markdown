@@ -601,4 +601,12 @@ menuentry 'CentOS Linux (busybox) 7 (Core)' --class centos --class gnu-linux --c
 
 ```
 
-z
+参考资料： 
+https://wiki.gentoo.org/wiki/Custom_Initramfs#Busybox
+https://wiki.gentoo.org/wiki/Mdev
+http://www.tldp.org/HOWTO/Bootdisk-HOWTO/
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/sec-Customizing_the_GRUB_2_Configuration_File.html
+https://wiki.centos.org/zh/HowTos/Grub2
+https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
+https://github.com/mirror/busybox/blob/master/examples/inittab
+https://git.busybox.net/busybox/plain/docs/mdev.txt
