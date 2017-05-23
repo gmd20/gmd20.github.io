@@ -8,18 +8,25 @@ iPhone里面有两种探测方式：
 不管有人说apple会使用了随机使用多个域名来探测。
 
 1. 第一个HTTP请求
+```text
    captive.apole.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+```
 
 2. 第二个HTTP请求
+```text
    www.apple.com
          GET / HTTP/1.1
          User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Mobile/14E304\r\n
+```
+
 3.  第二步页面加载完之后，40毫秒后发送探测
+```text
     www.apple.com
          GET /library/test/success.htm  HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr
+```
 4.  用户提交数据后，连发两个第3步一样的探测包。
 
 
@@ -31,18 +38,27 @@ iPhone里面有两种探测方式：
 
 
  1. 第一个HTTP请求
+```text
      captive.apole.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+```
+
  2. 第二个HTTP请求
+```text
     100毫秒秒后
      captive.apole.com
          GET  /hotspot-detect.html HTTP/1.1
          User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Mobile/14E304\r\n
+```
+
  3.  等第2步的页面加载完后，过了200毫秒，又马上发送探测
+```text
      captive.apole.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+```
+
  4.  第2步用户操作提交数据后，过了400毫秒，
      马上连发2个和第3步一样的探测。
 
@@ -106,9 +122,12 @@ iPhone里面有两种探测方式：
 其他观察结果和结论：
 ===================
 1.  iPhone 不会对
+```text
     captive.apple.com或者www.apple.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+```
+
 
     这个HTTP/1.0请求返回的的http response 进行任何处理，如果这个respone里面有各种跳转， iPhone也不会执行跳转。
     页面跳转只会在 HTTP/1.1那个的结果里面进行。
@@ -127,24 +146,29 @@ iPhone里面有两种探测方式：
 
 wifi万能钥匙发起的iphone探测
 ----------------------------
+```text
     GET / HTTP/1.1\r\n
     Host: captive.apple.com\r\n
     User-Agent: Zeus/95 CFNetwork/811.4.18 Darwin/16.5.0\r\n
     Accept-Language: zh-cn\r\n
     Connection: keep-alive\r\n
     [Full request URI: http://captive.apple.com/]
+```
 
 Apple服务器给它的回应
 -----------------------------
+```text
     HTTP/1.1 304 Not Modified\r\n
     Cache-Control: max-age=300\r\n
     Connection: keep-alive\r\n
     Via: http/1.1 uslax1-edge-bx-005.ts.apple.com (ApacheTrafficServer/7.0.0)\r\n
     Server: ATS/7.0.0\r\n
+```
 
 
 wifi万能钥匙发送的探测
 ----------------------
+```text
     GET /generate_204 HTTP/1.1\r\n
     Host: c.51y5.net\r\n
     Accept: */*\r\n
@@ -153,9 +177,11 @@ wifi万能钥匙发送的探测
     Accept-Encoding: gzip, deflate\r\n
     User-Agent: Zeus/95 CFNetwork/811.4.18 Darwin/16.5.0\r\n
     \r\n
+```
 
 wifi万能钥匙自己服务器发送的andoird探测包回应
 ---------------------------------------------
+```text
     HTTP/1.1 204 No Content\r\n
         [Expert Info (Chat/Sequence): HTTP/1.1 204 No Content\r\n]
         Request Version: HTTP/1.1
@@ -163,18 +189,22 @@ wifi万能钥匙自己服务器发送的andoird探测包回应
         Response Phrase: No Content
     Server: nginx\r\n
     Connection: keep-alive\r\n
+```
 
 
 
 正常iphone 发送的探测包 和回应
 ------------------------------
+```text
     GET /hotspot-detect.html HTTP/1.0\r\n
     Host: captive.apple.com\r\n
     Connection: close\r\n
     User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+```
 
 正常iPhone 服务器探测包的回应
 ------------------------------
+```text
     HTTP/1.0 200 OK\r\n
     Cache-Control: max-age=300\r\n
     Accept-Ranges: bytes\r\n
@@ -187,6 +217,7 @@ wifi万能钥匙自己服务器发送的andoird探测包回应
     Age: 116\r\n
     \r\n
     <HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>\n
+```
 
 
 可以知道wifi万能钥匙的iPhone方式探测包url有点问题的。
