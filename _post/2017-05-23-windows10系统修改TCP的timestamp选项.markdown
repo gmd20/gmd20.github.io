@@ -1,17 +1,21 @@
+
 查看当前设置
 -----------
+```text
 netsh interface tcp show global
 Get-NetTCPSetting 这个是powershell的命令，netsh在powershell和命令提示符里面都可以运行
-
+```
 使用netsh:
 ----------
+```text
 netsh interface tcp set global timestamps=enabled
 netsh interface tcp set global timestamps=disabled
-
+```
 使用PowerShell:
 ---------------
+```text
 Set-NetTCPSetting -SettingName InternetCustom -Timestamps Disabled
-
+```
 也可以直接在注册表设置：
 -----------------------
 HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
