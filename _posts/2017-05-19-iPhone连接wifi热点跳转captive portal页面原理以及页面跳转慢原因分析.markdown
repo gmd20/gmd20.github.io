@@ -100,8 +100,8 @@ iPhone里面有两种探测方式：
    +------------+-------------+---------+                                                    |
    |  认证完成，wifi “完成”按钮可用     |  ------------------------------------------------>-+
    +------------------------------------+
-
 ```
+
 
 其他观察结果和结论：
 ===================
@@ -226,21 +226,34 @@ wifi万能钥匙自己服务器发送的andoird探测包回应
    *根据apple开发者论坛的说法在iOS的任务管理器里面把“wifi助手”进程给结束掉，iOS就也不会调用这些APP的hotspothelper*
    这样没有其他app hotspothelper的干扰，应该也可以避免这个首次连接的超时问题。
 
-
 7. 这个HotspotHelper接口按apple的说法是专门给用了开发“captive portal”的app用的，专门用来辅助wifi热点认证的。
    hotspothelper模块在整个认证过程中出现错误，可能导致iOS把这个模块从这个wifi网络的“有效列表”中删除，不再参与后面的
    重试。可能 wifi热点还会被 “断开” ，或者wifi热点的“auto-join”按钮被禁用等。这都可能影响到最终的认证行为。具体可以
    参考Apple的状态说明。
 
-8. 其他导致页面显示慢的问题，估计主要是 HTTP/1.0和 HTTP/1.1两个连接创建失败或者超时导致的
-   比如避免portal页面的http服务打开了TCP的tcp_tw_recycle选项，然后用户全部通过NAT网络连接这个服务器。
+8. 其他导致页面显示慢的问题，估计主要是网络原因导致 HTTP/1.0和 HTTP/1.1两个连接创建失败或者超时导致的
+   如果到了“PresentUI阶段”，但HTTP1.1的请求portal页面的请求失败了，那么就显示的是空白页面了。其他的影响
+   因素还有dns解析的速度，网关或者防火墙是否有连接数量限制导致的丢包等等。
+   可以pc连接上网络，然后暂时不认证portal页面，然后用一些http测试工具测试一下portal服务器连接的性能，抓包
+   看看，比如用这个工具https://github.com/rakyll/hey
+   ./hey -more=1  -n 256  -c 4 -q 4  http://captive.apple.com/hotspot-detect.htm
+
+   另外需要避免portal页面的http服务打开了TCP的tcp_tw_recycle选项，然后用户全部通过NAT网络连接这个服务器。
    这样tcp的timestamp选项和tcp_tw_recycle一起使用时， NAT网络用户的创建连接会很大概率失败。
-   原因这两篇文章：
+   原因这两篇文章有介绍：
    一个NAT问题引起的思考
    http://perthcharles.github.io/2015/08/27/timestamp-NAT/
    Coping with the TCP TIME-WAIT state on busy Linux servers
    https://vincent.bernat.im/en/blog/2014-tcp-time-wait-state-linux
 
+9. 按照苹果文档的说法，wifi热点还没有认证通过的时候（“非Authenticated”），默认
+   路由是不会是wifi设备的，自己的helper里面需要从wifi上面发送探测网络包，是需要
+   明确指定了出去的网络设备才行的。但在实际测试发现，不知道是不是一些助手helper
+   模块的干扰，有的时候是会看到一些 “支付宝”或者“微信”等的443端口的https还有8080
+   或者80的端口出来。有可能这是wifi被错误的设置了 authenticated 状态，又要等到
+   后面CNA探测到问题再开始显示portal页面。但在这之前已经有很多后台页面尝试在wifi
+   设备上发送请求了，有的比如qq的浏览器加载portal页面，还会自己尝试加载重定向后
+   的页面等等。
 
 
 测试方法
