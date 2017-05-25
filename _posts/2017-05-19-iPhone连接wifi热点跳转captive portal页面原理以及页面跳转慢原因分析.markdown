@@ -12,12 +12,14 @@ iPhone里面有两种探测方式：
    captive.apole.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+	 Connection: close\r\n
 ```
 
 2. 第二个HTTP请求
 ```text
    www.apple.com
          GET / HTTP/1.1
+	 Connection: keep-alive\r\n
          User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Mobile/14E304\r\n
 ```
 
@@ -26,6 +28,7 @@ iPhone里面有两种探测方式：
     www.apple.com
          GET /library/test/success.htm  HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr
+	 Connection: close\r\n
 ```
 4.  用户提交数据后，连发两个第3步一样的探测包。
 
@@ -42,6 +45,7 @@ iPhone里面有两种探测方式：
      captive.apole.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+	 Connection: close\r\n
 ```
 
  2. 第二个HTTP请求
@@ -49,6 +53,7 @@ iPhone里面有两种探测方式：
     100毫秒秒后
      captive.apole.com
          GET  /hotspot-detect.html HTTP/1.1
+	 Connection: keep-alive\r\n
          User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Mobile/14E304\r\n
 ```
 
@@ -57,6 +62,7 @@ iPhone里面有两种探测方式：
      captive.apole.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+	 Connection: close\r\n
 ```
 
  4.  第2步用户操作提交数据后，过了400毫秒，
@@ -126,6 +132,7 @@ iPhone里面有两种探测方式：
     captive.apple.com或者www.apple.com
          GET  /hotspot-detect.html HTTP/1.0
          User-Agent: CaptiveNetworkSupport-346.50.1 wispr\r\n
+	 Connection: close\r\n
 ```
 
 
