@@ -1,0 +1,48 @@
+
+像iTools（http://www.itools.cn/） 这样的软件，可以使用usb数据线连接iPhone和PC之后，可以在PC上面通过他的“实时日志”功能，实时查看iPhone的syslog日志，可以看到系统或者应用的日志。
+苹果的XCode开发平台是可以查看这个日志的。但这个iTools可以在windows平台查看比较方便一些，不是每个人都有苹果笔记本或者台式机来做开发啊。
+
+iTools的原理是什么样的？ 在网上找了一下资料：
+
+iPhone的这个system log日志，其实就是/var/log/syslog文件来，如果越狱之后很容易读取这个文件就可以了。
+但没有越狱的机器需要使用iPhone内置的接口才行。
+
+iPhone的PrivateFrameworks/MobileDevice.framework有个后台进程 “/usr/libexec/lockdownd” 可以提供
+“com.apple.syslog_relay” 服务，通过iPhone的接口调用这个服务就可以了，其实任何lockdown的services.plist提供的服务都可以。
+
+
+这有人提供一个OS X系统调用这个服务的例子
+http://newosxbook.com/src.jl?tree=listings&file=jurpleConsole.c
+
+
+这个MobileDevice的接口私有的，以前苹果都有开发windows 平台的 configure tool 可以用了读取console log数据。
+不过好像现在不支持了？
+
+不过网上有个开源项目了。说是跨平台Linux， Mac OS X 和 Windows都是可以。支持最新的iOS 10.
+http://www.libimobiledevice.org/
+https://github.com/libimobiledevice/libimobiledevice
+
+有人编译好的windows平台的库：
+https://github.com/Sn0wCooder/libimobiledevice-compiled-windows
+
+还有人说怎么在windows上面编译这个库：
+http://docs.quamotion.mobi/en/latest/imobiledevice/compiling.html
+
+有了这个库，在windows平台调用就可以方便调用这个接口了，自己写个程序读取iPhone的日志
+也是有可能的了。有时间再看看。其实要找这个东西是发现iTools的日志读取缓存太小了，
+还不能直接保存到文件，日志比较多时都一下刷过去了，没能查看完整的日志。
+
+这个libimobiledevice还是要依赖苹果的usb驱动才行的，所以使用时还是要预先安装苹果的iTunes，
+它应该会把必须的驱动安装上。苹果现在应该不单独提供这些驱动的安装包了。
+之前看iTools 安装完，它也是自动下载安装几个 “Apple mobile deive support”的包的，估计从
+iTunes的里面剥离出来的吧。
+
+
+参考资料：
+https://www.theiphonewiki.com/wiki/System_Log
+https://stackoverflow.com/questions/7277804/ios-iphone-ipad-ipodtouch-view-real-time-console-log-terminal
+
+
+
+
+
