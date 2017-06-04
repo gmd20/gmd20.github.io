@@ -35,14 +35,14 @@ http://docs.quamotion.mobi/en/latest/imobiledevice/compiling.html
 这个libimobiledevice还是要依赖苹果的usb驱动才行的，所以使用时还是要预先安装苹果的iTunes，
 它应该会把必须的驱动安装上。苹果现在应该不单独提供这些驱动的安装包了。
 之前看iTools 安装完，它也是自动下载安装几个 “Apple mobile deive support”的包的，估计从
-iTunes的里面剥离出来的吧。
+iTunes的里面剥离出来的吧。iTunes对应的iTunesMobileDevice.dll  文件说是在 C:\Program Files\Common Files\Apple\Mobile Device Support\iTunesMobileDevice.dll，64位系统在Program Files (x86)目录。还有CoreFoundation.dll等文件。
+这个可以直接根据头文件来调用里面的函数？
 
 
 参考资料：
 https://www.theiphonewiki.com/wiki/System_Log
+https://www.theiphonewiki.com/wiki/MobileDevice_Library
 https://stackoverflow.com/questions/7277804/ios-iphone-ipad-ipodtouch-view-real-time-console-log-terminal
-
-
 
 
 
