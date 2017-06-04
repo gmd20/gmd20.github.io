@@ -65,6 +65,6 @@ pbzx.exe < payload > root_file.xz
 
 其他有用的苹果越狱和破解相关的资料
 ===============================
-[the iphone wiki]（https://www.theiphonewiki.com/wiki/Main_Page）
+[the iphone wiki](https://www.theiphonewiki.com/wiki/Main_Page)
 [Hacking_the_iPhone](https://www.theiphonewiki.com/wiki/25C3_presentation_%22Hacking_the_iPhone%22)
 [看雪iOS安全小组](https://github.com/r0ysue/OSG-TranslationTeam)
