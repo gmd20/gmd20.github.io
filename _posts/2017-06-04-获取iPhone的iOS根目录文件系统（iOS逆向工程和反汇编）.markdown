@@ -67,4 +67,5 @@ pbzx.exe < payload > root_file.xz
 ===============================
 [the iphone wiki](https://www.theiphonewiki.com/wiki/Main_Page)
 [Hacking_the_iPhone](https://www.theiphonewiki.com/wiki/25C3_presentation_%22Hacking_the_iPhone%22)
+[看雪iOS安全小组置顶向导集合贴](http://bbs.pediy.com/thread-212685.htm)
 [看雪iOS安全小组](https://github.com/r0ysue/OSG-TranslationTeam)
