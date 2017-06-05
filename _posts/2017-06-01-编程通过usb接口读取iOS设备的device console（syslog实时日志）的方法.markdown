@@ -1,4 +1,6 @@
 
+
+
 像iTools（http://www.itools.cn/） 这样的软件，可以使用usb数据线连接iPhone和PC之后，可以在PC上面通过他的“实时日志”功能，实时查看iPhone的syslog日志，可以看到系统或者应用的日志。
 苹果的XCode开发平台是可以查看这个日志的。但这个iTools可以在windows平台查看比较方便一些，不是每个人都有苹果笔记本或者台式机来做开发啊。
 
@@ -33,6 +35,12 @@ https://github.com/libimobiledevice/libimobiledevice/issues/327
 
 还有人说怎么在windows上面编译这个库：
 http://docs.quamotion.mobi/en/latest/imobiledevice/compiling.html
+windows的代码对应是下面的这些
+https://github.com/libimobiledevice-win32/libplist
+https://github.com/libimobiledevice-win32/libusbmuxd
+https://github.com/libimobiledevice-win32/libimobiledevice
+https://github.com/libimobiledevice-win32/ideviceinstaller
+
 
 有了这个库，在windows平台调用就可以方便调用这个接口了，自己写个程序读取iPhone的日志
 也是有可能的了。有时间再看看。其实要找这个东西是发现iTools的日志读取缓存太小了，
