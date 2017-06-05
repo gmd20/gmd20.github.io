@@ -21,9 +21,15 @@ http://newosxbook.com/src.jl?tree=listings&file=jurpleConsole.c
 不过网上有个开源项目了。说是跨平台Linux， Mac OS X 和 Windows都是可以。支持最新的iOS 10.
 http://www.libimobiledevice.org/
 https://github.com/libimobiledevice/libimobiledevice
+这个库自带的读取iPhone的syslog的工具
+https://github.com/libimobiledevice/libimobiledevice/blob/master/tools/idevicesyslog.c
 
 有人编译好的windows平台的库：
 https://github.com/Sn0wCooder/libimobiledevice-compiled-windows
+https://github.com/rcmpayne/libimobiledevice-Compiled-Windows
+后面这个说是支持ios 10的syslog， 参考
+https://github.com/libimobiledevice/libimobiledevice/issues/325
+https://github.com/libimobiledevice/libimobiledevice/issues/327
 
 还有人说怎么在windows上面编译这个库：
 http://docs.quamotion.mobi/en/latest/imobiledevice/compiling.html
