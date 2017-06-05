@@ -1,6 +1,7 @@
 
 
 
+
 像iTools（http://www.itools.cn/） 这样的软件，可以使用usb数据线连接iPhone和PC之后，可以在PC上面通过他的“实时日志”功能，实时查看iPhone的syslog日志，可以看到系统或者应用的日志。
 苹果的XCode开发平台是可以查看这个日志的。但这个iTools可以在windows平台查看比较方便一些，不是每个人都有苹果笔记本或者台式机来做开发啊。
 
@@ -50,7 +51,9 @@ https://github.com/libimobiledevice-win32/ideviceinstaller
 它应该会把必须的驱动安装上。苹果现在应该不单独提供这些驱动的安装包了。
 之前看iTools 安装完，它也是自动下载安装几个 “Apple mobile deive support”的包的，估计从
 iTunes的里面剥离出来的吧。iTunes对应的iTunesMobileDevice.dll  文件说是在 C:\Program Files\Common Files\Apple\Mobile Device Support\iTunesMobileDevice.dll，64位系统在Program Files (x86)目录。还有CoreFoundation.dll等文件。
-这个可以直接根据头文件来调用里面的函数？
+也可以直接根据头文件来调用里面的函数？
+按照https://github.com/libimobiledevice/libusbmuxd 的说明，windows平台还是推荐使用iTunes的usbmuxd后台进程，iTunes应该搞定usb驱动和usb交换部分了。  这个libusbmuxd的只是通过socket接口和usbmuxd后台进程来进行交互而已。不过他们也有开发linux平台的https://github.com/libimobiledevice/usbmuxd
+。windows平台还是用iTunes自带的那些比较好吧。
 
 
 参考资料：
