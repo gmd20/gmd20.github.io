@@ -51,9 +51,13 @@ https://github.com/libimobiledevice-win32/ideviceinstaller
 它应该会把必须的驱动安装上。苹果现在应该不单独提供这些驱动的安装包了。
 之前看iTools 安装完，它也是自动下载安装几个 “Apple mobile deive support”的包的，估计从
 iTunes的里面剥离出来的吧。iTunes对应的iTunesMobileDevice.dll  文件说是在 C:\Program Files\Common Files\Apple\Mobile Device Support\iTunesMobileDevice.dll，64位系统在Program Files (x86)目录。还有CoreFoundation.dll等文件。
-也可以直接根据头文件来调用里面的函数？
+也可以直接根据头文件来调用里面的函数? (看网上说确实很多助手类软件都是使用iTunes的dll，然后用Loadlibrary动态加载方式来调用的。)
+
 按照https://github.com/libimobiledevice/libusbmuxd 的说明，windows平台还是推荐使用iTunes的usbmuxd后台进程，iTunes应该搞定usb驱动和usb交换部分了。  这个libusbmuxd的只是通过socket接口和usbmuxd后台进程来进行交互而已。不过他们也有开发linux平台的https://github.com/libimobiledevice/usbmuxd
-。windows平台还是用iTunes自带的那些比较好吧。
+。windows平台还是用iTunes自带的那些比较好吧。iTunes应该自己在系统安装了驱动，然后会安装一个service “ Apple Mobile Device Service 
+”， 估计就是这个usbmuxd的后台了。看libusbmuxd实现就是去连接本地的 127.0.0.1的27015这个端口，27015 应该就是usbmod的监听端口，苹果最新的iOS要求用TLS 安全连接去建立连接，通讯消息的格式好像就是plist封装，可以是二进制编码或者xml编码的吧。
+
+刚刚试了在windows 10 + vc 2017编译libimobiledevice，很顺利， 不过要以来openssl 和 libiconv。有空试一下便宜出来的ideviceinfo 和idevicesyslog这两个命令看看怎么样
 
 
 参考资料：
