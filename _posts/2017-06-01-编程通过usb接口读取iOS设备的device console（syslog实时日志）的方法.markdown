@@ -2,6 +2,9 @@
 
 
 
+
+
+
 像iTools（http://www.itools.cn/） 这样的软件，可以使用usb数据线连接iPhone和PC之后，可以在PC上面通过他的“实时日志”功能，实时查看iPhone的syslog日志，可以看到系统或者应用的日志。
 苹果的XCode开发平台是可以查看这个日志的。但这个iTools可以在windows平台查看比较方便一些，不是每个人都有苹果笔记本或者台式机来做开发啊。
 
@@ -57,7 +60,46 @@ iTunes的里面剥离出来的吧。iTunes对应的iTunesMobileDevice.dll  文�
 。windows平台还是用iTunes自带的那些比较好吧。iTunes应该自己在系统安装了驱动，然后会安装一个service “ Apple Mobile Device Service 
 ”， 估计就是这个usbmuxd的后台了。看libusbmuxd实现就是去连接本地的 127.0.0.1的27015这个端口，27015 应该就是usbmod的监听端口，苹果最新的iOS要求用TLS 安全连接去建立连接，通讯消息的格式好像就是plist封装，可以是二进制编码或者xml编码的吧。
 
-刚刚试了在windows 10 + vc 2017编译libimobiledevice，很顺利， 不过要以来openssl 和 libiconv。有空试一下便宜出来的ideviceinfo 和idevicesyslog这两个命令看看怎么样
+刚刚试了在windows 10 + vc 2017编译libimobiledevice，很顺利， 不过要以来openssl 和 libiconv。有空试一下便宜出来的ideviceinfo 和idevicesyslog这两个命令看看怎么样.
+
+*注意*
+libimobiledevice在windows平台必须编译成dll才行，编译为静态库的时候有问题，需要修改一下idevice.c
+程序初始化阶段必须自己调用internal_idevice_init 先初始化openssl才行，不然程序创建TLS连接的时候SSL_CTX *ssl_ctx = SSL_CTX_new(TLSv1_method());
+会失败，程序报告 idevice_connection_enable_ssl(): ERROR: Could not create SSL context. 错误。
+解决方法可以自己导出这两个函数自己d调用初始化。
+```c
+LIBIMOBILEDEVICE_API void idevice_init(void)
+{
+  thread_once(&init_once,	internal_idevice_init);
+}
+LIBIMOBILEDEVICE_API void idevice_deinit(void)
+{
+  thread_once(&init_once,	internal_idevice_deinit);
+}
+```
+如果不用c++的静态变量初始化，用纯c的话，可以使用 vc里面可以用这个写法来让编译器帮忙初始化和释放，类似gcc
+ __attribute__((constructor))和 __attribute__((destructor)) 的用法。
+
+```c
+// idevice_init();   // 程序初始化时，必须先初始化openssl才能成功创建SSL_CTX 才能建立TLS连接
+// idevice_deinit();   // 程序退出时释放openssl资源  
+static int _idevice_init_(void) {
+	idevice_init();
+	return 0;
+}
+
+static int _idevice_deinit_(void) {
+	atexit(idevice_deinit);
+	return 0;
+}
+
+__pragma(section(".CRT$XCU", read))
+__declspec(allocate(".CRT$XCU")) static int(*__init)(void) = _idevice_init_;
+__declspec(allocate(".CRT$XCU")) static int(*__deinit)(void) = _idevice_deinit_;
+
+```
+
+
 
 
 参考资料：
