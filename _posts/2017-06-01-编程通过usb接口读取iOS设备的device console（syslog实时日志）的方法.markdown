@@ -62,7 +62,7 @@ iTunes的里面剥离出来的吧。iTunes对应的iTunesMobileDevice.dll  文�
 
 刚刚试了在windows 10 + vc 2017编译libimobiledevice，很顺利， 不过要以来openssl 和 libiconv。有空试一下便宜出来的ideviceinfo 和idevicesyslog这两个命令看看怎么样.
 
-*注意*
+**注意**
 libimobiledevice在windows平台必须编译成dll才行，编译为静态库的时候有问题，需要修改一下idevice.c
 程序初始化阶段必须自己调用internal_idevice_init 先初始化openssl才行，不然程序创建TLS连接的时候SSL_CTX *ssl_ctx = SSL_CTX_new(TLSv1_method());
 会失败，程序报告 idevice_connection_enable_ssl(): ERROR: Could not create SSL context. 错误。
