@@ -77,25 +77,23 @@ LIBIMOBILEDEVICE_API void idevice_deinit(void)
   thread_once(&init_once,	internal_idevice_deinit);
 }
 ```
-如果不用c++的静态变量初始化，用纯c的话，可以使用 vc里面可以用这个写法来让编译器帮忙初始化和释放，类似gcc
- __attribute__((constructor))和 __attribute__((destructor)) 的用法。
+如果不用c++的静态变量初始化，用纯c的话，可以使用 vc又没有类似gcc
+ __attribute__((constructor))和 __attribute__((destructor)) 的用法，可以这样写
 
 ```c
-// idevice_init();   // 程序初始化时，必须先初始化openssl才能成功创建SSL_CTX 才能建立TLS连接
-// idevice_deinit();   // 程序退出时释放openssl资源  
-static int _idevice_init_(void) {
-	idevice_init();
+int idevice_deinit_wrapper(void) {
+	idevice_deinit();  // 程序退出时释放openssl资源
+	return 0;
+}
+int idevice_init_wrapper(void) {
+	idevice_init();   // 程序初始化时，必须先初始化openssl才能成功创建SSL_CTX 才能建立TLS连接
+	atexit(idevice_deinit_wrapper);  // 程序退出时释放openssl资源
 	return 0;
 }
 
-static int _idevice_deinit_(void) {
-	atexit(idevice_deinit);
-	return 0;
-}
-
-__pragma(section(".CRT$XCU", read))
-__declspec(allocate(".CRT$XCU")) static int(*__init)(void) = _idevice_init_;
-__declspec(allocate(".CRT$XCU")) static int(*__deinit)(void) = _idevice_deinit_;
+int main(int argc, char *argv[])
+{
+	idevice_init_wrapper();
 
 ```
 
