@@ -77,7 +77,7 @@ LIBIMOBILEDEVICE_API void idevice_deinit(void)
   thread_once(&init_once,	internal_idevice_deinit);
 }
 ```
-如果不用c++的静态变量初始化，用纯c的话，可以使用 vc又没有类似gcc
+如果不用c++的静态变量初始化，用纯c的话，vc又没有类似gcc
  __attribute__((constructor))和 __attribute__((destructor)) 的用法，可以这样写
 
 ```c
