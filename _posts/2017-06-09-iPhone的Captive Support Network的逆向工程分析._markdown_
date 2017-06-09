@@ -1,0 +1,719 @@
+
+
+首先要读一下苹果官方文档
+------------------------
+要大概了解状态机上面的各个状态和转移流程，NEHotspotHelper应该就是专门为了wifi
+热点辅助 captive portal功能的支持的。如果是苹果内置的网页的插件还不能满足要求
+的话，只能自己利用这个接口来开发APP了。
+1.Hotspot Network Subsystem Programming Guide
+https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/Hotspot_Network_Subsystem_Guide/Contents/AuthStateMachine.html
+2. NEHotspotHelper Class Reference,
+https://developer.apple.com/documentation/networkextension/nehotspothelper
+
+模块，线程和事件循环
+--------------------
+iOS里面相关的功能模块是
+“PrivateFramework/SystemConfigure/CaptiveNetworkSupport”
+但iOS 10
+看上去把http请求和加载的部分分离出来放到一个CaptiveAgent程序里面去了。
+CatptiveSupportNetwork 和 CaptiveAgent 不同的进程，CaptiveAgent构建一个专门处理
+portal页面http请求的sandbox环境。ios 9.3.5 还没有这个沙盒的，看网上好像是因为有
+人报告 cookies泄露等安全问题，苹果才把这个http处理分离出来放到一个沙盒里面执行吧。
+两个进程之间通过 XPC https://developer.apple.com/documentation/xpc#overview
+来交互。
+
+[CatptiveSupportNetwork] <-----------> [助手类Plugin 响应状态命令]
+[CatptiveSupportNetwork] <-----------> [CaptiveAgent  http沙盒]
+
+CatptiveSupportNetwork 和 Plugin的之间的调用通过 CNPluginStateListIssueCommand
+函数来进行。 这个插件的通知和调度，定时器事件，应该是运行在一个
+CFRunLoop事件循环里面的。不同的事件循环直接还可以通过信号量之类的来进行同步
+对Apple的开发不是很熟悉，不过大概是这样子吧。
+https://developer.apple.com/documentation/corefoundation/cfrunloop-rht
+
+```text
+start()   // iOS的serice的启动函数吧
+   ->pthread_create( captived_thread())
+   
+   
+captived_thread()
+  CaptivePrefsInit(gThreadRunLoop, prefs_changed); //配置界面
+  mysyslog_init_logger(0);  // 初始化log
+  UIAllowedRegisterForCallbacks(gThreadRunLoop, CaptiveHandleUIAllowedChange);
+  WebSheetHandlerInitialize(CaptiveWebsheetDone);   // 内置的，弹出来登陆的那个浏览器
+  CNPluginHandlerInitialize(CaptiveBuiltinPluginProcessCommand);  // 处理wifi状态变化
+  CFRunLoopRun(v7)  // 执行事件循环;
+  CFRunLoopSourceSignal();
+  CFRunLoopWakeUp(sConfigdRunLoop);
+  
+    
+CNPluginHandlerInitialize   // 初始化插件
+  CommandHandlerClassRegister(3, CNPluginHandlerMethods);
+  v2 = CommandHandlerClassRegister(5, CNScanListFilterHandlerMethods);
+  my_CFRunLoopSourceCreateForBSDNotification(v4, CNPluginHandlerNWIChanged, 0, &v8);
+  G_builtin_plugin = CNPluginStateBuiltinRegister(v1);  //内置的插件
+  NetIFSetNewInterfaceCallBack(CNPluginHandlerInterfaceAttached);
+  PowerChangeRegister(CNPluginHandlerPowerChange);
+  return NetIFSetScanResultsCallBack(CNScanListFilterHandleScanResults);
+  
+CNPluginHandlerNetworkInformationChanged   // 网络有变化的处理函数？
+  CNInfoNetworkActive  //  对应状态机图上的Active状态, 应该就是用户选了某个wifi热点
+
+CaptiveBuiltinPluginProcessCommand
+这个就是内置插件的处理命令的函数了
+```
+
+状态机状态转移函数
+------------------
+```text
+Function name               Segment Start    Length   Locals   Arguments R F L S B T =
+-------------               ------- -----    ------   ------   --------- - - - - - - -
+_CNInfoGetCacheEntry        __text  00011286 0000003E 0000001C 00000000  R . . . B . .
+_CNInfoFind                 __text  000112D4 00000030 00000010 00000000  R . . . B . .
+_CNInfoEvaluating           __text  000113F8 0000050C 00000050 00000000  R . . . B . .
+_CNInfoAuthenticating       __text  00011910 0000033A 00000050 00000000  R . . . B . .
+_CNInfoMaintaining          __text  00011C58 0000033A 00000058 00000000  R . . . B . .
+_CNInfoPresentingUI         __text  00011FA0 00000268 00000054 00000000  R . . . B . .
+_CNInfoLoggingOff           __text  00012208 00000202 00000044 00000000  R . . . B . .
+_CNInfoSetAuthState         __text  00012650 0000016A 0000002C 00000000  R . . . B . .
+_CNInfoFlushAuthCommand     __text  000127BA 0000001E 0000000C 00000000  R . . . B . .
+_CNInfoFailure              __text  00012912 000000B4 00000020 00000000  R . . . B . .
+_CNInfoAuthenticated        __text  00012A08 00000346 0000006C 00000000  R . . . B . .
+_CNInfoInactive             __text  00012F70 00000088 00000010 00000000  R . . . B . .
+_CNInfoAddExcludedDisplayID __text  00013B58 00000038 00000010 00000000  R . . . B . .
+_CNInfoFlushFilterCommand   __text  00014428 0000001E 0000000C 00000000  R . . . B . .
+_CNInfoNetworkActive        __text  00014596 000002B0 00000040 00000000  R . . . B . .
+_CNInfoGet                  __text  00014866 00000138 00000020 00000000  R . . . B . .
+```
+
+_CNInfo开头的这些函数应该是状态机状态转移处理函数，对应苹果官方文档的状态机的图上的各个状态。
+CNPluginHandleResponse 应该是各个插件处理完成之后，再在这个函数里面调用上面的那些CNInfoxxxx状态转移函数
+
+```
+CNInfoNetworkActive {
+  CNInfoGetCacheEntry
+  NetCacheEntryGetIsCaptive    缓存的network导致是不是captive的
+  这个函数里面里打印下面这个消息
+     "cache indicates network not captive"
+     "cached captive network"
+     "cache indicates network not captive"
+     "no cache entry";
+     "%@: SSID '%@' %smaking interface primary (%s)"
+  if (cache提示不是captive网络的话 ) {// cache indicates network not captive
+    NetIFSetRankDefault(v17);  // 马上在wifi上面放行网络流量了，这样微信等应用流量应该马上切换过来了吧
+  } else {
+    NetIFSetRankNever(v17);  // 禁用wifi流量，等到后面认证通过把
+  }
+  PassiveDetectNewNetwork(v19);
+  if (cache提示不是captive网络的话) { // cache indicates network not captive
+    CNInfoEvaluating(v1, 0, &v25);
+  } else {
+    CNInfoMaintaining(v1, 0, (int)&v25);
+  }
+}
+
+CNInfoEvaluating {
+  if (超时回调回来检查没有件超时没有返回，但之前有其他插件返回非confidence high的)  {
+    print “Evaluate timeout fired, using %@"
+    CNInfoAuthenticating()  // 选择这个插件开始认证
+    return
+  }
+ if (超时回调回来检查，所有插件超时没有返回)  {
+    print “Evaluate timed out, these plugins did not respond:"
+    CNInfoAuthenticated(v4, 0, 0);  // 认为认证通过
+    return
+  }
+ if (需要通知插件evaluate) {
+   if (CNPluginStateListIssueCommand 通知插件开始执行命令成功) {
+     TimerSet(v38, 45);  // 设置定时器45秒超时，在超时时回调我们
+   } else {
+     CNInfoFailure(v4, 0);  // 转入失败状态
+   }
+   return
+ } else if（是插件返回） {
+   CFDictionaryGetValue(v3[1], CFSTR("RedirectHostname"))
+   PassiveDetectSetRedirectURLHostname();  // 获取 插件探测出来的重定向url
+   responseGetResult(v3[1]);
+   print  %@: Evaluate result is %s (%d)   // 打印 evaluate 结果
+  if (插件评估返回的是 IsCaptive） {
+      NetIFSetRankNever(*(_DWORD *)(v4 + 24));  // 暂时禁用网络等到后面认证通过
+      print "%@: network is captive Confidence %s"
+  } else {
+      print  %@: network is not captive
+  }
+  if（是不是所有的插件都处理完成了）等等，这个地方就是按照苹果的Evaluate状态的文档写法一致的吧
+  if（插件返回需要认证）{
+    CNInfoAuthenticating(v4, 0, 0);
+  } else {
+    CNInfoAuthenticated(v4, 0, 0);  // 认为认证通过
+  }
+  return
+ }
+}
+
+CNInfoAuthenticating {
+  CNPluginStateIssueCommand(v5, v7);
+  TimerSet(v8, 45);  //  等待各个插件的响应时间也是45秒
+  if （如果出现意外情况 ） {
+    确实会把插件从列表排除，然后返回evaluate阶段再次重新开始
+    CNInfoAddExcludedDisplayID(v4, v18);
+    CNInfoEvaluating(v4, 0, 0);
+  }
+}
+
+CNInfoPresentingUI {
+  这个确实根据文档描述一致，这个阶段显示UI后就没有超时的定时器了，一直等下去。
+  CNPluginStateIssueForegroundCommand(v5, v7)
+  出错的处理跟CNInfoAuthenticating一样，把插件排除，然后重新用剩下的插件中做evaluate
+}
+
+CNInfoAuthenticated {
+  if （是不是CNPluginHandlerPassiveDetected调用进来的） {// session 超时？？？？
+    AWDUpdateCaptiveSessionBoolean  // 感觉是在用objc_msgSend 把认证结果个各种情况通知给UI展现层
+    AWDUpdateCaptiveSessionEndDuration(19);
+    CNInfoMaintaining(v4, 0, 0);  // 转入 maintaining 状态
+    PassiveDetectSetNotificationCallBack  // 注册事件通知源，网络出问题再通知主动探测？
+      com.apple.symptoms.managed_events.captive-network
+  } else {  // 网页认证插件返回的认证结果通过进来的
+    CNInfoSetAuthState  // 这个状态变化的设置
+    NetIFSetRankDefault(*(_DWORD *)(v4 + 24));  //设置默认网络为 wifi网络？
+    AWDUpdateCaptiveSessionStartDuration  //
+    NetCacheUpdateEntry // 缓存认证结果吧
+    if ( !CNPluginStateIsBuiltin(v39)
+        || ! DisableMaintaining && !PassiveDetectSetNotificationCallBack((int)CNPluginHandlerPassiveDetected, v4) )
+      {
+          TimerSet(v14, 300);  // 设置一个300秒的定时器，调用CNPluginHandlerPassiveDetected吧，跟文档的描述一致
+      }
+  }
+}
+
+CNInfoMaintaining {
+  if （现在下发maintain命令） {
+    CNPluginStateIssueCommand(v5, v24); // 通知插件处理maintain命令
+    TimerSet(v25, 45);  // maintain阶段，各个插件也只有45秒的时间处理完命令吧
+  } else {  // 插件的处理结果或者定时器超时超时？
+    if （要不要重新认证） {
+      CNInfoAuthenticating(v4, 0, 0);
+    } else {
+      print "%@: Maintain result is %s (%d)"
+      CNInfoAuthenticated(v4, 0, v3);
+    }
+  }
+}
+
+CNInfoInactive {
+  清理一些回调和定时器
+  PassiveDetectNewNetwork(v3);  不是很理解这个是干嘛的
+  NetIFSetRankNever(*(_DWORD *)(v1 + 24)); // 禁用网络从wifi出去了
+}
+
+CNInfoFailure {
+    if （不知道类的子函数在做什么判断）{
+      NetIFTakeWiFiNetworkOffline（）
+    } else {
+      CNInfoInactive(v3);
+    }
+}
+```
+
+内置插件(__BUILTIN__)的命令处理函数
+-----------------------------------
+上面那些是状态机的转移函数，下面重点来了，
+这个系统自带的buildin插件的处理函数，如果没有其他第3方wifi助手之类的captive
+portal插件，iPhone默认的弹认证界面就是由这个内置插件来处理的。
+
+```c
+int __fastcall CaptiveBuiltinPluginProcessCommand(int a1)
+{
+  int command; // r4@1
+  int commandType; // r5@2
+  int v3; // r6@2
+  int cmdUniqueID; // r5@5
+  int cmdInterfaceName; // r6@5
+  int network; // r0@5
+  int network_; // r11@5
+  int ssidStr; // r8@6
+  int ssid; // r4@6
+  _DWORD *i; // r4@7
+  int result; // r0@10
+  void *captiveState; // r10@13
+  int v23; // r1@14
+  int logger; // r6@18
+  int v25; // r8@18
+  int ssidStr_; // r6@20
+  int is_captive_bypass; // r0@22
+  int v28; // r5@22
+  int v29; // r11@23
+  int v30; // r4@23
+  int responseDict; // r4@25
+  int confidence; // r2@25
+  int respResult; // r1@26
+  int respUniqueID; // r0@26
+  int v35; // r4@27
+  int v36; // r5@27
+  int v37; // r6@27
+  __CFString *currentStageString; // r2@30
+  __CFString *probe_ssid; // r0@30
+  int probe_cmdID; // r1@30
+  int response; // r0@31
+  int v42; // r11@32
+  int v43; // r4@32
+  int v44; // r6@32
+  int v45; // r4@35
+  int v46; // r5@35
+  int v47; // r8@38
+  int v48; // r6@38
+  int ssidStr___; // r6@42
+  int v50; // r8@42
+  int v51; // r1@49
+  int v52; // r11@51
+  int v53; // r4@51
+  int *v54; // r0@52
+  const char *v55; // r3@52
+  int v56; // r4@53
+  int v57; // r6@53
+  int v58; // r4@56
+  int v59; // r6@56
+  int v60; // r11@71
+  int v61; // r4@71
+  __CFString **next_stage; // r0@79
+  int v63; // r11@84
+  int v64; // r4@84
+  int *v65; // [sp-8h] [bp-38h]@19
+  signed int v66; // [sp-4h] [bp-34h]@19
+  int ssid_; // [sp+0h] [bp-30h]@18
+  int ssidStr__; // [sp+4h] [bp-2Ch]@18
+  unsigned __int8 v69; // [sp+Bh] [bp-25h]@22
+  int cmdTypeValue; // [sp+Ch] [bp-24h]@4
+  int v71; // [sp+10h] [bp-20h]@1
+  command = a1;
+  v71 = __stack_chk_guard;
+  if ( a1 )
+  {
+    commandType = CFDictionaryGetValue(a1, CFSTR("Type"));
+    v3 = CFNumberGetTypeID();
+    if ( commandType && CFGetTypeID(commandType) == v3 && CFNumberGetValue(commandType, 3, &cmdTypeValue) )
+    {
+      cmdUniqueID = CFDictionaryGetValue(command, CFSTR("UniqueID"));
+      cmdInterfaceName = CFDictionaryGetValue(command, CFSTR("InterfaceName"));
+      network = CFDictionaryGetValue(command, CFSTR("Network"));
+      network_ = network;
+      if ( network )
+      {
+        ssidStr = CFDictionaryGetValue(network, CFSTR("SSIDString"));
+        ssid = CFDictionaryGetValue(network_, CFSTR("SSID"));
+      }
+      else
+      {
+        ssid = 0;
+        ssidStr = 0;
+      }
+      captiveState = (void *)CaptiveStateGet(cmdInterfaceName);
+      if ( !captiveState )
+      {
+        captiveState = malloc(0x78u);
+        *((_DWORD *)captiveState + 29) = 0;
+        *((_DWORD *)captiveState + 28) = 0;
+        _R0 = (int)captiveState + 96;
+        __asm
+        {
+          VMOV.I32        Q8, #0
+          VST1.32         {D16-D17}, [R0]
+        }
+        _R0 = (int)captiveState + 80;
+        __asm { VST1.32         {D16-D17}, [R0] }
+        _R0 = (int)captiveState + 64;
+        __asm { VST1.32         {D16-D17}, [R0] }
+        _R0 = (int)captiveState + 48;
+        __asm { VST1.32         {D16-D17}, [R0] }
+        _R0 = (int)captiveState + 32;
+        __asm { VST1.32         {D16-D17}, [R0] }
+        _R0 = captiveState;
+        __asm
+        {
+          VST1.32         {D16-D17}, [R0]!
+          VST1.32         {D16-D17}, [R0]
+        }
+        *((_DWORD *)captiveState + 6) = CFRetain(cmdInterfaceName);
+        CFStringGetCString(cmdInterfaceName, (char *)captiveState + 8, 16, 1536);
+        v23 = S_stateHeadStorage;
+        *(_DWORD *)captiveState = S_stateHeadStorage;
+        if ( v23 )
+          *(_DWORD *)(v23 + 4) = captiveState;
+        S_stateHeadStorage = (int)captiveState;
+        *((_DWORD *)captiveState + 1) = &S_stateHeadStorage;
+      }
+      switch ( cmdTypeValue )
+      {
+        case 2:                                 // Evaluate 命令
+          ssid_ = cmdUniqueID;
+          ssidStr__ = ssidStr;
+          logger = mysyslog_get_logger();
+          v25 = _SC_syslog_os_log_mapping(6);
+          if ( os_log_type_enabled(logger, v25) == 1 )
+          {
+            *(&ssid_ - 4) = 71303682;
+            *(&ssid_ - 3) = *((_DWORD *)captiveState + 6);
+            v65 = &ssid_ - 4;
+            v66 = 14;
+            _os_log_impl((int)&dword_0, logger, v25, aEvaluate_0, &ssid_ - 4, 14, ssid_, ssidStr__);
+          }
+          CaptiveStateCleanup(captiveState, 1);
+          my_FieldSetRetainedCFType((char *)captiveState + 116, 0);
+          my_FieldSetRetainedCFType((char *)captiveState + 36, ssid);
+          ssidStr_ = ssidStr__;
+          my_FieldSetRetainedCFType((char *)captiveState + 32, ssidStr__);
+          if ( !ssid || !ssidStr_ )
+          {
+            v56 = mysyslog_get_logger();
+            v57 = _SC_syslog_os_log_mapping(3);
+            if ( os_log_type_enabled(v56, v57) == 1 )
+            {
+              v65 = (int *)71303426;
+              v66 = *((_DWORD *)captiveState + 6);
+              v65 = (int *)&v65;
+              v66 = 8;
+              _os_log_impl((int)&dword_0, v56, v57, aSsidIsNull, &v65, 8);
+            }
+            CaptiveSetStage(captiveState, kStage_Unknown);
+            respResult = 1;
+            respUniqueID = ssid_;
+            goto RET_1;
+          }
+          is_captive_bypass = CaptiveBypass(network_, ssidStr_, &v69);
+          v28 = ssid_;
+          if ( is_captive_bypass )
+          {
+            v29 = mysyslog_get_logger();
+            v30 = _SC_syslog_os_log_mapping(5);
+            if ( os_log_type_enabled(v29, v30) == 1 )
+            {
+              *(&ssid_ - 5) = 71303938;
+              *(&ssid_ - 4) = *((_DWORD *)captiveState + 6);
+              *((_BYTE *)&ssid_ - 12) = 64;
+              *((_BYTE *)&ssid_ - 11) = 4;
+              *(int *)((char *)&ssid_ - 10) = ssidStr_;
+              v65 = &ssid_ - 5;
+              v66 = 20;
+              _os_log_impl((int)&dword_0, v29, v30, aNotProbing, &ssid_ - 5, 20);
+              v28 = ssid_;
+            }
+            responseDict = ResponseDictCreate(v28, 0);
+            confidence = 1;
+RET_SET_CAPTIVE_TRUE:
+            ResponseDictSetIsCaptiveAndConfidence(responseDict, 1, confidence);
+            goto RET_3;
+          }
+          if ( network_
+            && !my_CFDictionaryGetBooleanValue(network_, CFSTR("WasCaptive"), 0)
+            && my_CFDictionaryGetBooleanValue(network_, CFSTR("IsCached"), 0) )
+          {
+            v63 = mysyslog_get_logger();
+            v64 = _SC_syslog_os_log_mapping(5);
+            if ( os_log_type_enabled(v63, v64) == 1 )
+            {
+              *(&ssid_ - 4) = 71303682;
+              *(&ssid_ - 3) = *((_DWORD *)captiveState + 6);
+              v65 = &ssid_ - 4;
+              v66 = 14;
+              _os_log_impl((int)&dword_0, v63, v64, aNotProbingCach, &ssid_ - 4, 14, ssid_, ssidStr__);
+              v28 = ssid_;
+            }
+            AWDUpdateCaptiveSessionUnsignedInt(0, 0);
+            responseDict = ResponseDictCreate(v28, 0);
+            ResponseDictSetIsCaptiveAndConfidence(responseDict, 0, 0);
+            next_stage = &kStage_Unknown;
+RET_SET_STAGE:
+            CaptiveSetStage(captiveState, *next_stage);
+            goto RET_3;
+          }
+          if ( CNAccountsIsCarrierSSID(ssidStr_) == 1 )
+          {
+            v60 = mysyslog_get_logger();
+            v61 = _SC_syslog_os_log_mapping(5);
+            if ( os_log_type_enabled(v60, v61) == 1 )
+            {
+              *(&ssid_ - 4) = 71303682;
+              *(&ssid_ - 3) = *((_DWORD *)captiveState + 6);
+              v65 = &ssid_ - 4;
+              v66 = 14;
+              _os_log_impl((int)&dword_0, v60, v61, aFoundCarrierNe, &ssid_ - 4, 14, ssid_, ssidStr__);
+              v28 = ssid_;
+            }
+            *((_BYTE *)captiveState + 114) = 1;
+            responseDict = ResponseDictCreate(v28, 0);
+            confidence = GetConfidenceFromAccounts(captiveState);
+            goto RET_SET_CAPTIVE_TRUE;
+          }
+          currentStageString = kStage_Probe[0];
+          probe_ssid = (__CFString *)captiveState;
+          probe_cmdID = v28;
+          goto START_PROBE;
+        case 3:                                 // Authenticate  命令
+          v35 = cmdUniqueID;
+          v36 = mysyslog_get_logger();
+          v37 = _SC_syslog_os_log_mapping(6);
+          if ( os_log_type_enabled(v36, v37) == 1 )
+          {
+            *(&ssid_ - 5) = 71303938;
+            *(&ssid_ - 4) = *((_DWORD *)captiveState + 6);
+            *((_BYTE *)&ssid_ - 12) = 64;
+            *((_BYTE *)&ssid_ - 11) = 4;
+            *(int *)((char *)&ssid_ - 10) = v35;
+            HIWORD(v65) = 1088;
+            v66 = *((_DWORD *)captiveState + 10);
+            v65 = &ssid_ - 5;
+            v66 = 20;
+            _os_log_impl((int)&dword_0, v36, v37, aAuthenticate_0, &ssid_ - 5, 20);
+          }
+          if ( *((_BYTE *)captiveState + 114) )
+          {
+            currentStageString = kStage_Probe[0];
+            probe_ssid = (__CFString *)captiveState;
+            probe_cmdID = v35;
+            goto START_PROBE;
+          }
+          my_FieldSetRetainedCFType((char *)captiveState + 116, 0);
+          response = CaptiveCopyAuthenticationResult((int)captiveState, network_, v35);
+          goto RET_2;
+        case 4:                                 // PresidentUI 命令
+          v42 = cmdUniqueID;
+          v43 = mysyslog_get_logger();
+          v44 = _SC_syslog_os_log_mapping(6);
+          if ( os_log_type_enabled(v43, v44) == 1 )
+          {
+            *(&ssid_ - 4) = 71303682;
+            *(&ssid_ - 3) = *((_DWORD *)captiveState + 6);
+            v65 = &ssid_ - 4;
+            v66 = 14;
+            _os_log_impl((int)&dword_0, v43, v44, aPresentui_0, &ssid_ - 4, 14);
+          }
+          my_FieldSetRetainedCFType((char *)captiveState + 116, 0);
+          if ( (__CFString *)*((_DWORD *)captiveState + 10) == kStage_UIRequired[0] )
+          {
+            my_FieldSetRetainedCFType((char *)captiveState + 116, cmdUniqueID);
+            CaptiveInteract(captiveState);
+            break;
+          }
+          v45 = mysyslog_get_logger();
+          v46 = _SC_syslog_os_log_mapping(3);
+          if ( os_log_type_enabled(v45, v46) == 1 )
+          {
+            v65 = &v66;
+            v66 = 2;
+            _os_log_impl((int)&dword_0, v45, v46, aPresentuiComma, &v66, 2);
+          }
+          respResult = 0;
+          respUniqueID = v42;
+          goto RET_1;
+        case 5:                                 // Maintain命令
+          ssid_ = ssid;
+          ssidStr__ = ssidStr;
+          v47 = mysyslog_get_logger();
+          v48 = _SC_syslog_os_log_mapping(6);
+          if ( os_log_type_enabled(v47, v48) == 1 )
+          {
+            *(&ssid_ - 4) = 71303682;
+            *(&ssid_ - 3) = *((_DWORD *)captiveState + 6);
+            v65 = &ssid_ - 4;
+            v66 = 14;
+            _os_log_impl((int)&dword_0, v47, v48, aMaintain_0, &ssid_ - 4, 14);
+          }
+          if ( (__CFString *)*((_DWORD *)captiveState + 10) != kStage_Online[0]
+            || network_ && my_CFDictionaryGetBooleanValue(network_, CFSTR("WasJustJoined"), 0) )
+          {
+            CaptiveStateCleanup(captiveState, 0);
+          }
+          *((_BYTE *)captiveState + 114) = 0;
+          my_FieldSetRetainedCFType((char *)captiveState + 116, 0);
+          my_FieldSetRetainedCFType((char *)captiveState + 36, ssid_);
+          ssidStr___ = ssidStr__;
+          my_FieldSetRetainedCFType((char *)captiveState + 32, ssidStr__);
+          v50 = cmdUniqueID;
+          if ( *((_DWORD *)captiveState + 11) )
+            captive_agent_abort_probe((_DWORD *)captiveState + 11);
+          if ( *((_DWORD *)captiveState + 12) )
+            captive_agent_abort_login((char *)captiveState + 48);
+          if ( ssid_ && ssidStr___ )
+          {
+            if ( CaptiveBypass(network_, ssidStr___, &v69) )
+            {
+              v51 = 16;
+              ssid_ = v69;
+              if ( v69 )
+                v51 = 17;
+              AWDUpdateCaptiveSessionUnsignedInt(0, v51);
+              v52 = mysyslog_get_logger();
+              v53 = _SC_syslog_os_log_mapping(5);
+              if ( os_log_type_enabled(v52, v53) != 1 )
+                goto SET_ONLINE;
+              *(&ssid_ - 5) = 71303938;
+              *(&ssid_ - 4) = *((_DWORD *)captiveState + 6);
+              *((_BYTE *)&ssid_ - 12) = 64;
+              *((_BYTE *)&ssid_ - 11) = 4;
+              *(int *)((char *)&ssid_ - 10) = ssidStr___;
+              v65 = &ssid_ - 5;
+              v66 = 20;
+              v54 = &dword_0;
+              v55 = aNotProbing;
+              goto NOT_PROBE;
+            }
+            if ( *((_BYTE *)captiveState + 113) )
+            {
+              v52 = mysyslog_get_logger();
+              v53 = _SC_syslog_os_log_mapping(5);
+              if ( os_log_type_enabled(v52, v53) != 1 )
+              {
+SET_ONLINE:
+                responseDict = ResponseDictCreate(v50, 0);
+                next_stage = kStage_Online;
+                goto RET_SET_STAGE;
+              }
+              *(&ssid_ - 4) = 71303682;
+              *(&ssid_ - 3) = *((_DWORD *)captiveState + 6);
+              v65 = &ssid_ - 4;
+              v66 = 14;
+              v54 = &dword_0;
+              v55 = aNotProbingIgno;
+NOT_PROBE:
+              _os_log_impl((int)v54, v52, v53, v55, v65, v66);
+              v50 = cmdUniqueID;
+              goto SET_ONLINE;
+            }
+            currentStageString = kStage_Maintain[0];
+            probe_ssid = (__CFString *)captiveState;
+            probe_cmdID = cmdUniqueID;
+START_PROBE:
+            response = CaptiveStartProbe(probe_ssid, probe_cmdID, (int)currentStageString);
+          }
+          else
+          {
+            v58 = mysyslog_get_logger();
+            v59 = _SC_syslog_os_log_mapping(3);
+            if ( os_log_type_enabled(v58, v59) == 1 )
+            {
+              v65 = (int *)71303426;
+              v66 = *((_DWORD *)captiveState + 6);
+              v65 = (int *)&v65;
+              v66 = 8;
+              _os_log_impl((int)&dword_0, v58, v59, aSsidIsNull, &v65, 8);
+              v50 = cmdUniqueID;
+            }
+            CaptiveSetStage(captiveState, kStage_Unknown);
+            respResult = 1;
+            respUniqueID = v50;
+RET_1:
+            response = ResponseDictCreate(respUniqueID, respResult);
+          }
+RET_2:
+          responseDict = response;
+RET_3:
+          if ( responseDict )
+          {
+            CNBuiltinPluginProvideResponse(responseDict);
+            CFRelease(responseDict);
+          }
+          break;
+        default:
+          respResult = 3;
+          respUniqueID = cmdUniqueID;
+          goto RET_1;
+      }
+    }
+  }
+  else
+  {
+    for ( i = (_DWORD *)S_stateHeadStorage; i; i = (_DWORD *)*i )
+      CaptiveStateCancelOperations(i, 0);
+  }
+  result = __stack_chk_guard - v71;
+  if ( __stack_chk_guard != v71 )
+    __stack_chk_fail(result);
+  return result;
+}
+```
+
+CaptiveStartProbe 里面会通过xpc的IPC把http的请求发送到CaptiveAgent去进行。
+CaptiveAgent主要做一些http response status code还有一些重定向的Location的分析
+等等，还有就是WISPr自动登录协议的xml的解析。HTTP协议相关的处理都是在
+CaptiveAgent进行的。就一个Probe请求来说，CaptiveSupportNetwork需要提供这几个参数
+给CaptiveAgent的吧.
+
+CaptiveSupportNetwork在create_probe_request里面建立消息
+```c
+    v27 = CFSTR("http://captive.apple.com/hotspot-detect.html");
+    // 下面这个UserAgent里面的字符串应该是对应iPhone这个模块的版本了，
+    // 应该可以根据这个来区分不同的iPhone的手机的版本。
+    v35 = (__CFString *)CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s %@"), "CaptiveNetworkSupport-346.50.1");
+    xpc_dictionary_set_uint64(v41, (int)"MessageType", 0, 0);
+    xpc_dictionary_set_string(v42, "ProbeURL", v39);
+    xpc_dictionary_set_string(v42, "InterfaceName", v38);
+    xpc_dictionary_set_string(v42, "UserAgent", v52);
+    xpc_dictionary_set_uint64(v42, (int)"ProbeTimeout", v51, a5);
+```
+
+CaptiveAgent收到消息的处理
+```text
+message_type = xpc_dictionary_get_uint64(a2, "MessageType");
+switch ( message_type )
+    {
+      case 0:                                   // Probe Message
+        v8 = xpc_dictionary_get_string(v2, "ProbeURL");
+        v9 = xpc_dictionary_get_string(v2, "InterfaceName");
+        v10 = xpc_dictionary_get_string(v2, "UserAgent");
+        v11 = xpc_dictionary_get_uint64(v2, "ProbeTimeout");
+```
+这个ProbeTimeout等待http请求的超时时间值得看一下，找了一下调用的参数赋值，
+应该是用的一个常量 const int _kWISPrProbeDefaultTimeout = 40;
+这个值稍微小于文档那些提到的状态机各个evaluate authenticate maintain阶段等待
+的插件响应的最长时间45秒。
+
+其他部分，检查Apple的Success页面的代码
+```c
+bool CheckHttpResponseContent()
+{
+  int v0; // r0@1
+  int v1; // r0@1
+  int v2; // r0@2
+  const char *v3; // r0@4
+  bool result; // r0@6
+  v0 = xmlDocGetRootElement();
+  v1 = sub_9DFE(v0, "title", 0);
+  result = 0;
+  if ( v1 )
+  {
+    v2 = *(_DWORD *)(v1 + 12);
+    if ( v2 )
+    {
+      if ( *(_DWORD *)(v2 + 4) == 3 )
+      {
+        v3 = *(const char **)(v2 + 40);
+        if ( v3 )
+        {
+          if ( !strcmp(v3, "Success") )
+            result = 1;
+        }
+      }
+    }
+  }
+  return result;
+}
+```
+
+有了反汇编的源码就可以结合代码逻辑和iPhone的syslog来分析各种问题了
+---------------------------------------------------------------
+1.  网络连接激活之后，缓存里面到底是不是captive network的手机的行为
+    如果是缓存了的是captive的网络，wifi流量不会没马上放行，先等一个maintain阶段的HTTP/1.0探测结果再放行流量。
+    如果不是captive网络，马上放行wifi流量，同时也马上开始evaluate阶段， evaluate 也会马上发送http/1.0探测。
+    也就是说不管是不是“cache indicates network not captive”，
+    一连网络后苹果肯定马上发送http/1.0 探测的。
+    如果先前是captive的网络，探测之后还是captive网络，如果检查到需要认证就马上开始认证。
+    如果先前不是captive网络，evaluate探测之后也会检查出是captive网络，需要认证也可
+    以马上开始认证。区别是evaluate会所有的插件都参与，可能会有别的插件干扰。如果直接
+    maintain就只有一个插件（一般是内置的插件）参与。不同的地方就是
+    如果网络激活时有需要重新验证的话， “cache indicates network not captive”预先
+    切换过来的流量会失败，导致用户在手机可能会看到一些应用比如微信报告的网络错误。
+    如果缓存的里面的是captive，就不会有这个问题。另外预先放行流量可能会导致比较多
+    连接出来，这些连接又被重定向captive portal页面的http服务器上面去。
+    要避免苹果手机的缓存成非captive网络，只能evaluate首次探测即使不需要认证也给它弹一个简单
+    的提示框了。 后面的maitain的探测应该不影响是不是captive的判断了。
