@@ -26,3 +26,8 @@ const struct file_operations kmsg_fops = {
 
 devkmsg_read   同样阻塞在 log_wait 这个锁上面
 
+不过试了一下 cat /proc/kmsg 和 cat /dev/kmsg，前者只会阻塞等待新消息，  后者会把历史buf的消息也显示出来。
+用strace 跟踪了一下 dmesg命令 应该是使用的/dev/kmsg文件来的吧。
+
+其他的设置终端console的printk级别
+echo 8 > /proc/sys/kernel/printk
