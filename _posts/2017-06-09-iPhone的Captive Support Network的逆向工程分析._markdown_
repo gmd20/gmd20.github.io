@@ -633,6 +633,31 @@ RET_3:
 }
 ```
 
+
+看内置的插件函数， 
+在重新Evalute时候会撤销未完成的 websheet登录页面和http probe探测。
+进入maintain时会撤销未完成的http probe探测，
+通过调用CaptiveStateCleanup或者captive_agent_abort_probe来取消的吧
+```text
+CaptiveStateCleanup
+  CaptiveStateCancelOperations
+    WebSheetStateIssueExitCommand
+    captive_agent_abort_probe
+```
+
+第三方wifi助手插件的加载和卸载
+```text
+CNPluginStateListIssueCommandCommon
+  CNPluginStateLaunchApplier
+    CNPluginStateSetProcessAssertion
+      会打印 Created process assertion for com.tencent.xin (227)这样信息
+
+CNPluginRemove
+   CNPluginStateSetNotRunning
+      会打印 Removing assertion for com.tencent.xin 这样信息
+```
+
+
 CaptiveStartProbe 里面会通过xpc的IPC把http的请求发送到CaptiveAgent去进行。
 CaptiveAgent主要做一些http response status code还有一些重定向的Location的分析
 等等，还有就是WISPr自动登录协议的xml的解析。HTTP协议相关的处理都是在
