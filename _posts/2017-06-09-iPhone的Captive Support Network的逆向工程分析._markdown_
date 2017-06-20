@@ -635,6 +635,7 @@ RET_3:
 
 
 看内置的插件函数， 
+
 在重新Evalute时候会撤销未完成的 websheet登录页面和http probe探测。
 进入maintain时会撤销未完成的http probe探测，
 通过调用CaptiveStateCleanup或者captive_agent_abort_probe来取消的吧
@@ -724,6 +725,24 @@ bool CheckHttpResponseContent()
   return result;
 }
 ```
+
+
+专门显示html页面供用户操作UI，是叫做一个com.apple.WebSheet的应用里面进行的。
+CaptiveNetworkSupport模块属于configd进程，然后探测到portal页面的存在的的话，
+他是需要这样通知springboard管理器来启动websheet应用的。和websheet应用之间的交互
+应该是通过xpc跨进程调用来进行的。 WebSheetStateLaunchApplication里面会设置一个
+定时器，如果发出“launch websheet”请求之后，10秒超时时间到了这个websheet进程还没有
+被启动的话，CaptiveNetworkSupport模块会回复websheet died的错误，
+参考 CaptiveWebsheetDone里面的返回结果的处理。
+
+```text
+CaptiveInteract
+  WebSheetStateLaunchApplication
+     SBSLaunchApplicationWithIdentifier(CFSTR("com.apple.WebSheet"), 1);
+```
+
+
+
 
 有了反汇编的源码就可以结合代码逻辑和iPhone的syslog来分析各种问题了
 ---------------------------------------------------------------
