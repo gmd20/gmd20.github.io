@@ -789,9 +789,11 @@ https://forums.developer.apple.com/message/223136#223136
 另外像“微信”这样的应用，如果没有开移动蜂窝网络登录微信，也会evaluate阶段超时，等待45秒才能弹出portal页面。
 应该是微信里面的public wifi功能也实现了这个接口，但在没有网络时没有正确处理这个evaluate命令。给微信的人反馈
 了就不知道他们后续怎么处理了。 
-  从测试来看，iPhone的portal页面慢，这个evaluate超时是出现较多的，很多应用，什么“地铁wifi”类似的wifi助手类应用
+
+从测试来看，iPhone的portal页面慢，这个evaluate超时是出现较多的，很多应用，什么“地铁wifi”类似的wifi助手类应用
 都可能有影响，连微信都有问题。那肯定要怪苹果文档没写好吧，各个应用开发者都没有实现对。
-  另外也看到 iPhone的springboard（桌面管理进程？） 出现崩溃，导致CaptiveNetworkSupport发送launch Websheet时候
+
+另外也看到 iPhone的springboard（桌面管理进程？） 出现崩溃，导致CaptiveNetworkSupport发送launch Websheet时候
 启动com.apple.WebSheet应用失败，这样最终10秒超时后日志记录websheet died报告，iPhone在PresentUI阶段返回临时
 错误，就会临时断开wifi热点。因为websheet是专门显示portal页面的进程，启动不起来，那肯定就有问题了。iPhone这个
 时候应该会进入死循环，不停在各个ssid直接做wifi漫游。但都会由于这个问题连不上。出现这种情形应该比较少见，但一旦出现
@@ -799,17 +801,17 @@ https://forums.developer.apple.com/message/223136#223136
 因为后面的PresentUI阶段肯定是会失败。这个应该是iPhone自身的问题，只能通过重启系统来让各个模块恢复正常了。
 苹果笔记本上面也观察到类似现象。 
 
-    如果网络被评估为no captive 网络，auto-join和auto-login按钮不可设置，不可用。反之这两个选项才可以设置。
+如果网络被评估为no captive 网络，auto-join和auto-login按钮不可设置，不可用。反之这两个选项才可以设置。
 各个认证阶段失败，ios禁用或者永久禁用这个wifi热点的，参考苹果的文档。
 
-    iOS只会在判断wifi网络可用后，才会把默认路由切换到wifi接口上面来。 但如果cache里面 有提示wifi 是no captive
+iOS只会在判断wifi网络可用后，才会把默认路由切换到wifi接口上面来。 但如果cache里面 有提示wifi 是no captive
 的也会马上切换过来，这个可能会有些影响，因为到真正检测到网络是不是可用还需要探测。那些探测（probe）网络是否可用
 的HTTP包发送时应该是需要专门绑定的wifi的interface才会从这个非默认路由的接口出来吧。
  
-    苹果这个capitve portal页面有3个模块，后面文章的里面我有详细分析各个模块的功能。各个进程之间通过xpc来进行跨进程通讯。
-CaptiveNetworkSupport： 运行在configd进程里面，hotspot的状态机处理主要逻辑都在这里面。会在适当的时候通知其他两个。
-captiveagent： 独立的进程，专门发送HTTP/1.0探测。
-WebSheet： 独立进程，专门显示HTTP/1.1 供用户操作的UI，由captiveNetworkSupport唤醒
+苹果这个capitve portal页面有3个模块，后面文章的里面我有详细分析各个模块的功能。各个进程之间通过xpc来进行跨进程通讯。
+1. CaptiveNetworkSupport： 运行在configd进程里面，hotspot的状态机处理主要逻辑都在这里面。会在适当的时候通知其他两个。
+2. captiveagent： 独立的进程，专门发送HTTP/1.0探测。
+3. WebSheet： 独立进程，专门显示HTTP/1.1 供用户操作的UI，由captiveNetworkSupport唤醒
 
 
 
