@@ -666,22 +666,22 @@ location.replace("{{.PortalUrl}}");
 		fmt.Fprint(w,
 			`<HTML>
 <!--
-    <?xml version="1.0" encoding="UTF-8"?>
-    <WISPAccessGatewayParam xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:noNamespaceSchemaLocation="http://www.acmewisp.com/WISPAccessGatewayParam.xsd">
-      <Redirect>
-        <VersionHigh>1.0</VersionHigh>
-        <VersionLow>0.0</VersionLow>
-        <AccessProcedure>1.0</AccessProcedure>
-        <AccessLocation>Hotel Guest Network</AccessLocation>
-        <LocationName>Hotel Test</LocationName
-        <LoginURL>`+wisprLoginUrl+`
-        <MessageType>100</MessageType>
-        <ResponseCode>0</ResponseCode>
-      </Redirect>
-    </WISPAccessGatewayParam>
+<?xml version="1.0" encoding="UTF-8"?>
+<WISPAccessGatewayParam xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://www.acmewisp.com/WISPAccessGatewayParam.xsd">
+  <Redirect>
+    <VersionHigh>1.0</VersionHigh>
+    <VersionLow>0.0</VersionLow>
+    <AccessProcedure>1.0</AccessProcedure>
+    <AccessLocation>Hotel Guest Network</AccessLocation>
+    <LocationName>Hotel Test</LocationName>
+    <LoginURL>`+wisprLoginUrl+`</LoginURL>
+    <MessageType>100</MessageType>
+    <ResponseCode>0</ResponseCode>
+  </Redirect>
+</WISPAccessGatewayParam>
 -->
-</HTML>`)
+</HTML>`
 
 	case 5: // http head refresh 重定向   非标准，但大多浏览器都支持
 		// req.Header.Add("If-None-Match", `W/"wyzzy"`)
