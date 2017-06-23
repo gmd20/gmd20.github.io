@@ -690,9 +690,12 @@ switch ( message_type )
         v11 = xpc_dictionary_get_uint64(v2, "ProbeTimeout");
 ```
 这个ProbeTimeout等待http请求的超时时间值得看一下，找了一下调用的参数赋值，
-应该是用的一个常量 const int _kWISPrProbeDefaultTimeout = 40;
-这个值稍微小于文档那些提到的状态机各个evaluate authenticate maintain阶段等待
-的插件响应的最长时间45秒。
+最初在CaptiveStartProbe函数里面赋值，然后会通过参数传给captive_agent_send_probe create_probe_request函数
+，是const数据段的一个常量 const int _kWISPrProbeDefaultTimeout = 0;
+看起来是0，有点奇怪，最后是转换为ios的API函数CFRunLoopTimerCreate的一个参数吧，但实在看不懂ARM汇编到底这个值
+是多少。从测试来看60秒超时captiveagent也没有返回错误的，反而是captivenetworksupport那里的45秒的evaluate阶段
+的超时先触发了。可能有个平台gdb调试一下或者，越狱后有些hook框架可以打印一下这个captiveagent里面的超时到底是多少。
+ 
 
 其他部分，检查Apple的Success页面的代码
 ```c
