@@ -815,6 +815,18 @@ iOS只会在判断wifi网络可用后，才会把默认路由切换到wifi接口
 
 
 
+2017-06-23补充
+--------------
+按照文档，有一个300秒的Maintaining timer.，这样每隔300秒ios都会主动发送一个 http请求去探测。
+但根据实际测试，抓包和syslog都没有看到这个间隔300秒的探测包。
+大概看了一下代码，日志里面有“Enabling passive detection”，实在PassiveDetectSetNotificationCallBack 函数里面打印出来的，
+它监控  "com.apple.symptoms.managed_events.captive-network" 这个notification事件，收到事件之后再做maintain探测。
+启用了这个之后CNInfoAuthenticated就没有设置这个300秒的定时器事件了。 这个不知道事件不知道怎么触发的，反正re-join同一个
+wifi热点肯定是触发maintain的探测的。 这个是ios 10.2的测试结果。但ios 10.3.2 里面又没有这个“Enabling passive detection”
+了，不知道怎么回事，反正确实没有看到这个300秒的探测。
+
+
+
 
 
 
