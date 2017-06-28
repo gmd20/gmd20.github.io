@@ -1,0 +1,34 @@
+联想的笔记本，装完最新的ubuntu 17.04，发现Intel无线网卡Intel(R) Dual Band Wireless AC 3165 没有正常工作。
+
+找到了Intel的驱动资料：
+
+Linux* Support for Intel® Wireless Adapters
+-------------------------------------------
+https://www.intel.com/content/www/us/en/support/network-and-i-o/wireless-networking/000005511.html
+
+iwlwifi is the wireless driver for Intel's current wireless chips
+-----------------------------------------------------------------
+https://wireless.wiki.kernel.org/en/users/drivers/iwlwifi
+
+
+iwlwifi 安装了iwl开头的几个命令和驱动吧，dmesg |grep iwl可以看到相关内核日志。
+
+根据intel的文档3165的最新固件是有问题的，需要在 29版本里面才修复
+
+
+>7260, 3160, 7265, 7265D, 3165 and 3168 support
+Those devices will not be supported by the newest firmware versions: the last firmware that was released for 3160, 7260 and 7265 is -17.ucode. Bug fixes will be ported to -17.ucode. 7265D, 3165 and 3168's latest firmware version is -29.ucode. 
+
+
+明天去这里
+https://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/linux-firmware.git/tree/
+下载最新的iwlwifi-7265D-29.ucode固件来试试。
+把这个 iwlwifi-7265D-29.ucode文件复制到/lib/firmware 文件夹里面就算装上了吧。
+
+从ubuntu的启动的内核日志，dmesg输出里面确实看到内核尝试了几个版本的固件都不成功，最后才勉强用了一个低版本的固件。
+
+
+
+Bugs and support调试日志分析问题的方法
+--------------------------------------
+https://wireless.wiki.kernel.org/en/users/drivers/iwlwifi/debugging
