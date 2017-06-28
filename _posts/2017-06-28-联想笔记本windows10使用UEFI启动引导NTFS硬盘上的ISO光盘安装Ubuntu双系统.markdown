@@ -1,4 +1,4 @@
-1.  磁盘管理器里面压缩某个盘，留出空间创建，Ubunut的分区
+1. 磁盘管理器里面压缩某个盘，留出空间创建，Ubunut的分区
 --------------------------------------------------------
 我的笔记本一个128GB的SSD已经有EFI分区，安装了windows10了。机械硬盘是1TB的，
 我就打算在机械硬盘上面也创建一个EFI分区，安装完这个笔记本启动时按F12进入UEFI
@@ -121,7 +121,7 @@ DiskPart 成功格式化该卷。
 ```
 
 
-3.  在windows里面访问EFI分区
+3. 在windows里面访问EFI分区
 ----------------------------
 ```text
 PS C:\WINDOWS\system32> mountvol  /?
@@ -382,7 +382,7 @@ ubuntu的图形界面了。这个Linux这么多年了还是有这种兼容问题
 ubuntu安装的时候，不要把选择把grub启动引导安装到windows 10的那个window boot manager一起，
 选择安装到第二块磁盘的EFI分区上面。
 
-**不过肯爹的ubuntu还是把grub给安装到windows 10的那个EFI分区里面去了**
+**不过ubuntu还是把grub给安装到windows 10的那个EFI分区里面去了**
 
 
 8. 整理一下UEFI启动项和各个EFI分区
