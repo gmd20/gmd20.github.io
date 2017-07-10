@@ -827,6 +827,23 @@ wifi热点肯定是触发maintain的探测的。 这个是ios 10.2的测试结�
 
 
 
+2017-07-10 补充
+----------------------
+苹果锁屏后屏幕关闭后，如果手机没有一直充电，wifi会自动断开。等重新点亮屏幕之后才重新链接wifi。
+解锁后，苹果会马上发送HTTP/1.0探测，如果页面正常返回Success页面不需要验证的情况，手机状态栏
+会立即显示wifi图标，wifi网络应该马上接通。反之如果HTTP/1.0的probe检测到captive portal 页面，那就是需要
+弹出UI验证页面。CaptiveNetworkSupport需要显示页面之前会有个UIAllowed（）的检查，这个检查按照字幕
+意思应该是在屏幕点亮解锁之后可以显示UI的时候才通过。实际测试发现，只有用户操作打开浏览器访问网络
+了，或者用户打开系统的“wifi设置”，这个UIAllowed（）的检查才通过，手机才会通知websheet应用加载HTTP/1.1
+页面弹出验证页面。  如果用户没有操作，估计没有网络流量访问的时候，是不会自动弹出websheet登录验证窗口的。
+从syslog和反汇编的代码看， CaptiveNetworkSupport 打印“en0 waiting for UI” 的log之后就一直等待系统发送
+“com.apple.airport.userNotification“ ”com.apple.airportsettingsvisible“ 的这两个notification的某一个过来时候才会进行
+”launch websheet“的动作。按照苹果的文档前面一个notification应该对应”network state changes“ 网络状态变化通知，
+后面对应系统”设置wifi“ 界面显示的通知。所以前面写的用户的操作触发了弹出 portal页面是很合理的。
+        这个苹果的实现估计可以做的更好一些，一般人都是希望马上弹出验证框，然后马上连上wifi的。但ios现在的实现
+依赖这两个通知，只有浏览器之类网络访问或者”wifi设置“显示了的动作才触发系统下发这个通知，虽然没有太大问题，
+但会觉得wifi不会马上自动连接是个问题。  
+
 
 
 
