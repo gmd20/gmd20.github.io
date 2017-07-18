@@ -3,24 +3,27 @@ Open vSwitch Architectural Overview
 [Porting Open vSwitch to New Software or Hardware]( http://docs.openvswitch.org/en/latest/topics/porting/)
 参考这个文档的的介绍理解ovs-vswitchd ofproto netdev dpif几个层次关系。
 
+```text
 ovs源码目录里面
  
 datapath 目录应该是底层内核接口代码
 ofproto  应该是用户空间的openflow协议的实现
-
+```
 
 ofproto-provider.h 是接口定义
 =============================
+```text
 struct ofproto_class {
-  packet_xlate（） 把啮合网络包translate成openflow包
-  packet_xlate_revert（） 反方向从 openflow处理完发回 内核
+  packet_xlate（） 把网络包translate成openflow包
+  packet_xlate_revert（） 反方向从openflow处理完发回 内核
   set_ipfix()  所有openflow 的provider实现都要支持这个 iffix设置。
   get_ipfix_stats 
 }
-
+```
 
 ipfix在用户空间实现的
 =====================
+```text
 ofproto-dpif.c dpif是对ovs项目的一个ofproto_class接口的一个内置实现
 这个provider实现就支持了 set_ipfix 接口
 
@@ -31,10 +34,12 @@ dpif_ipfix_run
 
 从dpif_ipfix_run函数代码可以看到ovs除了支持基于bridge全局的ipfix，还支持基于某个flow的单独的ipfix。 只对某些匹配的流才做ipfix监控可能对性能影响更小了。
 这个基于流的细粒度ipfix监控应该是通过sample action来实现的吧
+```
 
 
 用户空间处理内核的translate请求
 ===============================
+```text
 ofproto-dpif-upcall.c 
 process_upcall()  //这个应该是收到upcall已经在用户空间了，
   switch (classify_upcall(upcall->type, userdata)) {
@@ -47,10 +52,12 @@ process_upcall()  //这个应该是收到upcall已经在用户空间了，
        ipfix_cache_update
           hmap_insert              // ovs自己实现的一个hmap 哈希表吧，里面缓存所有的流
           ipfix_update_stats
+```
 
 
 用户空间构建（translate）flow的action
 =====================================
+```text
 /* If flow IPFIX is enabled, make sure IPFIX flow sample action
  * at egress point of tunnel port is just in front of corresponding
  * output action. If bridge IPFIX is enabled, this appends an IPFIX
@@ -114,12 +121,13 @@ xlate构建的时候在output这个action之前会插入ipfix的action。如果f
 把构建好的action发回内核，让内核缓存起来吧，后面在处理这个流应该就不需要再发送到用户空间来处理了，避免内核和用户空间的context switch的开销吧。
 从代码来看如果ovs的ipfix设置起作用了，ovs应该会在合适的地方插入ipfix的action的。 ovs的包处理其实也很简单，收到一个网络包就找flow流，然后根据流
 执行flow已定义的action。
-
+```
 
 
 
 内核用updcall通知用户空间构建flow对应的action
-===========================================
+=============================================
+```text
 vport.c 
 datapath.c
 
@@ -145,9 +153,10 @@ actions.c
          upcall.cmd = OVS_PACKET_CMD_ACTION;
          ovs_dp_upcall()
 
+
 看看Linux的实现， 确实从port上面收到网络包之后，在ovs_dp_process_packet 处理的时候先是查找缓存的flow的action，
 如果找到就执行aciton了，没找到就通过upcall传到用户空间vswitchd进程处理。
-
+```
 
 
 
