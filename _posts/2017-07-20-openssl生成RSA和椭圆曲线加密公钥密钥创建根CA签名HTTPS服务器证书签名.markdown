@@ -251,3 +251,27 @@ openssl req -new -sha256 -key server.key -out server.csr -extensions v3_req -con
   openssl ca -days 3650 -cert root_ca.crt -keyfile root_ca.key -md sha256 \
     -extensions v3_req -config openssl.cnf -in server.csr -out server.crt
 ```
+openssl在demoCA目录会做简单的索引，这个命令执行后同样的证书不能再生成第二次了，
+需要手工的清理一下demoCA目录index.txt文件内容。
+
+6.  检查证书的有效性
+```text
+$ openssl verify -verbose -CAfile root_ca.crt   server.crt
+server.crt: OK
+```
+如果前面生成的ca.crt 时没有指定“-extensions v3_ca”生成的 ca.crt 不是根证书，就会报告这个错误，因为openssl就找不到根节点了。
+```text
+$ openssl verify -verbose -CAfile root_ca.crt  server.crt
+server.crt: C = CN, ST = GuangDong, O = Heath Company, OU = Heath Root GZ, CN = Heath inc
+error 20 at 0 depth lookup:unable to get local issuer certificate
+```
+现在就可以把新的server.crt 和server.key 拿到HTTP服务器上面部署了
+
+
+7. 配置windows系统的"受信任根证书颁发机构"
+  在客户端电脑上，资源管理器里面 右键 ca.crt 文件， “安装证书” ，
+  选择自定义存储，存到“受信任的根证书颁发机构”里面去。这样再访问我们自签发的
+  HTTPS网站,浏览器就不会报告证书错误了. 其他linux系统或者Andorid/iOS之类的应该
+  都是有类似的方法来添加自定义证书的吧.
+  在IE/chrome浏览器都可以打开证书窗口,对添加的的证书进行管理。但好像只有在
+  "certmgr.msc"证书管理程序里面才能删掉某些证书。
