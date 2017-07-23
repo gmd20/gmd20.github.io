@@ -263,6 +263,10 @@ ovs为什么分为两级的搜索，而不是每个linux flow 直接对应hash�
 条hash项。肯定还是基于这种mask通配符的匹配更好了，基本ovs里面配置多少条flow就
 只需要创建多少条 flow+mask的匹配项而已。
 
+2017-07-23补充
+[The Design and Implementation of Open vSwitch](https://benpfaff.org/papers/ovs.pdf) 这篇论文详细介绍了
+openvswitch实现这个megaflow的设计思想，以及开发人员为什么要这么设计的，还做了详细的性能测试、缓存命中率、和
+linux bridge的性能比较等等，感兴趣的可以看一下
 
 
 往表中插入flow比较容易理解
