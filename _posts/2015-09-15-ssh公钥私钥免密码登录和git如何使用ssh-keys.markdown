@@ -1,7 +1,9 @@
 
 1.  生成公钥和私钥对
 ====================
+```text
 ssh-keygen -t rsa -b 4096 -f <key_file_name> -C "your_email@example.com"
+```
 
 会在当前目录生成2个文件
 key_file_name   对应私钥
