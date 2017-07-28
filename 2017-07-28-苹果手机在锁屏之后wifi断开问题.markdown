@@ -1,0 +1,73 @@
+这个是苹果文档的原话：
+--------------------
+    - 蜂窝网络和Wifi网络被设计成没有网络活动时就会关闭电源。
+    - 如果你的应用要访问无线wifi，你必须在你的应用的Info.pliste配置文件里面设置UIRequiresPersistentWiFi这个选项。设置了这一项系统 才不会在你的应用运行的时候关闭wifi硬件。
+    - 为了避免wifi硬件消耗太多的电，iOS有一个内置的定时器，当没有应用要使用“持久wifi连接”，30分钟过后系统就会完全关闭wifi硬件。如果
+用户运行了要求“持久wifi连接”功能的应用，在这个应用的运行周期内，iOS都不会关闭wifi。一旦这个应用推出或者休眠，系统会重新启动“关闭wifi定时器”。
+    - 注意： 即使应用配置了UIRequiresPersistentWiFi选项，但手机设备空闲的时候（屏幕被锁定了），这个设置也会被忽略。应用会被认为是“非活动”状态， 也许这个应用还有可以一定程度的运行（好像iOS后台应用可以保留10分钟还是多久吧），它也用不了wifi连接了。
+    如果iPAD设置上面有应用使用了苹果的消息通知服务APNS（所有应用的在休眠后的消息通知都是使用这个），iOS不会断开Wifi。
+
+
+我测试观察到的现象：
+------------------
+使用iPhone 7 iOS 10.3.3
+  1. 如果是 “非Captive弹页”类型的Wifi，在黑屏后Wifi大多数情况不会断开，可以保留40分钟以上。
+     但也有的时候10分钟之后就自动断开情况。
+  2. 如果是 “Capitve弹页面”类型的WiFi。黑屏后wifi会马上断开，但如果你在浏览器里面打开网易音乐之类
+     网站播放歌曲那么wifi会等歌曲播放完之后再断开（苹果手机，音乐播放类应用可以保持后台运行的久一些）。
+  3. 黑屏断开不是我们网关特有的，直接用手机连笔记本的时候也是这样。我去几个银行网点测试了他们的wifi
+     热点也是这样。
+  4. 手机充电时锁屏wifi不会断开。
+  5. 有一个iPhone4还是5，iOS 8版本的手机，无论是 “capitve”还是“非captive”类型的wifi，
+     他的手机在锁屏后都不会断开wifi。
+
+  6. 从抓包看，锁屏后手机不再响应外部的 ping程序发生送的ICMP消息，如果手机的wifi没有断开，
+     手机会每隔1分半钟发送ARP请求探测网关，每隔10分钟左右会有TCP连接苹果的“消息通知服务器”拉取消息通知。
+
+
+手机日志分析：
+----------
+   从文档看，这种锁屏之后断wifi的机制，是苹果系统的一种省电机制。从测试结果来看，
+基本也都是符合他的文档的说法的，但明显iOS是区分“capitve”和“非captive”网络类型的
+，当wif网络是“capitve”类型的时候，iOS的省电机制更为激进一些，可能是认为这种“captive”
+网络意味着人是在外出时候更需要省电还是怎么地。
+
+手机的日志：
+```text
+ wifid[40] <Error>: WiFi:[409311476.561537]: Disable WoW requested by "apsd"
+ wifid[40] <Notice>: WiFi:[409311476.564321]: WoW Capable = YES, Attempting to disable WoW and enable LPAS
+ wifid[40] <Notice>: WiFi:[409311476.575158]: Setting WoW params to <dictionary> {
+ wifid[40] <Notice>:   IO80211InterfaceEnableLowPwrAssocMode : TRUE
+ wifid[40] <Notice>:   IO80211InterfaceEnableWoW : FALSE
+ wifid[40] <Notice>: }
+ wifid[40] <Notice>: WiFi:[409311476.584428]: WiFiDeviceRequestAssociatedSleep: ActiveDuringSleepRequested is already set (<dictionary> {
+```
+
+ 苹果手机应该是有一个叫做“wifid”的后台进程管理wifi连接，如果它收到
+ apsd（消息通知服务进程）等应用修改wifi网络的的 WoW（wake up on wireless
+ lan）属性的时候，wifid就会根据具体情况来决定要不要设置
+ “ActiveDuringSleepRequested”（应该就是在系统休眠时保留wifi连接的意思）。
+
+ 看来锁屏断wifi应该和 WoW（wake up on wireless lan）技术有关系：
+ 以前的iOS 4/5 的时候，wifi硬件都不支持低功耗模式，那时的苹果系统应该也不会主动断开
+ wifi的。后来有了新的无线协议和wifi硬件的支持，wifi连接可以运行在一种低功耗模式下面，
+ 这种模式下，应用设置好要监听端口，网卡就会可以进入低功耗休眠状态，只有等这个连接真正
+ 有数据包进来的了，AP才会通知iPhone，才开始激活无线网卡设备来处理网络包。
+
+ 结合日志，我觉得锁屏之后，正常iPhone应该进入这个“wifi低功耗模式”。但对于“captive”
+ 类型网络，iOS系统明显做了特殊处理。我逆向了wifid这个程序大概看了一下，它的逻辑
+ 判断比较复杂，但有一个地方像是在检查要不要启用 “IO80211InterfaceEnableWoWOnCaptive”
+ 特性（字面就是captive类型网络上面要不要支持WoW）。这个会调用ioctl检查网卡设备
+是否支持一个“deviceCapabilities = 9”的特性，只有从底层驱动确认了，才会在“captive”
+ 类型的wifi网络支持WoW低功耗模式。这个估计跟wifi硬件芯片有关。可能苹果开发
+ 人员认为某些硬件的低功耗模式才能满足苹果的这个“captive portal”机制的设计要求吧。
+ 前面的那个iPhone 4或者5不会断网的手机刚好用的就是那种可以支持的芯片吧。
+
+
+总结：
+-----
+   苹果手机黑屏之后，到底断还是不断wifi只有iOS才控制的了，不同iOS版本不同的wifi
+硬件，不同的使用场景，现象可能都不一样。苹果自作聪明把机制搞得超级复杂，自己认为自己
+做的都是对的最好的，还不给用户设置。但其实还不如像Android简单的留一个设置开关，
+让用户来决定是不是要断开wifi。
+
