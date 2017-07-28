@@ -1,6 +1,6 @@
 
 1.  生成公钥和私钥对
-====================
+===================
 ```text
 ssh-keygen -t rsa -b 4096 -f <key_file_name> -C "your_email@example.com"
 ```
@@ -42,7 +42,7 @@ https://help.github.com/articles/generating-ssh-keys/
 
 
 2.公钥文件的使用
-==================
+===============
 如果是github这些网站使用, 界面上有提供配置 公钥对页面.
 https://help.github.com/articles/generating-ssh-keys/
 
@@ -62,7 +62,7 @@ https://github.com/res0nat0r/gitosis
 
 
 3. 私钥文件的使用
-==================
+================
 git 自带的bash发现他使用的是这个配置文件
 全局的配置文件是 /etc/ssh/ssh_config   对应 C:\Git\etc\ssh\ssh_config
 
@@ -128,7 +128,7 @@ putty key 制定, 刚才导出的私钥文件就可以了.
 
 
 
-4.  ssh-agent  ssh-add 帮助管理私钥的密码，免得每次输入私钥的密码
+5.  ssh-agent  ssh-add 帮助管理私钥的密码，免得每次输入私钥的密码
 ================================================================
 github有文档
 https://help.github.com/articles/working-with-ssh-key-passphrases/
