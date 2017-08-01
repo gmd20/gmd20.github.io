@@ -1,6 +1,7 @@
-修改msys  git的配置
+修改mingw64  git的全局配置
 -------------------
-* c:\git\ec\gitconfig
+* c:\git\mingw64\etc\gitconfig
+* 或者 c:\users\<username>\.gitconfig
 
 ```
 [core]
@@ -19,7 +20,7 @@
 
 修改msys  bash的配置
 -------------------
-* c:\git\ec\profile
+* c:\git\etc\profile
 ```bash
 #ls能够正常显示中文
 alias ls='ls --show-control-chars --color=auto'
