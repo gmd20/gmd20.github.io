@@ -325,11 +325,24 @@ git daemon --verbose --base-path=/d  --export-all  --listen=192.168.56.1 D://sms
      启动的git server  默认的 tcp端口是 DEFAULT_GIT_PORT = 9418  可以用 --port  指定
      默认server是只读的，支持git pull fecth，要支持git push
      需要配置daemon.receivepack 为true，或者直接在命令行里面制定 --enable=receive-pack
-      C:\Git\bin\git.exe daemon --verbose --enable=receive-pack --export-all --listen=192.168.56.1  --base-path=D:  D:/smsc
+     C:\Git\bin\git.exe daemon --verbose --enable=receive-pack --export-all --listen=192.168.56.1  --base-path=D:  D:/smsc
+     
+     注意git默认拒绝远程push修改本地当前分支，必须配置下面这个才能让远程push修改本地当前分支，不然就要先在本地checkout到切换到
+     其他分支上面，再在远程机器执行git push到对应分支的操作
+     git config --local receive.denyCurrentBranch ignore
      
 
-linux 通过添加多个远程仓库来访问windows上面的 git 服务器
----------------------------------------------------
+linux 通过添加多个远程仓库来访问windows上面的 git daemon 服务器
+-----------------------------------------------------
+git clone git://192.168.56.1/smsc
+直接在linux上面clone不成功，会收到下面这样错误，windows端不知道为什么发了一个 tcp reset 
+   fatal: read error: Connection reset by peer
+   fatal: early EOF
+   fatal: index-pack failed
+但windows本地 clone windows本地dammon服务器是可以的，好像是msys git的一个bug。
+把本地clone出来的目录复制到linux，再git pull是可以。
+或者像下面这样配置好remote 然后再pull应该也可以
+
 git remote add windows git://192.168.56.1/smsc
 git fetch windows
 git pull windows
