@@ -307,7 +307,7 @@ origin	http://192.168.100.105:8080/git/repos/myproject.git (push)
 git remote set-url origin http://192.168.4.203:8080/git/repos/myproject.git
 ```
 
-使用内置的git server 来在widnows 和linux 机器之间同步文件 ，使用多个remote仓库
+使用内置的git server 来在windows 和linux 机器之间同步文件 ，使用多个remote仓库
 =========================================================
 ```text
 在windows上面用git命令启动一个简单的git server ， 为 D盘的  smsc 目录提供git 协议访问。
@@ -335,12 +335,14 @@ git daemon --verbose --base-path=/d  --export-all  --listen=192.168.56.1 D://sms
 linux 通过添加多个远程仓库来访问windows上面的 git daemon 服务器
 -----------------------------------------------------
 git clone git://192.168.56.1/smsc
-直接在linux上面clone不成功，会收到下面这样错误，windows端不知道为什么发了一个 tcp reset 
+直接在linux上面clone/pull不成功，会收到下面这样错误，windows端不知道为什么发了一个 tcp reset 
    fatal: read error: Connection reset by peer
    fatal: early EOF
    fatal: index-pack failed
-但windows本地 clone windows本地dammon服务器是可以的，好像是msys git的一个bug。
-把本地clone出来的目录复制到linux，再git pull是可以。
+但windows本地 clone windows本地dammon服务器是可以的，好像是msys git的一个bug, *网上有人说需要在git server运行后
+的git bash 命令终端窗口用鼠标选中一些字符，再在linux那边git pull就可以绕过这个bug了*。试了一下确实可以。选中命令窗口的字符
+之后windows应该是会把线程挂起吧，可能是多线程同步之类的bug，打印线程退出导致socket被不正确的释放了？
+有时把本地clone出来的目录复制到linux，再git pull是可以。
 或者像下面这样配置好remote 然后再pull应该也可以
 
 git remote add windows git://192.168.56.1/smsc
