@@ -16,6 +16,8 @@ $ git branch
 提交所有改动了的文件
 ==================
 ```text
+git status 看看哪些文件被修改了
+
 git commit -p  这个自动让你选择所有修改过的文件，然后提交。 当然用GUI程序集成的功能，commit的时候自动就选了所有改动过的文件，更方便了。用命令行，必须的用-p参数啊，自己用git help commit查看
 类似的有：
 
@@ -96,7 +98,17 @@ git checkout -f   force选项可以强制checkout，并且丢弃本地位未提�
 
 git reset --soft e20bec14
 git commit -m "重写的commit修改状态"
+
 ```
+
+
+清除目录下所有不在git版本仓库里面的文件，类似make clean的效果
+=========================================================
+```text
+git clean
+git clean -x
+```
+
 
 查看修改历史
 ===========
