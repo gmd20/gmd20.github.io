@@ -1,0 +1,47 @@
+可以用来发送大量的网络包，指定ip范围，mac范围等等，包大小等等，测试网卡性能极限.
+
+
+# 内核文档
+https://www.kernel.org/doc/Documentation/networking/pktgen.txt
+
+ubuntu默认应该编译安装了这个模块的。
+```text
+@ubuntu:~$ modinfo  pktgen
+filename:       /lib/modules/4.4.0-98-generic/kernel/net/core/pktgen.ko
+version:        2.75
+license:        GPL
+description:    Packet Generator tool
+author:         Robert Olsson <robert.olsson@its.uu.se>
+srcversion:     B0DB6BD2861F1E11735145A
+depends:        
+intree:         Y
+vermagic:       4.4.0-98-generic SMP mod_unload modversions 
+parm:           pg_count_d:Default number of packets to inject (int)
+parm:           pg_delay_d:Default delay between packets (nanoseconds) (int)
+parm:           pg_clone_skb_d:Default number of copies of the same packet (int)
+parm:           debug:Enable debugging of pktgen module (int)
+
+
+$ modprobe pktgen
+$ lsmod |grep pktgen
+pktgen                 53248  0
+
+```
+
+# 源代码
+已经被linux upstream接收了，代码在      
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/core/pktgen.c?h=v4.14   
+下面这个网址也提供以前的版本   
+https://github.com/danieltt/pktgen/blob/master/Makefile   
+https://people.kth.se/~danieltt/pktgen/   
+
+
+# 帮助文档 
+pktgen the linux packet generator   
+Robert Olsson   
+Uppsala Universitet & SLU   
+https://www.kernel.org/doc/ols/2005/ols2005v2-pages-19-32.pdf   
+
+
+# 启动测试的脚本，参数配置
+https://github.com/danieltt/pktgen/blob/master/examples/pktgen.conf-1-1-rdos
