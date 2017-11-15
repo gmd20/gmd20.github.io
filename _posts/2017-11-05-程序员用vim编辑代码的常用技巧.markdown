@@ -1,0 +1,961 @@
+
+
+基本动作
+=======
+```text
+i     切换到插入模式，在光标之前
+a     切换到插入模式  在光标之后，自己体会和i的区别吧
+I     切换到插入模式，光标在行的开始
+A     切换到插入模式  光标在行的结尾
+
+v  进入 visual mode ，选择模式？
+R  进入替换模式，输入的文字直接覆盖替换光标下的字符。 直到按<Esc>建退出。
+
+<Esc>  退出输入模式，
+:w    保存文件
+:w  newfilename  文件另存为
+:q    退出编辑
+:wq   保存并退出
+:edit  打开另外一个文件， 可以用<TAB> 补全
+
+u     undo  取消上次修改
+
+ctrl + R    redo 重复上次修改
+
+:help   后面加上某个命令，查看vim的帮助文档
+
+```
+
+编程常用设置
+===========
+
+参见最后我的个人设置
+
+
+
+
+移动光标
+=======
+
+```text
+h   j   k   l  光标 “左 下 上 右” 移动
+0        光标移动到本行的的开始
+^        光标移动到本行的第一个字符
+$        光标移动到本行末尾
+b        光标移到单词的开头
+e        光标移到单词的末尾
+w        光标移到下一个单词
+
+大写的 E W和小写的e w类似，不过单词是以空格作为分界。移动光标到下一个空格的的前或者后面一个字符。
+
++       光标移到下一行的开头
+-       光标移到上一行的开头
+%        光标在匹配 最近() {} 块切换，这个很有用啊，类与visual studio中的ctrl + ]
+‘’       两次单引号，光标移到上次修改的位置。 两次反引号 ` 才是正式的写法？ 一个反引号加上一点(`.)也可以跳到最后一个修改的位置（参加mark和macro的用法  http://www.viemu.com/vi-vim-tutorial-5.gif）
+        其实是反引号书签的用法来的，    “m + 一个字母表示的书签名字”  就在当前行设置一个书签。   “反引号 + 一个字母表示的书签名字” 就跳到该书签的位置。
+     标签的一个 用法，比如要删大量内容，可以在某个地方ma ，mz 之类的设置标签到某行，然后把光标移到对应的位置，再 d`a   y`z 之类的可以删除到指定标签位置的所有内容。
+     gvim里面单引号和反引号一样的效果，ma 之后， ‘a可以移动到书签a的位置
+
+
+
+G        光标移到文件的末尾
+gg       光标移到文件的开始
+行号+G   或者 行号+gg    跳转到第几行
+f + 字符   （forward）  光标移到本行的 下一个指定字符,搜索
+F + 字符   光标移到本行的 上一个指定字符，反向搜索
+t / T +  字符  (til) 和 f / F类似，但光标放在前一个字符上面。
+,  ;   使用过f F  t T的查找之后，可以用“，”和“ ;”重复上一次查找的字符 逗号往左搜索，分号往右搜索。
+
+
+{  段落的开始
+}  段落的结尾
+
+(  句子的开始
+)  句子的结尾
+
+g,    最近的修改
+g;    最近的修改
+
+gd 移到程序变量的定义   在函数里面查找
+gD 移到程序变量的定义   在文件里面查找
+
+[(   移到光标位置到  类似if 的条件判断的括号的开始
+])   移到光标位置到 类似if 的条件判断的括号的结尾
+
+[{    代码块的开始（for 循环if等的大括号）
+]}    代码块的结尾 （for 循环if等的大括号）
+
+[[  移到函数的开始{
+]}  移到函数的结尾的}
+
+[#   ]#   移到外层#if  #endif的 
+
+[/  代码注释的块的开始
+]/  代码注释的块的结尾
+
+参考 *29.3* Moving through a program
+
+ http://vimdoc.sourceforge.net/htmldoc/usr_29.html#29.3
+
+zz       光标当前位置滚动到移到屏幕的中间
+zt  zb  光标当前位置滚动到屏幕顶端和底部
+shitf + M   光标滚动到移到屏幕的中间, 自己体会 和zz的区别
+shitf + H   光标滚动到移到屏幕的顶端
+shitf + L   光标滚动到移到屏幕的底部
+ctrl + E    向上滚屏
+ctrl + Y   向下滚屏， windows的vim听说需要重新map一下命令才有效果，否则是redo效果，自己google一下吧
+ctrl + F  ctrl +B  上下翻页
+ctrl  + o    ctrl + i  移动光标到上一次光标所在的位置，在光标的历史位置记录里面前后移动。
+
+*CTRL-O* 
+CTRL-O Go to [count] Older cursor position in jump list 
+(not a motion command). {not in Vi} 
+{not available without the |+jumplist| feature} 
+
+<Tab> or *CTRL-I* *<Tab>* 
+CTRL-I Go to [count] newer cursor position in jump list 
+(not a motion command). 
+In a |quickfix-window| it takes you to the position of 
+the error under the cursor. 
+{not in Vi} 
+{not available without the |+jumplist| feature} 
+```
+
+
+搜索用法
+========
+
+```text
+# 和 *      在文件搜索光标当前位置的单词，高亮位置。向前和向后搜索。 非常有用。
+g# g*      同# *用法，但搜索的时候，当前单词如果作为其他的单词的一部分的时候，也高亮显示。# 和 *  要求完整匹配，这个值要求部分包含就可以了
+/  和 ？    进入搜索模式，在文档搜索相应的单词。 向前和向后
+
+n  和 N     上面的两个搜索用法之后，向前和反向搜索下一个
+
+[I     类似# 和 * 用法，不过显示一个快速列表。 还有这个用来搜索c /c++变量定义的，默认会用tags，但如果没有tags，也会在include 的头文件里面也会搜索，准确找到该类型的定义。这点和gD  gd比较类似。 gD在文件里面搜索变量定义，gd在函数里面搜索，但这个[I 会搜索#include的文件。 include的查找目录由vim的path变量定义，可以修改vimrc配置文件指定path变量，不然vim会找不到头文件的。
+数字 + [ + <TAB>     跳到上面一条命令里面显示的第几个 位置去。
+]I  类似[I   但只列出后面的
+]i  类似[I   但只列出前面的
+
+参考 *29.4* Finding global identifiers  http://vimdoc.sourceforge.net/htmldoc/usr_29.html#29.4
+
+
+ :/buf\c   搜索内容时，后面加上 \c 不区分大小写
+ 
+显示搜索命令历史
+q/ 显示搜索命令历史的窗口 
+q? 显示搜索命令历史的窗口 可以选择重用以前用过的搜索查找命令
+
+
+在多个文件里面搜索
+:vimgrep /pattern/[j][g] file file2... fileN
+
+/joe/e                      : cursor set to End of match  搜索时可以移动光标到相对单词结尾偏移的位置
+3/joe/e+1                   : find 3rd joe cursor set to End of match plus 1 [C] 
+/joe/s-2                    : cursor set to Start of match minus 2  搜索时可以移动光标到相对丹迪开头偏移的位置
+:g/gladiolli/#              : 弹出所有的包含gladiolli的行供    类似  [I  但【I使用的是当前光标下的词来搜索
+
+/jo[ha]n     Search john or joan
+/\< the      Search the, theatre or then
+/the\>       Search the or breathe
+/\< the\>   Search the
+/fred\|joe   Search fred or joe
+/\<\d\d\d\d\>   Search exactly 4 digits
+/^\n\{3}    Find 3 empty lines
+```
+
+
+
+替换操作
+========
+
+```text
+:s/要替换的单词/替换为的内容/             和perl里面的正则一样啊，  
+:%s/buf_/buf/c    在全文件替换buf_ 为buf，并且询问是否替换
+:127,215 s/foo/bar    替换127行到215之间的foo为bar。
+. 表示当前行， $表示最后一行，
+
+:%s/\%Vold/new/g                : Do a substitute on last visual area [N]
+
+. or $ for current and last lines respectively. One could also use relative prefixes + and - to refer to offsets after or before the curent line, respectively. Thus: :.,$j meaning "from the current line to the last line, join them all into one line". :% is synonymous with :1,$ (all the lines).
+The :... g and :... v commands bear some explanation as they are incredibly powerful. :... gis a prefix for "globally" applying a subsequent command to all lines which match a pattern (regular expression) while :... v applies such a command to all lines which do NOT match the given pattern ("v" from "conVerse"). As with other ex commands these can be prefixed by addressing/range references. Thus:.,+21g/foo/d means "delete any lines containing the string "foo" from the current one through the next 21 lines" while :.,$v/bar/d means "from here to the end of the file, delete any lines which DON'T contain the string "bar."
+
+
+参考文档 |10.2| Substitution
+
+http://vimdoc.sourceforge.net/htmldoc/usr_10.html#10.2
+
+
+:%s/old/new/g    Replace all occurences of old by new in file
+:%s/old/new/gw    Replace all occurences with confirmation
+:2,35s/old/new/g   Replace all occurences between lines 2 and 35
+:5,$s/old/new/g   Replace all occurences from line 5 to EOF
+:%s/^/hello/g    Replace the begining of each line by hello
+:%s/$/Harry/g    Replace the end of each line by Harry
+:%s/onward/forward/gi   Replace onward by forward, case unsensitive
+```
+
+
+
+删除、复制和粘帖
+===============
+
+```text
+o      在光标位置下面新建一行
+O     在光标位置上面新建一行
+j        合并上下两行为一行
+d       删除
+c       change 剪切并进入插入模式， 和d的区别是这个会把剪切的记录也保存到重复命令   .    的记录里面去。
+C    D   d$  c$   删到行的结尾
+s      删除当前字符并且进入插入模式
+S      删掉一整行然后进入插入模式
+行数+ dd    删除指定行数，比如 3dd  删除3行
+行数+ cc    和 上一个类似，但会记录重复记录。
+ yy                 复制当前行内容到剪切板
+行数+ yy         复制多少行， 3yy  复制3行 
+大写P    在光标前粘贴
+小写p  在光标后粘贴
+r   替换当前选中内容，关于选择，参见下面xisual 模式
+
+可以组合使用
+y2w 复制后面连个单词
+d2w    删除两个单词
+db     删除到单词开头
+di(   di)     da(  da)   删除括号里面的块
+di>    di<
+di{    di}
+
+同样有
+ ce     cw   c3w 等
+yip   复制一个段落，代码块
+d/foo  删除到后面第一个出现foo的地方
+y?bar  同样有复制到前面第一个出现bar的位置
+y2/foo 复制当前光标位置到后面第二次出现foo之间的字符。
+d/fred/                                :delete until fred
+y/fred/                                :yank until fred
+c/fred/e                               :change until fred end
+
+
+利用标签用法，删除或复制大块数据
+可以在某个地方ma ，mz 之类的设置标签到某行，然后把光标移到对应的位置，再 d`a  c'a  y`z   之类的可以删除或复制从当前光标所在wei位置到标签所在位置的所有内容。 修阿删除多行数据时这个比较方便。
+
+利用visual模式，删除或复制大块数据。
+按v 或者V 进入visual模式后，可以选择大块内容，用d c y 等进行操作。参考某某的 “选择块”的介绍。
+
+
+"*  双引号+星号 再加上复制或者粘贴命令，把内容复制到系统剪切板，
+"*yy  把当前行复制到系统剪切板
+"*p   从系统剪切板粘帖出来
+
+:%s/ *$//g      Delete all white spaces
+:g/string/d     Delete all lines containing string
+:v/string/d     Delete all lines containing which didn’t contain string
+:s/Bill/Steve/    Replace the first occurence of Bill by Steve in current line
+:s/Bill/Steve/g    Replace Bill by Steve in current line
+:%s/Bill/Steve/g    Replace Bill by Steve in all the file
+:%s/\r//g             Delete DOS carriage returns (^M)
+:%s/\r/\r/g             Transform DOS carriage returns in returns
+:%s#<[^>]\+>##g        Delete HTML tags but keeps text
+:%s/^\(.*\)\n\1$/\1/           Delete lines which appears twice
+ggVGg?                  Change text to Rot13
+
+
+
+指定寄存器
+d   c  s  y p 等指令操作的内容，默认保存到 “” 寄存器。但也可以用双引号加 一个字母表示的名字指定26个寄存器中任意的一个。
+小写字母表示替换原有寄存器的内容，大写表示追加内容到寄存器
+"ayy    复制当前行内容到 a号寄存器“Ayy   把当前行内容添加到寄存器a里面，如果以前a寄存器已经有一行内容了，那么这个做完a寄存器就有两行内容了。
+"ap  粘帖寄存器a里面内容
+"bp  粘帖寄存器b里面内容
+:reg             : display contents of all registers
+:reg a           : display content of register aqqq              : empty register "q"  应该是记录 一个空的宏到寄存器，所以寄存器就被清空了
+qaq              : empty register "a"
+
+其他的还有 0 到9好等寄存器，只读寄存器等，参考文档 
+registershttp://vimdoc.sourceforge.net/htmldoc/change.html#registers
+
+:g/^\s*$/d                  : delete all blank lines
+:g!/^dd/d                   : delete lines not containing string
+:v/^dd/d                    : delete lines not containing string
+:g/joe/,/fred/d             : not line based (very powerfull)
+:g/fred/,/joe/j             : Join Lines [N]
+:g/^/t.                     : duplicate every line
+```
+
+重复命令
+=======
+.      按 “点” 这个句号字符重复执行命令,  从上一个按 i 进入“插入模式”开始到  esc建退出的所有动作。
+       非常有用。不如用了重复删除 重复粘贴等。
+
+
+
+
+ 
+
+选择块
+======
+
+```text
+vim里面的 “visual mode”应该也去学一下。 选择文字时用比较方便。就是进入这个模式之后，把当前光标和你移动到的光标的内容都选择起来。
+v     进入 visual 选择模式，以字符为选择单位
+V    选择viusal模式，不过以整行为选择单位
+然后就可以用 hjkl键选择区域。 
+
+*组合命令*：
+“viB”  选择当前光标所在的两个大括号包含的整个代码块，不包含大括号  
+“vaB”  选择当前光标所在的两个大括号包含的整个代码块，包含大括号
+类似的有
+vib vab   选择两个括号里面的一整块内容
+viw vaw  选择一个单词
+
+vip  选择一个代码段落
+
+类的的组合有，用于选择大括号 尖括号等里面的内容，i不包含，a包含。可以和其他编辑命令组合使用。
+ii{
+a{
+i(   a(
+i<  a< 
+i[   a[
+
+也可以用鼠标直接选择区域，那就是select mode，后用鼠标选取之后，可以用ctrl + O  或者ctrl + G切换到visual mode。
+
+很多命令可以在 visual mode下面操作，参考这里
+http://vimdoc.sourceforge.net/htmldoc/visual.html#visual-operators
+
+比较常用的有，选择多行之后进行删除复制，修改代码缩进等。
+```
+
+
+
+viusul mode的整块操作模式 Blockwise operators
+============================================
+```text
+ctrl  + v  开始进入viusual mode的整块操作模式选取。
+然后可以用hjkl 键选择块。
+可以I之后修改esc退出后就应用到所有的行。 d删除，p可以粘贴整块的内容等。
+windows因为快捷键默认ctrl +v 是粘贴，所以 ctrl + q才是块操作。
+这个功能可以用来给多行代码前面加上注释 // 。
+
+*其他的块模式的操作有*
+I 在block的前面插入
+A  添加字符串到 block的结尾
+c  C  修改block的每一行内容为指定字符床
+< >  整block的缩进修改
+r    替换
+d 删除整个选中的block
+p 粘贴整块block
+
+参考 http://vimdoc.sourceforge.net/htmldoc/visual.html#blockwise-operators
+
+其他visual模式说明参考详细参见：
+http://vimdoc.sourceforge.net/htmldoc/visual.html#Visual
+
+```
+
+
+启用代码自动缩进 利用paste粘帖模式，保留粘帖代码的格式等
+====================================================
+
+```text
+set cindent
+
+"  参考 Indenting C style programs	
+"     http://vimdoc.sourceforge.net/htmldoc/indent.html
+" :0  设置c 缩进风格， switch的case 语句相对switch语句的缩进为0
+" l1  设置c 缩进风格， switch的case 里面的语句把case 作为对齐标准，而不是跟上一句语句对齐
+" =0  设置c 缩进风格， switch的case 里面的语句按照case 缩进的距离，
+" g0 设置c++类的"pubic"，"private" ，"protected" 声明的 缩进为0 
+
+set cino=:0l1g0
+
+
+filetype plugin indent on 
+等自动缩进模式之后，直接在插入模式粘贴代码块，往往会把缩进搞乱，因为自动缩进模式又会自动在每一行的前面插入缩进，而且会自动添加注释行开头。想我这样经常往终端vim粘贴整个文件的代码的人碰到这个很是苦恼，还好vim有个模式，可以让你不需要禁用这个自动缩进功能就可以在粘贴时保留原来代码格式了。
+这时就要使用 “paste” 模式了，在这个“粘帖”模式之下，粘帖的时候，代码格式就不会乱了，所以的缩进等还是保留以前的格式。
+
+进入“paste”模式
+:set paste
+
+这时如果进入插入模式，可以看到后面有粘帖字样。像下面这样
+- 插入 (粘帖) --
+
+然后就可以在终端往vim直接粘帖代码了，粘帖完了，再撤销这个paste模式就可以了
+:set nopaste
+
+```
+
+
+代码缩进
+========
+```text
+<      选择块减少缩进，自己先用visual 模式，viB 选择块之后，再做这个就可以缩进一整块   
+>      选中块增加缩进。   这个缩进宽度由  set shiftwidth=4 定义 
+ <iB   >iB    <aB   >aB 可以直接使用，不用先选择代码块。
+>i{   <a{ 等
+>%    也可以直接把光标移到块的前面或者后面的大括号那里，然后运行    >%   命令就可以了，同样应也有 <%
+>i{     上面那个是把大括号一起移动的，这个缩进不包含大括号。
+ =     自动缩进代码块，用法，先把光标移到一块的起始括号那里 { ,然后 执行   =%  就可以格式化整个代码块了。
+>>   当前行减少缩进， 左移
+<<    当前行增加缩进，右移
+5>>   行数加缩进，那么就一共几行一起调整缩进
+
+
+*组合命令*
+==   格式化当前一行。
+=a{       等号加上其他选择块命令，  格式化 一个 代码块。
+=ip    格式化一个段落，就是一个代码块
+1G=G    解释1G移到文件开始， G移到文件结束，所以这个组合就是格式化整个文件的代码。
+gg=G    和 1G=G  等价
+```
+
+
+大小写转换
+==========
+
+```text
+ 按 v 进入”visual mode “ 模式，然后选中制定的文字，
+再  gu  ，选中的文字转换为小写。
+    gU  选中的文字转换为大写。
+
+guW   guW 等命令可以直接转换一个单词的，但我在Windows的 gvim里面好像默认没有这个用法，只能先到visual选择模式 gu才可以用。肯恩那个是vim或者linux平台的默认设置吧。
+
+转换光标下面的字符的就是 vgu  vgU 啦，
+
+一开始发现不进入 ”visual mode “ 模式不能进行大小写转换，不过后来发现，这些也是可以直接使用的，下面这些更方便一些吧
+ ~ 将光标下的字母大小写反向转换 
+guw 将光标所在的单词变为小写 
+guw 将光标所在的单词变为小写 
+gUw 将光标所在的单词变为大写 
+guu 光标所在的行所有字符变为小写 
+gUU 光标所在的行所有字符变为大写 
+g~~ 光标所在的行所有字符大小写反向转换
+
+同样有 gU2w 等组合
+```
+
+
+
+代码折叠
+========
+```text
+" 设置折叠的方法
+set foldmethod=syntax
+
+" 设置最大折叠深度
+set foldnestmax=3
+
+" 打开文件时默认不要折叠
+set nofoldenable
+
+
+有6种 foldmethod 方式来折叠代码
+1. manual   手工定义折叠
+2. indent   根据代码用缩进表示折叠
+3. expr　   根据指定的表达式来定义折叠
+4. syntax   根据语法来定义折叠，这个对c++的函数和类的支持比较好。
+5. diff     对没有更改的文本进行折叠
+6. marker   根据标签来折叠
+
+zi    禁用和开启折叠功能， 相当于 set foldenable
+zn    展开所有折叠
+zN    还原会zn 之前的状态
+zc    折叠当前光标所在
+zC    对所在范围内所有嵌套的折叠点进行折叠
+zo    展开折叠
+zO    对所在范围内所有嵌套的折叠点展开
+[z    到当前打开的折叠的开始处。
+]z    到当前打开的折叠的末尾处。
+zj    向下移动。到达下一个折叠的开始处。关闭的折叠也被计入。
+zk    向上移动到前一折叠的结束处。关闭的折叠也被计入。
+za    切换折叠状态，根据当前折叠状态决定是zc 或者 zo
+zA    同za不过递归到所有深度。
+zm    对全部折叠增加多一层折叠
+zM    全部折叠。
+zr    对全部折叠展开多一层折叠
+zR    展开全部折叠
+
+zf    创建折叠，比如在marker方式下：
+        zf56G，创建从当前行起到56行的代码折叠；
+        10zf或10zf+或zf10↓，创建从当前行起到后10行的代码折叠。
+        10zf-或zf10↑，创建从当前行起到之前10行的代码折叠。
+        在括号处zf%，创建从当前行起到对应的匹配的括号上去（（），{}，[]，<>等）。
+
+zd    删除 (delete) 在光标下的折叠。仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
+zD    循环删除 (Delete) 光标下的折叠，即嵌套删除折叠。
+        仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
+zE    除去 (Eliminate) 窗口里“所有”的折叠。
+        仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
+```
+
+
+
+
+
+
+其他辅助编程用法
+===============
+```text
+
+[CTRL-I, ]CTRL-I Search for a word under the cursor in the current file and
+any brought in by #include directives.
+gd,  Search for the definition of a variable 在函数里面查找
+gD Search for the definition of a variable 在整个文件查找
+]CTRL-D, [CTRL-D Jump to a macro definition.
+]d, [d, ]D, [D Display macro definitions
+
+CTRL-A,CTRL-X : increment, decrement next number on same line as the cursor 只在Linux下面起作用。Windows可能需要重新做一下按键映射
+ctrl + n   insert模式时，在输入很长的变量名字函数名字时，可以使用这个做自动补全，就不用完整的敲入整个变量名字了
+ctrl + p  按ctrl + n补全之后，如果不合适，可以用这个取消补全，
+```
+
+临时退出 Vi/Vim、进入 shell 环境后再回来的要求
+===========================================
+```text
+
+方法一：使用 Ctrl-z 以及 fg 这两个命令组合。
+　　这一解决方法主要利用了 Linux/Unix 的作业机制。具体原理是：Ctrl-z 命令将当前的 Vi/Vim 进程放到后台执行，之后 shell 环境即可为你所用；fg 命令则将位于后台的 Vi/Vim 进程放到前台执行，这样我们就再次进入 Vi/Vim 操作界面并恢复到原先的编辑状态。
+
+方法二：使用行命令 :sh。
+　　在 Vi/Vim 的正常模式下输入 :sh即可进入 Linux/Unix shell 环境。在要返回到 Vi/Vim 编辑环境时，输入 exit 命令即可。
+　　这两种方法实现机制不一定，但效果一样，都非常快捷有效。
+```
+
+
+取得外部输入
+==========
+```text
+ : r!<cmd> 将命令 <cmd> 的输出结果插入到当前光标所在位置 
+:r <file> 将文件 <file> 读入到当前光标所在位置
+```
+
+把多条命令录制为宏
+================
+```text
+q  加上 一个字母表示宏的名字      表示开始宏的录制
+q  再次按q，表示录制完成
+@  加 一个字母的表示的宏的名字，表示执行对应的宏
+比如qa 开始录制宏a， 然后按q停止，再@a就可以执行刚刚录制的宏a了
+@@  执行最后一次执行过的宏。
+5@@ 重复执行5次最后一次行的宏
+多个组合操作需要重复执行的时候，使用这个功能可以方便很多。
+
+参考
+10.1*Record and playback commands
+http://vimdoc.sourceforge.net/htmldoc/usr_10.html#10.1
+http://www.viemu.com/vi-vim-tutorial-5.gif
+
+```
+
+设置键盘快捷键
+=============
+
+```text
+The main commands to know when dealing with key bindings are:
+:map for the modes Normal, Insert, Visual and Command-line  所有模式都起作用
+:imap for Insert mode only     只在insert模式起作用
+:cmap for Command-line mode only
+:nmap for Normal mode only
+:vmap for Visual mode only
+
+一个例子，把ctrl + s 映射为后面保存文件
+:map <C-s> :w<cr>
+
+其他常用按键表示
+<CR>     : carriage Return for maps      <Space> 空格键
+<Esc>    : Escape
+<Leader> : normally \  change with :let mapleader = ","
+<Bar>    : | pipe下面这个用在按键映射里面不错，不过肯能只在Linux下面有效，比如下面这个映射为在当前目录搜索当前光标所在的单词	:nnoremap <F3> :grep <C-R><C-W> *<CR><esc>:cw<cr>CTRL-R CTRL-W   : pull word under the cursor into a command line or search
+CTRL-R CTRL-A   : pull whole word including punctuation
+CTRL-R -        : pull small register
+CTRL-R [0-9a-z] : pull named registers
+CTRL-R %        : pull file name (also #)
+
+参考 http://vimdoc.sourceforge.net/htmldoc/map.html
+```
+
+
+查看执行过的命令 历史记录
+=======================
+
+```text
+: 上下键 查找和补全
+:history   列出所有的历史记录
+:his c  
+:his s
+```
+
+VIM buffer 窗口
+===============
+```text
+
+VIM里面一个buffer对应一个打开的文件
+
+" 允许在有未保存的修改时切换缓冲区，此时的修改由 vim负责保存
+:set hidden
+
+"查看已经打开的buffer
+:ls   或者 :buffers  命令都可以
+
+“在不同的buffer直接切换，这个很好用
+ctrl + 6
+
+"切换到对应的buffer去 比如下面切换到第2个buffer 
+:buffer 2
+
+"用不同的窗口打开所有的buffer
+:ball
+:vertical ball  "在垂直分隔的窗口打开所有buffer
+:sbuffer  "split buffer到不同的窗口
+
+前后一个buffer
+:bnext   :bn
+:bprevious   :bp
+
+:bd[elete][!] [N]  可以指定号码的buffer，不指定buffer号码就关闭当前buffer, 会关闭打开这个buffer的所有windoww，并显示另外一个buffer。 不同于 :q[uit]  和 :close的关闭window命令
+
+另外还可以使用辅助插件
+bufexplorer.zip : Buffer Explorer 插件
+http://www.vim.org/scripts/script.php?script_id=42
+安装完 输入 :BufExplorer  , 就会弹出一个包含所有buffer列表的窗口供选择。用鼠标或者键盘都可以跳转的到对应的buffer去。
+或者在normal模式直接输入下面这个斜杠开始的命令，都可以打开bufexplorer的窗口。
+
+  '\be' (normal open)  or 
+  '\bs' (force horizontal split open)  or 
+  '\bv' (force vertical split open) 
+
+
+"可以把f9映射为这个buffer浏览的快捷键。
+noremap <silent> <F9> :BufExplorer<CR>
+nmap <F10> :bn<CR>
+nmap <F11> :bp<CR>
+```
+
+配置gvim左侧文件浏览栏
+====================
+```text
+
+安装 nerdtree  这个插件
+https://github.com/scrooloose/nerdtree
+然后就可以，用  :NERDTree 命令启动 左侧浏览栏，然后 在左边点击 文件名 就自动打开，鼠标中建点击，在新的窗口打开文件。
+t 键 打开一个新的 tab 窗口里面打开文件。
+然后可以在vimrc中加入下面这行代码让vim 启动是自动打开 文件浏览栏。
+autocmd vimenter * NERDTree
+
+安装很简单，网页有说明
+cd ~/.vim/bundle
+git clone https://github.com/scrooloose/nerdtree.git在Windows 平台，放到vim的安装目录就可以了。没有装git自己下载对应的插件文件放到对应的目录去就可以了。
+
+最好也安装一下这个插件配合，这样在gvim里面启动时，自动启动NERDTree 的文件浏览栏，并且打开新的tab是，这个文件浏览窗口也始终显示。
+不用配置前面的autocmd vimenter * NERDTree 命令了。 他autoload目录的插件自动加载。
+https://github.com/jistr/vim-nerdtree-tabs
+
+
+有很多默认选项开关 ，可以参考网页的说明
+let g:nerdtree_tabs_open_on_gui_startup=1     这个默认就是1了，
+let g:nerdtree_tabs_open_on_console_startup=1   直接在字符终端的的vim里面也默认启动 NERDTree
+
+不过他这个插件加载比较慢，需要的时候再打开比较好
+" 把F2映射为显示左侧目录浏览树窗口开关
+map <F2> :NERDTreeToggle<CR>
+```
+
+c/c++ 结构解析，函数快捷查找
+==========================
+```text
+另外为了浏览文件是查看搜索函数名字，有人还喜欢安装 
+cscope
+ctags     下载放到 vim的bin目录，或者其他系统目录可以找到的地方就可以了，参考taglsit文档
+taglist
+tagbar 比 taglist对c++ 面向对象的支持更好一些。 https://github.com/majutsushi/tagbar
+等插件，这样查看搜索函数定义之类的方便一点吧。有需要的时候在网上找一下相关资料吧
+
+
+vimrc里面的键盘映射配置
+let Tlist_Use_Right_Window = 1   " 显示在右边窗格
+nnoremap <silent> <F8> :TagbarToggle<CR>
+
+
+用 ctags 生成所有的c++ tags
+ctags -R –c++-kinds=+px –fields=+iaS –extra=+q .
+:set tags=D:\xxxx\tags    加载生成的tags文件
+ctrl + ]    查找光标下的tag
+ctrl + o    退回上一次光标位置
+:ts  有多个匹配时，弹出选择窗口
+:help tags  查看vim tags 帮助
+```
+
+vim里面搜索目录下的文件，quickfix模式和grep
+=========================================
+
+```text
+在vim里面直接搜索目录下的文件的内容
+
+:grep sendv *.c       使用外部grep程序
+:vimgrep /sendv/   *.c   使用内部vim 模式的搜索,速度较慢 Vim 需要载入每个文件，就像编辑它们那样。如果文件里没有匹配，相应
+的缓冲区又会被彻底删除
+:vimgrep sendv\c   *.c   使用内部vim 模式的搜索,速度较慢
+
+:help vimgrep
+greo 在windows系统默认调用的是findstr /n命令来进行搜索的的， 可以通过  :set grepprg 设置来修改设置
+linux缺省为 "grep -n " 参考
+
+http://vimcdoc.sourceforge.net/doc/options.html#'grepprg'
+我安装了git 自带一个mingw的grep 还是改为用grep好了，比findstr命令好用吧
+
+:set grepprg=c:/git/bin/grep.exe\ -n
+:grep -i sendv *.c 这样就可以用grep的各种参数了
+其他的'grepformat'设置vim怎么解析grep的输出，一般都不用修改了吧。参考vm的文档
+
+搜索之后只显示一行，可以:cc 重复显示结果
+或者打开 quickfix窗口
+:cw[indow] [height]     当存在可以识别的错误时，打开窗口。如果该窗口已经打开且
+                        没有可识别的错误，则将此窗口关闭。
+:cope[n] [height]       打开一个窗口显示当前的错误列表。
+:ccl[ose]              关闭 quickfix 窗口。
+:colder 和 :cnewer  合适显示十个搜索历史记录
+
+在打开的窗口里面可以直接用鼠标双击和enter键可以跳到指定找到的指定位置去。
+但以前的窗口缓冲器没有修改才行？   在quickfix 窗口  ctrl +w 在按enter键，可以在新窗口打开。
+
+ctrl + w 在窗口直接切换
+
+在quickfix模式里面常用操作
+:cc                显示详细信息 ( :help :cc )
+:cp                跳到上一个结果 ( :help :cp )
+:cn                跳到下一个结果 ( :help :cn )
+:cl                列出所有结果 ( :help :cl )
+:cw                如果有结果列表，则打开quickfix窗口 ( :help :cw )
+:col               到前一个旧的结果列表 ( :help :col )
+:cnew              到后一个较新的结果列表 ( :help :cnew ) 
+
+可以把这些命令映射到快捷建方便使用
+":nmap <F4> :cw<cr>
+":nmap <F4> :cclose<cr>
+:nmap <F5> :cn<cr>
+:nmap <F6> :cp<cr>
+   "把 f3 按键映射为在本目录下文件里面搜索光标下面的单词
+
+if has("win32")
+	" grep的设置
+	:set grepprg=c:/git/bin/grep.exe\ -n
+	"windows平台用这个
+	:nmap <F3> "*yw<cr>:grep <c-v> ./*<cr><esc>:cw<cr>
+else
+	" linux 平台用这个
+	:nnoremap <F3> :grep <C-R><C-W> *<CR><esc>:cw<cr>
+endif
+
+
+可以使用下面这个显示和隐藏quickfix窗口的函数，这样cw 和 cclose功能都映射到同一个按键了
+" 弹出和隐藏quickfix窗口
+" 来自http://vim.wikia.com/wiki/Toggle_to_open_or_close_the_quickfix_window
+function! QFixToggle()
+  if exists("g:qfix_win")
+    cclose
+    unlet g:qfix_win
+  else
+    " copen 10
+	cw
+    let g:qfix_win = bufnr("$")
+  endif
+endfunction
+let g:qfix_win = 1
+nmap <script> <silent> <F4> :call QFixToggle()<CR>
+
+
+参考http://vimcdoc.sourceforge.net/doc/quickfix.html
+这种quickfix的用法，vim内部出了grep 还支持make和其他编译工具的，可以参考vim的文档
+```
+
+
+
+
+保存vim的会话状态和设置信息等
+===========================
+```text
+:help mksession
+:help 'sessionoptions'
+:help source
+mksession  ddddd.vim  把当前的窗口状态，全局设置等保存到dddd.vim文件里面，保存的内容由 sessionoptions 选项指定
+source dddd.vim 从上次保存的文件加载vim的会话状态
+
+:help wviminfo
+:help rviminfo
+:help 'viminfo'
+
+wviminfo  ddd.viminfo  把搜索记录，历史命令记录等，寄存器内容缓冲区列表等保存到，文件位置标记保存到ddd.viminfo  文件。viminfo 选项执行保存那些内容。 vim默认退出时也会保存状态到.viminfo文件里面？
+rviminfo  ddd.viminfo  读入保存的设置
+```
+
+
+
+
+
+
+
+
+
+
+
+
+vim-multiple-cursors插件 “True Sublime Text style multiple selections for Vim”
+
+==============================================================================
+```text
+https://github.com/terryma/vim-multiple-cursors   
+允许同时选择多个同名变量，同时修改。 参考上面主页上面的动画演示。比较有意思的一个插件，   
+可以用 git clone https://github.com/terryma/vim-multiple-cursors 把目录复制下来，然后把autoload 和 doc plugin目录复制到vim目   
+录去使用就可以了。
+使用起来很简单，在normal模式，把光标移到一个变量名字上面，再不停的按 ctrl +n 就把相同名字的变量都选中了。然后使用vim的命令就
+可以编辑了。esc退回普通模式。
+
+```
+
+
+
+
+
+commentary.vim 快捷注释代码插件
+=============================
+```text
+https://github.com/tpope/vim-commentary
+Commentary 可以帮你注释代码。在normal模式输入gcc 即可将该行注释（Commentary 会根据当前的 filetype 使用.
+在visual 模式，额可以选择多行，然后输入 gc ，注释掉整个选中内容。
+再次敲击 gcc 即可还原注释。我把空格键作为注释映射，下面这样：
+
+nmap <space> gcc
+vmap <space> gc
+即在 normal 模式下，敲击空格键可以注释当前行，在 visual 模式下，敲击空格键可以注释选中的内容
+参考了 http://zihua.li/2013/11/my-vim-configuration-plugin/的设置
+```
+
+NERD Commente  另外一个辅助注释代码的插件
+======================================
+http://www.vim.org/scripts/script.php?script_id=1218
+
+
+
+
+vim-expand-region 自动扩展选择区域的插件
+==================================
+```text
+https://github.com/terryma/vim-expand-region    
+可以通过 +   _  按键来扩大选择区域。比如，比如光标在单词中间，按一下 +，就选中整个单词，再+就选中单词外层的括号里面内容。等等，可以去上面主页去看动画。我只想在visual模式才使用这个功能，他插件里面会自己做一下判断你是否已经映射了快捷键的，如果已经有了，它就不在做nmap的普通模式的映射了。
+
+" 自动扩大选择区域的插件，让它只在visual 模式才使用+  _键盘映射 
+vmap + <Plug>(expand_region_expand)
+vmap _ <Plug>(expand_region_shrink
+```
+
+
+YouCompleteMe
+
+============
+
+c/c++的最好用的自动补全插件，基于clang的c/c++语法分析
+
+
+
+
+Tabular 自动对齐代码插件
+======================
+```text
+https://github.com/godlygeek/tabular
+自动对齐插件， 比如可以先用v模式选中几个要对齐的等号赋值语句，然后输入 :Tab /=
+就可以多条赋值语句按照等号对齐了。
+ 
+
+Tab  后面的写法支持正则表达式的的。
+比如    :Tab /\S\+   可以对齐结构元素定义
+比如    :Tab /\w*;   可以对齐结构元素定义
+对齐c++注释   :Tab /\/\/
+ ```
+ 
+
+vim 高亮 显示 c/c++ 的函数名和类名
+===========================
+```text
+https://github.com/octol/vim-cpp-enhanced-highlight
+" windows默认不加载 vim74/after/syntax 目录的脚本，需要配置一下
+set runtimepath+=$VIMRUNTIME/after
+
+主要是这3个命令
+syn match   cCustomParen    "(" contains=cParen contains=cCppParen
+syn match   cCustomFunc     "\w\+\s*(\@=" contains=cCustomParen
+hi def link cCustomFunc  Function
+把 c++的函数名字，设置成Function 关键字颜色显示。当然也可以自定义颜色了。
+参考
+http://stackoverflow.com/questions/736701/class-function-names-highlighting-in-vim
+http://vimdoc.sourceforge.net/htmldoc/syntax.html
+但前面的这个github的vim-cpp-enhanced-highlight 更完善一些。加上一下c++ 标准库的函数等。
+```
+
+=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+不错的参考
+=========
+
+```text
+强烈推荐阅读下面这篇文章，体会 重复命令和 组合命令用法。
+http://www.oschina.net/news/25882/why-they-are-using-vi
+
+为什么这些死脑筋们在用 VI ?
+翻译的还好，也许你要原版的。
+Why, oh WHY, do those #?@! nutheads use vi?
+http://www.viemu.com/a-why-vi-vim.html
+
+后来也参考了
+技巧：快速提高 Vi/Vim 使用效率的原则与途径
+http://www.ibm.com/developerworks/cn/linux/l-cn-tip-vim/ 
+
+vim的官方文档，可以用去看一下。不错的，详细的说明。
+http://vimdoc.sourceforge.net/htmldoc/usr_toc.html
+不过好像http://www.truth.sk/vim/vimbook-OPL.pdf   这个更有条理一些，讲的很详细，而且例子也不错，也将很多编程相关的高级用法等。我也参考了一下这个书。
+
+之前发的一个图也是很好的参考。
+http://hiphotos.baidu.com/widebright/pic/item/5d880d241eb39b40c89559a6.jpg
+原来图是来自这里的啊 
+
+Graphical vi-vim Cheat Sheet and Tutorial  
+http://www.viemu.com/a_vi_vim_graphical_cheat_sheet_tutorial.html
+这网站还有很多图，给出由浅入深的学习步骤图。
+
+
+不错的参考图书
+Hacking Vim
+A cookbook to get the most out of the latest
+Vim editor
+
+
+这个帖子提到的几个用法也不错
+http://stackoverflow.com/questions/1218390/what-is-your-most-productive-shortcut-with-vim/1220118#1220118
+
+Best of Vim Tips
+http://www.rayninfo.co.uk/vimtips.html
+
+Using vim as C/C++ IDE
+http://www.alexeyshmalko.com/2014/using-vim-as-c-cpp-ide/
+```
+
+我的vim配置
+=========
+https://github.com/gmd20/exercises/blob/master/vimrc
+
