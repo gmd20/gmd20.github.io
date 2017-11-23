@@ -80,3 +80,5 @@ Further examples::
 	%pISpfc		1.2.3.4:12345	or [1:2:3:4:5:6:7:8]:12345/123456789
 
 ```
+
+这个打印格式pI4的处理在 source/lib/vsprintf.c  文件里面
