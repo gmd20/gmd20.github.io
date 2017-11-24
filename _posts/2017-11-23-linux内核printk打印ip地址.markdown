@@ -82,3 +82,43 @@ Further examples::
 ```
 
 这个打印格式pI4的处理在 source/lib/vsprintf.c  文件里面
+
+但旧版的内核不支持这个参数，需要使用这几个宏， 使用 NIPQUAD_FMT 来格式化
+```c
+/*
+ *      Display an IP address in readable format.
+ */
+
+#define NIPQUAD(addr) \
+	((unsigned char *)&addr)[0], \
+	((unsigned char *)&addr)[1], \
+	((unsigned char *)&addr)[2], \
+	((unsigned char *)&addr)[3]
+#define NIPQUAD_FMT "%u.%u.%u.%u"
+
+#define NIP6(addr) \
+	ntohs((addr).s6_addr16[0]), \
+	ntohs((addr).s6_addr16[1]), \
+	ntohs((addr).s6_addr16[2]), \
+	ntohs((addr).s6_addr16[3]), \
+	ntohs((addr).s6_addr16[4]), \
+	ntohs((addr).s6_addr16[5]), \
+	ntohs((addr).s6_addr16[6]), \
+	ntohs((addr).s6_addr16[7])
+#define NIP6_FMT "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
+#define NIP6_SEQFMT "%04x%04x%04x%04x%04x%04x%04x%04x"
+
+#if defined(__LITTLE_ENDIAN)
+#define HIPQUAD(addr) \
+	((unsigned char *)&addr)[3], \
+	((unsigned char *)&addr)[2], \
+	((unsigned char *)&addr)[1], \
+	((unsigned char *)&addr)[0]
+#elif defined(__BIG_ENDIAN)
+#define HIPQUAD	NIPQUAD
+#else
+#error "Please fix asm/byteorder.h"
+#endif /* __LITTLE_ENDIAN */
+
+
+```
