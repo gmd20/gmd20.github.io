@@ -1,0 +1,81 @@
+sk_buff  分配时会预留一定的头部空间（32字节？），这样后面需要扩展头部空间的时候不需要重新分配内存空。
+
+```text
+dev->needed_headroom += EXTRA_HEADER_LENGTH;
+
+The basic logic is, when networking stack is about to allocate a SKB to transmit via a interface, it take into consideration the value of "needed_headroom" ( in fact, a macro LL_RESERVED_SPACE (dev ) ), and the SKB would have that large headroom reserved. This way, your NIC driver could assume that most packet reach into "do_start_xmit()" should have enough headroom --- most, not all, a headroom check is still needed.
+
+
+http://elixir.free-electrons.com/linux/latest/source/include/linux/netdevice.h#L260
+
+/* Reserve HH_DATA_MOD byte-aligned hard_header_len, but at least that much.
+ * Alternative is:
+ *   dev->hard_header_len ? (dev->hard_header_len +
+ *                           (HH_DATA_MOD - 1)) & ~(HH_DATA_MOD - 1) : 0
+ *
+ * We could use other alignment values, but we must maintain the
+ * relationship HH alignment <= LL alignment.
+ */
+#define LL_RESERVED_SPACE(dev) \
+	((((dev)->hard_header_len+(dev)->needed_headroom)&~(HH_DATA_MOD - 1)) + HH_DATA_MOD)
+#define LL_RESERVED_SPACE_EXTRA(dev,extra) \
+	((((dev)->hard_header_len+(dev)->needed_headroom+(extra))&~(HH_DATA_MOD - 1)) + HH_DATA_MOD)
+
+
+skb = __netdev_alloc_skb_ip_align(netdev, adapter->rx_ps_bsize0,
+    gfp);
+
+
+/**
+ *	__netdev_alloc_skb - allocate an skbuff for rx on a specific device
+ *	@dev: network device to receive on
+ *	@len: length to allocate
+ *	@gfp_mask: get_free_pages mask, passed to alloc_skb
+ *
+ *	Allocate a new &sk_buff and assign it a usage count of one. The
+ *	buffer has NET_SKB_PAD headroom built in. Users should allocate
+ *	the headroom they think they need without accounting for the
+ *	built in space. The built in space is used for optimisations.
+ *
+ *	%NULL is returned if there is no free memory.
+ */
+struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
+				   gfp_t gfp_mask)
+
+
+
+/*
+ * The networking layer reserves some headroom in skb data (via
+ * dev_alloc_skb). This is used to avoid having to reallocate skb data when
+ * the header has to grow. In the default case, if the header has to grow
+ * 32 bytes or less we avoid the reallocation.
+ *
+ * Unfortunately this headroom changes the DMA alignment of the resulting
+ * network packet. As for NET_IP_ALIGN, this unaligned DMA is expensive
+ * on some architectures. An architecture can override this value,
+ * perhaps setting it to a cacheline in size (since that will maintain
+ * cacheline alignment of the DMA). It must be a power of 2.
+ *
+ * Various parts of the networking layer expect at least 32 bytes of
+ * headroom, you should not reduce this.
+ *
+ * Using max(32, L1_CACHE_BYTES) makes sense (especially with RPS)
+ * to reduce average number of cache lines per packet.
+ * get_rps_cpus() for example only access one 64 bytes aligned block :
+ * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
+ */
+#ifndef NET_SKB_PAD
+#define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
+#endif
+
+
+
+/* NOTE: netdev_alloc_skb reserves 16 bytes, and typically NET_IP_ALIGN
+ * means we reserve 2 more, this pushes us to allocate from the next
+ * larger slab size.
+ * i.e. RXBUFFER_2048 --> size-4096 slab
+ * However with the new *_jumbo_rx* routines, jumbo receives will use
+ * fragmented skbs
+ */
+
+```
