@@ -6,7 +6,8 @@
 ./config -h
 /usr/bin/perl ./Configure  -h
 
-./config shared --prefix=/usr/mylibs --openssldir=/usr/mylibs/ssl
+./config shared --prefix=/usr/mylibs --openssldir=/usr/mylibs/ssl \
+LDFLAGS="-Wl,-rpath=/usr/mylibs/lib"
 make clean
 make
 make install
