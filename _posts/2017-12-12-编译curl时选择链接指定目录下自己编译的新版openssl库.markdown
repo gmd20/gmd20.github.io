@@ -53,6 +53,62 @@ LDFLAGS="-Wl,-rpath-link=/usr/mylibs/lib -Wl,--verbose"
 通过这个 -Wl,--verbose 参数才看出问题了。
 ```
 
+编译php使用新的curl和openssl
+===========================
+依赖openssl和curl
+
+```text
+/home/ming/php-5.6.32
+
+./configure --prefix=/opt --without-mysql --without-sqlite3 --without-pdo-sqlite \
+--without-iconv --disable-xmlreader --disable-xmlwriter --with-pcre-regex \
+--enable-sockets --without-pear --disable-debug --disable-fileinfo \
+--with-openssl=/usr/mylibs  --with-curl=/usr/mylibs \
+LDFLAGS="-Wl,-rpath-link=/usr/mylibs/lib -Wl,--verbose"
+
+检查Makefile里面的CFLAGS没有包含-I/usr/kerberos/include 和
+LDFLAGS不包含-L/usr/kerberos/lib 旧版的openssl库
+rpath看起来也是正常的 -Wl,-rpath,/usr/mylibs/lib
+
+
+编译链接正常
+[root@ming php-5.6.32]# ldd sapi/cli/php
+	linux-gate.so.1 =>  (0x00c12000)
+	libcrypt.so.1 => /lib/libcrypt.so.1 (0x00556000)
+	libresolv.so.2 => /lib/libresolv.so.2 (0x0058f000)
+	libcrypto.so.1.0.0 => /usr/mylibs/lib/libcrypto.so.1.0.0 (0x0014b000)
+	libm.so.6 => /lib/libm.so.6 (0x002e9000)
+	libdl.so.2 => /lib/libdl.so.2 (0x00110000)
+	libnsl.so.1 => /lib/libnsl.so.1 (0x00361000)
+	libxml2.so.2 => /usr/lib/libxml2.so.2 (0x0092c000)
+	libz.so.1 => /usr/lib/libz.so.1 (0x00114000)
+	libcurl.so.4 => /usr/mylibs/lib/libcurl.so.4 (0x00ac8000)
+	libssl.so.1.0.0 => /usr/mylibs/lib/libssl.so.1.0.0 (0x00eaa000)
+	librt.so.1 => /lib/librt.so.1 (0x00356000)
+	libc.so.6 => /lib/libc.so.6 (0x00378000)
+	/lib/ld-linux.so.2 (0x0012f000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x00310000)
+
+[root@ming php-5.6.32]# ldd sapi/cgi/php-cgi
+	linux-gate.so.1 =>  (0x00318000)
+	libcrypt.so.1 => /lib/libcrypt.so.1 (0x00556000)
+	libresolv.so.2 => /lib/libresolv.so.2 (0x0058f000)
+	libcrypto.so.1.0.0 => /usr/mylibs/lib/libcrypto.so.1.0.0 (0x0014b000)
+	libm.so.6 => /lib/libm.so.6 (0x002e9000)
+	libdl.so.2 => /lib/libdl.so.2 (0x00110000)
+	libnsl.so.1 => /lib/libnsl.so.1 (0x00361000)
+	libxml2.so.2 => /usr/lib/libxml2.so.2 (0x0092c000)
+	libz.so.1 => /usr/lib/libz.so.1 (0x00114000)
+	libcurl.so.4 => /usr/mylibs/lib/libcurl.so.4 (0x00319000)
+	libssl.so.1.0.0 => /usr/mylibs/lib/libssl.so.1.0.0 (0x0067d000)
+	librt.so.1 => /lib/librt.so.1 (0x00378000)
+	libc.so.6 => /lib/libc.so.6 (0x00381000)
+	/lib/ld-linux.so.2 (0x0012f000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x004c4000)
+
+```
+
+
 总结：系统存在多版本时的链接问题
 ========================
 如果系统在两个地方有两个不同版本的库，要选择链接使用某一个时，还是用 ld连接器的  -L参数来制定库的目录。   
