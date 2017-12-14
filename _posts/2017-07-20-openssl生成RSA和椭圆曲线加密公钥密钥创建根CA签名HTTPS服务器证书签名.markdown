@@ -38,6 +38,23 @@ x509的证书编码格式有两种
 
 RSA/ECC公钥私钥的生成
 =====================
+检查 openssl版本和支持的加密套件
+
+**目标支持加密套件 ECDHE-ECDSA-AES128-GCM-SHA256，这个性能应该会好一些.**       
+**下面是最佳组合的推荐列表，要排除不安全的，还有选择性能好的**         
+**https://wiki.mozilla.org/Security/Server_Side_TLS**      
+
+```text
+
+# openssl version
+OpenSSL 1.0.2n  7 Dec 2017
+
+# openssl  ciphers -v   | grep ECDSA
+
+检查性能
+openssl speed rsa2048 ecdsap256
+
+```
 
 1. 生成 根CA（证书授权中心 certificate authority）要用的RSA密钥
 ```text
@@ -79,6 +96,11 @@ server用自己的私钥自签名
    openssl genrsa -out server.key 8192
    或者
    openssl ecparam -genkey -name prime256v1 -out server.key
+   
+ ECDH椭圆曲线（对比RSA有性能优势，现在应该是主流选择了）: 
+   openssl ecparam -list_curves
+   openssl ecparam -out ecparam.pem -name prime256v1
+   openssl genpkey -paramfile ecparam.pem -out server.key  
 ```
 
 2. 生成证书签名请求
