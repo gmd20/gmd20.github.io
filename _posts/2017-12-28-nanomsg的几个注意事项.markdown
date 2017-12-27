@@ -1,0 +1,10 @@
+- nanomsg 的 soccket fd在内部 设置了 “FD_CLOEXEC” socket选项，所以fork()进入子进程后会自动把这个socket给关闭了。  
+  也就是说nanomsg的socket fd不能被子进程继承，不能多个进程共同监听或者accept之类的。虽然nanomsg的socket是多线程安全的，  
+  可以线程之间共享使用一个socekt fd， 但父子进程里面应该使用各自独立的soceket fd。  
+  
+- nanomsg的  ipc socket是用unix socket实现的，对应的socket的文件和目录可能需要root访问权限。
+
+- nn_connect/nn_bind 是异步的，函数返回来，socket并没有完全初始化完，如果马上nn_send使用这个socket fd来发送数据，前面
+  几个应该是会失败的。 nanomsg 应该是自己维护一个线程，所有的初始化工作在他的线路里面完成。比如断开自动重连等等。所以   
+  nn_connect 最好在程序的初始化阶段就调用完成，留一个时间窗口给nanomsg线程是创建底层的连接，这样后面的nn_send发送数据
+  时才能保证这个socket已经初始化完了，才能发送成功。 
