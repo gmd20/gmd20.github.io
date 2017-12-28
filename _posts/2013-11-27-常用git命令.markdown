@@ -419,8 +419,14 @@ git apply to update a text file with a patch does touch the files in the work tr
 git diff itself does not touch the files in the work tree, it is often run to inspect the changes you intend to next git add. To catch potential problems early, safety triggers.
 ```
 
+Release 版本发布
+===============
+```text
+git tag -d v1.0.1
+git tag -a v1.0.1
 
-
+git describe  会生成一个版本字符串，包含commit的哈希值等等
+```
 
 
 
