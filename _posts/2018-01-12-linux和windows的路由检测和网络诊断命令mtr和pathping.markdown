@@ -2,5 +2,8 @@
 ```
       mtr  combines  the functionality of the traceroute and ping programs in a single network diagnostic
        tool.
-       
+      
+      
+      mtr  baidu.com
+      mtr -u 8.8.8.8
 ```
