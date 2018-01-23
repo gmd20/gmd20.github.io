@@ -1,0 +1,30 @@
+真菌是自然界中的主要分解者，有它们分解有机物，有机物才会被回收。   
+
+
+*蘑菇（mushroom）*应该属于*真菌fungi*里面的*担子菌Basidiomycota*。   
+
+
+*担子菌*有30000种。很多种类可以分解木材和落叶，在自然界的碳循环中扮演着重要角色。对人类不好的地方是会破坏木房子结构等等。   
+
+
+担子菌中的*共生菌Symbiotic Basidiomycota*（跟寄生类似吧）是重要的植物致病菌 ，比如*锈病菌 "rusts" (Uredinales)*和*黑粉菌"smuts" (Ustilaginales)*,可以伤害小麦和其他作物。也有其他的共生担子菌会导致动物和人生病。不是每种都会导致宿主严重伤害，担子菌中的*外生菌根菌 Ectomycorrhizal Basidiomycota*（有的菌根菌可以长在植物的体内根部里面，那叫内生吧） 可以帮助 宿主植物从土壤总吸收矿物质营养，作为回报它从植物的光合作用获取糖作为回报。
+也有的共生担子菌和昆虫一起共生的。   
+
+
+*菌根菌 Mycorrhizal fungi/fungus*  ，专门生长于植物根部帮助植物吸收营养又从植物获取光合作用营养的真菌。 90%的植物都有它的共生菌。共生菌利用地下的广大的菌丝网络和土壤大的接触面、把水和矿物质的从土壤导入植物，帮助植物吸收营养。作为回报植物会把光合作用的营养供应给菌根菌。   
+
+有3种菌根菌:
+-----------
+1. 外生菌根菌有 子囊菌类Ascomycota, 担子菌类Basidiomycota,  接合菌类Zygomycota三种    
+2. 内生菌根菌 endomycorrhizae，Glomeromycete fungi类的菌类直接把丛枝体插入植物根部细胞，作为菌   类和宿主的共同新陈代谢的场所。   
+3. 兰科植物， 兰科植物的种子很小不能存储多少养分，没有它的共生菌（通常是Basidiomycete担子菌）的   帮助种子不会发芽。种子里面的养分消耗完了，共生的菌类会给种子提供碳水化合物和矿物质。有一些兰   科植物一生都和它的共生菌共生。   
+
+总结：
+-----
+蘑菇或者说担子菌有的是植物的致病菌，有的是对植物有益的菌根菌。
+
+
+参考
+----
+[Ecology of Fungi Fungi Habitat, Decomposition, and Recyclin](https://courses.lumenlearning.com/boundless-biology/chapter/ecology-of-fungi/)    
+[Fungus wiki](https://en.wikipedia.org/wiki/Fungus)
