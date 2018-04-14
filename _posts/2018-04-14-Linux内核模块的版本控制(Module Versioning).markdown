@@ -18,3 +18,7 @@ Module.symvers file 的格式是这样:
 加载，会打印 “ disagrees about version of symbol” 这样的信息。 如果编译时缺失Module.symvers 导致编译出来   
 的模块里面没有携带版本信息也是会报格式错误的。
 
+
+modprobe加载模块时用 -f选项丢掉版本信息，这样导出的符号别人就不需要检查版本，
+参考内核/kernel/module.c 里面 check_version函数
+
