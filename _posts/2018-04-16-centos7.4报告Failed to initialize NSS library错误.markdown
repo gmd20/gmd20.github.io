@@ -1,0 +1,87 @@
+
+Centos 7.4
+error: Failed to initialize NSS library
+=======================================
+
+
+https://access.redhat.com/solutions/3134931    
+https://bugzilla.redhat.com/show_bug.cgi?id=1477308    
+https://access.redhat.com/errata/RHEA-2017:0460    
+
+
+```text
+nss-softokn.i686
+nss-softokn.x86_64
+nss-softokn-freebl.x86_64
+
+/lib64/libnspr4.so
+
+
+Description of problem:
+ The nss-softokn packaging does not have a requirement for a matching nspr package. As a result, the installation of the glibc.i686 package pulls in nss-softokn-freebl, but not the additionally required nspr version.
+
+ 
+
+Yes, it looks like a duplicate of bug 1477308.  According to the rpm list attached to comment 2, only nss-softokn-freebl got updated while nspr was older (and missing PR_GetEnvSecure):
+
+$ grep '^nss\|^nspr' nss-rpm_-qa.txt | sort
+
+
+[root@localhost]# rpm -qa | grep '^nss\|^nspr' | sort
+nspr-4.13.1-1.0.el7_3.x86_64
+nss-3.28.4-15.el7_4.x86_64
+nss-pem-1.0.3-4.el7.x86_64
+nss-softokn-3.28.3-8.el7_4.x86_64
+nss-softokn-freebl-3.28.3-8.el7_4.x86_64
+nss-sysinit-3.28.4-15.el7_4.x86_64
+nss-tools-3.28.4-15.el7_4.x86_64
+nss-util-3.28.4-3.el7.x86_64
+
+
+
+
+
+So this is workaround for broken system.
+
+1. Use wget, or any other way to get the needed nspr package from the repository.
+   
+   needed package: nspr-4.13.1-1.0.el7_3
+
+2. get the nspr libraries out from rpm
+
+   rpm2cpio nspr-4.13.1-1.0.el7_3.x86_64.rpm |cpio -imdv
+
+3. copy them to /usr/lib64/
+ 
+   cp usr/lib64/* /usr/lib64/
+
+
+
+Netscape Portable Runtime (NSPR) provides platform independence for non-GUI operating system facilities. The nss-util packages provide utilities for use with the Network Security Services (NSS) libraries. Network Security Services (NSS) is a set of libraries designed to support the cross-platform development of security-enabled client and server applications.
+
+The following packages have been updated to the latest upstream versions: nspr (4.13.1), nss-util (3.28.2), nss (3.28.2). This provides a number of bug fixes and enhancements over the previous versions. Notable enhancements include:
+
+The NSPR and NSS-UTIL libraries now provide new utility functions. In addition, the libraries have received a variety of bug fixes, including several thread safety problems.
+The Next Protocol Negotiation (NPN) extension in NSS has been replaced by the Application-Layer Protocol Negotiation (ALPN) extension.
+NSS now supports the Finite Field Diffie-Hellman Ephemeral Parameters (FFDHE) negotiation.
+
+
+
+
+[root@localhost ]# rpm -qa | grep '^nss\|^nspr' | sort
+nspr-4.13.1-1.0.el7_3.x86_64
+nss-3.28.4-15.el7_4.x86_64
+nss-pem-1.0.3-4.el7.x86_64
+nss-softokn-3.28.3-8.el7_4.x86_64
+nss-softokn-freebl-3.28.3-8.el7_4.x86_64
+nss-sysinit-3.28.4-15.el7_4.x86_64
+nss-tools-3.28.4-15.el7_4.x86_64
+nss-util-3.28.4-3.el7.x86_64
+
+[root@localhost]# rpm -ql nss-util-3.28.4-3.el7.x86_64
+/usr/lib64/libnssutil3.so
+```
+
+
+
+      
