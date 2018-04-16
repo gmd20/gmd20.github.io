@@ -1,0 +1,27 @@
+```c
+#include <stdio.h>
+#include <string.h>
+#include <crypt.h>
+#include <errno.h>
+#include <pwd.h>
+#include <grp.h>
+
+
+int main(void)
+{
+  struct passwd *pw;
+  struct group *gp;
+  pw = getpwnam("nobody");
+  gp = getgrnam("nobody");
+
+  if (pw)
+    printf("%s %s %d %d %s %s\n", pw->pw_name, pw->pw_passwd, pw->pw_uid,
+           pw->pw_gid, pw->pw_gecos, pw->pw_shell);
+
+  if (gp)
+    printf("%s %s %d\n", gp->gr_name, gp->gr_passwd, gp->gr_gid);
+
+  return 0;
+}
+
+```
