@@ -1,0 +1,17 @@
+iptables 配置规则的时候，提示各种chain/target/match找不到，没有自己加载依赖的内核模块。
+看内核模块和so文件都是路径都是正常的。
+
+用strace  iptable xxxx  2>&1 |grep  '^lib\|^etc'  没法它会读取什么配置文件
+
+查看了一下代码libxtables/xtables.c 
+
+它应该是从 /proc/sys/kernel/modprobe 这里获取modprobe的命令的路径，然后用modprobe来加载的。
+
+cat  /proc/sys/kernel/modprobe
+/sbin/modprobe
+
+系统默认的是上面的设置，但由于某种原因，我系统里面没有这个文件了。路径应该是
+/usr/sbin/modprobe
+才对了。  用ln -s 建立一个链接，或者  echo /usr/sbin/modprobe >  /usr/sbin/modprobe
+就可以了。
+
