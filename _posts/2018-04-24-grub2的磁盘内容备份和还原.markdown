@@ -31,3 +31,6 @@ mke2fs -F -L "boot" -t ext4  /dev/sdb1
 mke2fs -F -L "disk1" -t ext4   /dev/sdb2
 mke2fs -F -L "disk2" -t ext4   /dev/sdb3
 ```
+
+这里有grub的磁盘布局的详细示意图   
+https://en.wikipedia.org/wiki/GNU_GRUB
