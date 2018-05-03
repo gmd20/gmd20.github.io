@@ -1,6 +1,11 @@
+这个好像用的台湾的一个公司的芯片， windows 10自动加载"BayhubTech Intergate MMS/SD"驱动没有问题，工作很正常。     
+但linux下面有问题，去BayhubTech的官方也没有提供linux的驱动的。 估计是linux对这这种芯片的支持有问题？   
+内核日志看UAS工作不正常，看到网上很多人遇到类似的问题，只好把UAS特性给关闭了，当作普通的USB storage来用，   
+但测试发现金庸UAS后如果插入的是USB3.0的接口还是工作的不正常的，还好插入USB2.0里面可以工作了，虽然读写速度可能有些下降，   
+但还能正常使用算不错了。
 
 dmesg 
-======w
+=====
 If UAS is not disabled, the scsi host adapter was reset again and again.
 ```text
 [ 9328.819527] usb 2-1: new SuperSpeed USB device number 4 using xhci_hcd
@@ -54,7 +59,6 @@ USB Attached SCSI (UAS)
 UAS was introduced as part of the USB 3.0 standard, but can also be used with devices complying to the slower USB 2.0 standard.
 UAS drivers generally provide faster transfers when compared to the older USB Mass Storage Bulk-Only Transport (BOT) protocol drivers
 When used with an SSD, UAS is considerably faster than BOT for random reads and writes, but still well below the speed of a native SATA 3 interface (6 Gbit/s).
-
 
 
 diable uas
