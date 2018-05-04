@@ -1,0 +1,8 @@
+卸载包的时候把这个右键菜单给删除了，很方便的一个功能。   
+在网上找了半天， 原来是在nautilus-extension-gnome-terminal这个包里面，ubuntu也是搞笑每个版本包名字都不一样。
+安装完重启就有这个“在终端打开”的右键菜单了。
+```text
+apt list  | grep nautilus
+sudo apt install nautilus-extension-gnome-terminal
+dpkg -L  nautilus-extension-gnome-terminal
+```
