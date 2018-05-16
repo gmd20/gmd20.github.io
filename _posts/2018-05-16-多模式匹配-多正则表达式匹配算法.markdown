@@ -1,0 +1,27 @@
+很多时候有一个这种应用场景，想测试某个字符串来测试，看看是否匹配多个正则表达式里面的某一个。
+如果正则表达式的数量很少，直接循环检查所有的正则表达式就好了，但如果正则表达式数量太多了成千上万条的话，这么轮询匹配效率就太低了。
+
+很多人也遇到过类似的问题：   
+1. [Regex was taking 5 days to run. So I built a tool that did it in 15 minutes](https://dev.to/vi3k6i5/regex-was-taking-5-days-to-run-so-i-built-a-tool-that-did-it-in-15-minutes-c98)
+2. [Speed up millions of regex replacements in Python 3](https://stackoverflow.com/questions/42742810/speed-up-millions-of-regex-replacements-in-python-3/42789508#42789508)
+3. [reddit topic](https://www.reddit.com/r/programming/comments/7j3433/regex_was_taking_5_days_to_run_so_i_built_a_tool/)
+
+
+自己觉得应该使用Trie，但Trie不支持正则表达式啊，除非自己整合一个正则库进去。上面的第二篇文章提到自己用python的Trie-regex应该就是自己结合这两者自己实现的。
+搜索了一下网上这种字符串的多模式匹配算法是 “Aho-Corasick”  “Commentz-Walter”， 这类的算法应该是把多个正则表达式整合到一个NFA 自动机里面，这样匹配时就不需要每个模式都要匹配一次了。
+但网上的开源实现不多。grep程序说是使用的算法很类似“Commentz-Walter”，可以参考一下。
+
+Google开源的正则表达式库RE2的作者（好像也是go语言的开发者）写到一篇文章谈到高性能的正则库的问题，也可以看一下。
+(Regular Expression Matching in the Wild)(https://swtch.com/~rsc/regexp/regexp3.html)
+
+
+查看开源的nDPI 自己实现了一个[Aho-Corasick](https://github.com/ntop/nDPI/blob/dev/src/lib/third_party/include/ahocorasick.h)
+不过再他的源码里面看奥Intel开源的一个高性能多正则表达式匹配库[Hyperscan](https://www.hyperscan.io/)库，这个库很适合用来干这种多模式的匹配，要比自己实现Aho-Corasick要好吧。
+看他官方的介绍hyperscan的典型应用场合也就是DPI了，用在这个应该确实比较合适。
+
+hyperscan匹配多个模式时用法很不错了，通过回调函数告诉你匹配到的是几千条正则中的哪一条，匹配到的偏移位置是多少。这个完美的匹配了我的需求，解决了之前我的疑惑。
+
+看hyperscan的一篇文章https://www.hyperscan.io/2017/06/20/regex-set-scanning-hyperscan-re2set/
+提到Google的c++的[RE2](https://github.com/google/re2)正则库应该也是支持多模式匹配的。
+
+这样应用层的有这种需求的话应该是可以使用RE2的各种包装库的。
