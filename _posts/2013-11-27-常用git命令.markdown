@@ -233,6 +233,15 @@ git rebase --interactive --autosquash master
 ```
 
 
+错误的git reset之后 怎么恢复
+==========================
+```text
+git fsck --lost-found  查看文件状态
+git reflog show  查看HEAD的修改记录
+git reset HEAD@{1} 最简单的还原HEAD到上次修改之前的状态
+```
+
+
 
 git的设置
 =======
