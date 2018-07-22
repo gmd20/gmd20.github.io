@@ -379,6 +379,22 @@ vendor is available.
 
 这个文档就比较清楚了， 还告诉你怎么手工创建这种组合的用于更新microcode的initramfs包。
 
+> 其中  cat /lib/firmware/intel-ucode/* > $DSTDIR/GenuineIntel.bin 这个其实是没必要复制全部型号的CPU的microcode进去的
+> 只要复制对应的cpu型号就可以了。可以 英特尔的 “inux* Processor Microcode Data File”文档的说明从/proc/cpuinfo里面找到
+> "family model stepping"这三个值，专程十六进制就可以了，比如下面这个cpu的是6 94 3 ，那么只要这么复制
+> cat /lib/firmware/intel-ucode/06-5e-03 > $DSTDIR/GenuineIntel.bin  应该就可以了， CentOS就是这么干的。
+ 
+```text
+[root@localhost ]# cat /proc/cpuinfo 
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 94
+model name	: Intel(R) Core(TM) i5-6600 CPU @ 3.30GHz
+stepping	: 3
+
+```
+
 
 # GRUB的multiple early initrd images的支持
 
