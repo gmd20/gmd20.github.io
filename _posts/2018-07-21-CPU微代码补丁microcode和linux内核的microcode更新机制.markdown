@@ -379,3 +379,13 @@ vendor is available.
 
 这个文档就比较清楚了， 还告诉你怎么手工创建这种组合的用于更新microcode的initramfs包。
 
+
+# GRUB的multiple early initrd images的支持
+
+Grub2好像应该开发了这种多个 initrd的的支持了，
+不过还没在最新的稳定版里面发布
+http://git.savannah.gnu.org/cgit/grub.git/commit/?id=a698240df0c43278b2d1d7259c8e7a6926c63112
+
+应该会在后面版本里面支持吧。 这个 Meltdown and Spectre 影响还是很广的啊。
+
+
