@@ -5,7 +5,7 @@
 好像是CPU的microcode版本太低， 影响“APIC timer”的初始化。所以就花了点时间看看这个 Microcode。
 
 
-# CPU的微代码Microcode
+# CPU的微码Microcode
 原来CPU还是可以动态更新一下固件的microcode的。像Intel就不停的为他的CPU发布最新
 的 Microcode， 来修复CPU的bug。比如最近很火的CPU安全漏洞的话题“meltdown spectre”。
 这个CPU设计的漏洞导致严重的安全问题，Intel都为这个发了好几次Microcode的更新，Linux
