@@ -1,7 +1,9 @@
+
 PF_PACKET socket可以用来接收和发送链路层的网络包，让你直接在二层的mac地址头后面
-自由构造任意的数据直接投递给网卡驱动，应该是绕过netfilter和QDISC流控等协议层的。
+自由构造任意的数据直接投递给网卡驱动，应该是绕过netfilter, 如果设置PACKET_QDISC_BYPASS选项还可以绕过QDISC流控。
 这个可以用来直接发送ARP/ICMP/IGMP/802.1q vlan头的网络包等。
 
+参考 http://man7.org/linux/man-pages/man7/packet.7.html
 ```text
        Packet sockets are used to receive or send raw packets at the device
        driver (OSI Layer 2) level.  They allow the user to implement
