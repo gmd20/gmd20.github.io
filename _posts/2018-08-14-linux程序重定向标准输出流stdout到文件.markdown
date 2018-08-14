@@ -36,9 +36,11 @@
         // redirect stdout to file
         int origin_stdout = dup(fileno(stdout));    // dup之后，需要写点东西再 dup2 才会成功重定向
         int origin_stderr = dup(fileno(stderr));
-        printf("\n");   // 如果少了这一行也不行，非常奇怪，好像这个写来触发stdout的file结构的copy-on-write才行。
+
         int new_fd = open("/dev/null", O_RDWR);
         // int dev_null = open("11111.txt", O_RDWR|O_CREAT);
+        
+        printf("\n");   // 如果少了这一行也不行，非常奇怪，好像这个写来触发stdout的file结构的copy-on-write才行。不然dup2虽然返回成功但实际stdout没有重定向
         dup2(new_fd, fileno(stdout));
         dup2(new_fd, fileno(stderr));
 
