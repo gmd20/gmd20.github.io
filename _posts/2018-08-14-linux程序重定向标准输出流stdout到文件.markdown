@@ -40,7 +40,10 @@
         int new_fd = open("/dev/null", O_RDWR);
         // int dev_null = open("11111.txt", O_RDWR|O_CREAT);
         
-        printf("\n");   // 如果少了这一行也不行，非常奇怪，好像这个写来触发stdout的file结构的copy-on-write才行。不然dup2虽然返回成功但实际stdout没有重定向
+        // printf("\n");   // 如果少了这一行也不行，非常奇怪，好像这个写来触发stdout的file结构的copy-on-write才行。不然dup2虽然返回成功但实际stdout没有重定向
+        fputc(0, stdout); // 如果少了这一行也不行，非常奇怪，好像这个写来触发stdout的file结构的copy-on-write才行。不然dup2虽然返回成功但实际stdout没有重定向
+        fputc(0, stderr);
+
         dup2(new_fd, fileno(stdout));
         dup2(new_fd, fileno(stderr));
 
