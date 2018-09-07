@@ -435,6 +435,7 @@ git tag -d v1.0.1
 git tag -a v1.0.1
 
 git describe  会生成一个版本字符串，包含commit的哈希值等等
+git log --format="%H" -n 1   会显示最后一次commit的id
 ```
 
 
