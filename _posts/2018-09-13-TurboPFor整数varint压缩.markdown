@@ -1,6 +1,12 @@
 修改makefile 增加一行 把MARCH改为 MARCH=-march=x86-64  把改为x86-64通用平台
 ```text
-gcc -O2 -DNDEBUG -s -w -Wall -std=gnu99 -DUSE_THREADS  -fstrict-aliasing -Iext -DNSIMD -march=x86-64  bitutil.o bitpack.o bitunpack.o   bitunpack_sse.o bitpack_sse.o fp.o vint.o vp4c.o vp4d.o  vp4c_sse.o vp4d_sse.o vsimple.o test.c -lm
+gcc -O2 -DNDEBUG -s -w -Wall -std=gnu99 -DUSE_THREADS  -fstrict-aliasing  -DNSIMD -march=x86-64  bitutil.o bitpack.o bitunpack.o   bitunpack_sse.o bitpack_sse.o fp.o vint.o vp4c.o vp4d.o  vp4c_sse.o vp4d_sse.o vsimple.o test.c -lm
+
+
+ar -r libTurboPFor.a  bitutil.o bitpack.o bitpack_sse.o bitunpack.o bitunpack_sse.o fp.o vint.o vp4c.o vp4c_sse.o vp4d.o vp4d_sse.o vsimple.o
+
+gcc -O2 -DNDEBUG -s -w -Wall -std=gnu99 -DUSE_THREADS  -fstrict-aliasing -DNSIMD -march=x86-64 -lm  test.c libTurboPFor.a
+
 ```
 ```c
 #include <stdio.h>
