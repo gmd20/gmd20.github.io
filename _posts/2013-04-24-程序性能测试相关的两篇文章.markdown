@@ -1,0 +1,19 @@
+Thinking Methodically about Performance
+
+https://queue.acm.org/detail.cfm?id=2413037
+
+
+
+Thinking Clearly about Performance
+
+http://queue.acm.org/detail.cfm?id=1854041
+
+
+
+
+
+都是大师之做啊，方法论。
+
+
+
+打算根据第二篇的 QUEUING DELAY 和KNEE方法，测试自己程序是不是符合 M/M/m 模型的。
