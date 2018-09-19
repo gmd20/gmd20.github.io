@@ -1,0 +1,71 @@
+原文英文在这里，可以去看一下：
+
+Chromium  >Developers? > ?Design Documents? > ?Threading
+
+http://www.chromium.org/developers/design-documents/threading
+
+ 
+
+------------------------
+
+       线程间的通讯都是异步操作，尽量避免锁的使用。只有这种跨线程的操作调用的时候，操作被封装成task，然后要加到其他线程的工作队列里面去的时候才使用锁。然后异步操作不可避免的需要回调函数。
+
+ 
+
+        然后这个不同线程的回调函数的传递的参数里面共享对象指针，不可避免的有生命周期的管理。要确保在其他线程使用的时候，那个对象还是没有释放的。在chromium 里面这个是通过weakptr来加强保护的，这个weakptr的好处是可以在需要的时候检查是不是对象已经释放掉了。
+
+-------------------------
+
+ base::Callback<> 
+
+A base::Callback<> is templated class with a Run() method.  It is a generalization of a function pointer and is created by a call to base::Bind.  Async APIs often will take a base::Callback<> as a means to asynchronously return the  results of an operation
+
+ 
+
+--------------------------
+
+ MessageLoop.PostTask
+
+MessageLoop.PostDelayedTask (
+
+A task is defined as a base::Closure, which is a typedef for a base::Callback<void(void)>. PostDelayedTask schedules a task to be run after a delay on a particular thread. A task is represented by the base::Closure typedef, which contains a Run() function, and is created by calling base::Bind().
+
+ 
+
+---------------------------
+
+base::WeakPtr and Cancellation
+
+Cancelable request
+
+ 
+
+取消异步调用的机制，可以去看一下原文，举了例子说的比较清楚
+
+-----------------------------
+
+ 
+
+ 
+
+总结一下：
+
+      看上去我自己写的一个项目的实现，跟这个也挺类似的，异途同归啊！
+
+不同的是我用的boost::bind和boost::function 来做回调，但Chromium  这些回调callback 和函数对象function object和weakptr都不用boost的，直接自己搞了一套。功能应该一样的。仅仅是为了避免使用boost库？还是自己的轮子好用一些？
+
+ 
+
+     线程之间的 post 方法和锁，Chromium  的都是用的自己的message post函数。我用的是 asio库的io_service的post，然后反向用一个自己写的一个队列加spinlock实现的post 方法，也只是在跨线程间的回调用到了一个锁。asio的 post使用的完成队列，但重试也是“锁+队列”来做的。看上去我最开始尽量避免锁的做法还是ok的，我的程序就两个线程，其他的地方都不需要锁了。
+
+ 
+
+     Chromium   代码还是晚上一些啊，比如封装成task的概念，这些实现都很完善。task的概念也是多线程编程里面的吧，区别于普通的thread。 task和task之间在同一个线程可能串行执行的，比如python里面的gevent 那些也有task概念。 
+
+ 
+
+     还有request的cancel 机制，我这个代码里面还没有，但也是打算实现的。但看上去 Chromium   这里面的机制略显复杂，上次看linux 内核里面 fs/aio.c那个cancel感觉简单明了一些。也许我看不懂太复杂的东西？  
+
+ 
+
+     那个用weakptr来保证异步调用的对象的有效性的办法，记得前段时间在 csdn上面陈硕的blog里面也有提到和boost bind结合使用的文章。暂时不考虑了，估计没什么时间。还是自己写代码时候注意一下？
