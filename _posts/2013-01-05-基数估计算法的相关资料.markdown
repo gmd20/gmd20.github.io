@@ -1,0 +1,60 @@
+```text
+    
+
+
+
+
+  下载LOFTER我的照片书  |
+基数就是，给一个数组，计算不同的数字的个数就是基数。 下面这些算法当数组非常大的时候，用概率的办法用很小的空间和误差估计大概的基数是多少。 想下面这个文档说的，用1.5kb的空间估算十亿个数字的基数。  淘宝工程师文档提到的一个应用就是统计访问一个链接的独立ip的数目。为每个连接分配一个基数估计需要的空间，然后把不同的ip和cookie之类的通过哈希函数，映射为一个数值。最后就是转换成基数估计问题。得到的基数就是独立ip数目。 Adaptive Counting论文说是应用于网络包内容的来源的统计，检测ddos攻击。  
+
+
+
+
+
+淘宝开源的库
+
+https://github.com/chaoslawful/ccard-lib
+
+
+
+给出的引用相关论文
+
+LogLog Counting and Adaptive Counting
+
+Min Cai, Jianping Pan, Yu K. Kwok, and Kai Hwang. Fast and accurate traffic matrix measurement using adaptive cardinality counting. In MineNet ’05: Proceedings of the 2005 ACM SIGCOMM workshop on Mining network data, pages 205–206, New York, NY, USA, 2005. ACM.
+
+Marianne Durand and Philippe Flajolet. LogLog counting of large cardinalities. In ESA03, volume 2832 of LNCS, pages 605–617, 2003.
+
+http://gridsec.usc.edu/files/TR/TR-2005-12.pdf  这里可以找到
+
+Linear Counting
+
+K.-Y. Whang, B. T. Vander-Zanden, and H. M. Taylor. A Linear-Time Probabilistic Counting Algorithm for Database Applications. ACM Transactions on Database Systems, 15(2):208-229, 1990.
+
+HyperLogLog Counting
+P. Flajolet, E. Fusy, O. Gandouet, and F. Meunier. Hyperloglog: The analysis of a near-optimal cardinality estimation algorithm. Disc. Math. and Theor. Comp. Sci., AH:127-146, 2007.
+
+http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf  这里可以找到
+
+
+
+
+
+淘宝工程师写的介绍系列文章的第一篇
+
+解读Cardinality Estimation算法（第一部分：基本概念）
+
+http://www.codinglabs.org/html/algorithms-for-cardinality-estimation-part-i.html
+
+
+
+
+
+微博上好像是从csdn翻译这篇文章开始讨论这个话题的。
+
+Big Data Counting: How To Count A Billion Distinct Objects Using Only 1.5KB Of Memory
+
+http://highscalability.com/blog/2012/4/5/big-data-counting-how-to-count-a-billion-distinct-objects-us.html
+
+
+```
