@@ -1,0 +1,86 @@
+```text
+    
+
+
+http://lua-users.org/wiki/OptimisationCodingTips
+Lua Performance Tips
+http://www.lua.org/gems/sample.pdf
+
+根据这里面常用的优化方式，
+1.
+比如使用local变量，避免直接引用global变量的多级hash查找等。甚至如果循环里面的引用各个模块的函数，都要在循环之前用本地变量先cache一下，因为在Lua里面函数也是table，也需要查找。
+比如，
+local table_insert = table.insert
+for i=1,5000000 do
+    table_insert(t, i)
+end
+
+就比
+for i=1,5000000 do
+    table。insert(t, i)
+end
+
+要快。
+但我发现在我自己的测试程序LuaJIT里面影响不是很大，几乎看不出区别。
+有可能模块开始 像下面这么写也有帮助。
+local os     = require "os"
+local math   = require "math"
+local string = require "string"
+local socket = require "socket"
+
+2  复用table，避免重新内存分配等。
+Lua的table很有意思的，等于同时包含了c++的vector和 hash table了。  如果是直接数值键引用，就是保存在 数组里面的，其他字符串作为键等就保存在哈希表里面，  array的内存扩展应该也类似c++ vector的2倍扩展？
+有一些地方复用table避免内存分配可能比较有用。 
+Programming In Lua一书举了一个例子，使用利用table来避免修改string导致的内存分配。
+local buff =""
+for line in io.lines(0 do
+  buff = buff .. line .. "\n"
+end
+
+local t = {}
+for line in io.lines(0 do
+  t[#t + 1] = line ..  "\n"
+end
+local s = tables.concat(t)
+
+后面的方式要比前面的要好很多，前面方法每次把内容追加到同一个字符串导致大量内存分配会导致严重性能问题。
+
+3.  另外一个就是追加一个元素到 一个array里面的结尾的写法。不用的写法性能差距很大
+一种写法来自前面那个例子
+t[#t + 1] =  123
+
+另外还有这两种写法。
+talbe.insert(t,  123)
+
+local counter = 1
+for i = 1, 10000 od
+t[counter] = i
+counter = counter + 1
+end
+
+
+我自己一开始是用table.insert,  也使用t[#t + 1] =  123这种方式，在luaJIT里面，表现都差不多。
+但根据
+Performance of array creation in Lua
+ http://blog.jgc.org/2013/04/performance-of-array-creation-in-lua.html
+一文的测试，最后一种方式，使用单独的local变量来作为计数和键值引用的话，在LuaJIT里面大概也要比前面两种方式快15倍。 不知道是什么原因导致的， #t这种访问数组个数有额外的开销或者其他查找的引用？
+
+我在自己的一个测试程序里面也改成最后一种方法之后，整个程序性能确实提高了很多，LuaJIT里面大概提高了25%
+参考  https://github.com/gmd20/lua-statsd
+
+补充
+===-
+这个问题的原因，可能是 #t这种获取table的大小的方法不是 O(1)的。
+因为
+#t 应该对应的是lapi.c里面的函数lua_objlen， 对应的是 ltable.c里面luaH_getn函数。
+这个函数实现有点复杂。看上去对应array部分是二分查找。
+
+lua的 table实现不是单纯的hash table，而是vector和 hash table的组合。 如果索引是数字，又比较连续，应该是直接用数组的形式保存的。如果是字符串作为键值或者数字键不连续跨度比较大就保存在hash table。
+
+写个简单的测试程序，然后用luac  或者luajit  -bl  test.lua 查看生成的虚拟机lua字节码，可以发现 #t的方式多了一个 LEN操作的。
+
+lua代码性能优化之追加元素到数组结尾的写法 - widebright - widebright的个人空间
+ 
+
+
+```
