@@ -1,0 +1,323 @@
+```text
+1. Lamport's Lock-Free Ring Buffer  
+
+     [Lamport, Comm. of ACM, 1977]
+
+     也就常说的单生产者-单消费者 的ringbuffer， 限制就是只能一个读线程（消费者），一个写进程（生产者）。  
+
+     好像有人改进了一下设计， 参加文章 “Cache优化的并发无锁队列” http://www.docin.com/p-30332640.html  ，这论文里面 “Fastforward for efficient pipeline parallelism: A Cache-Optimized Concurrent Lock-Free Queue  ” 里面有说
+
+ 
+
+. Lamport’s queue implementation
+
+=================================
+
+1 enqueue_nonblock(data) {
+
+2 if (NEXT(head) == tail) {   同时访问 head和tail
+
+3 return EWOULDBLOCK;
+
+4 }
+
+5 buffer[head] = data;
+
+6 head = NEXT(head);
+
+7 return 0;
+
+8 }
+
+1 dequeue_nonblock(data) {
+
+2
+
+3 if (head == tail) {        同时访问 head和tail
+
+4 return EWOULDBLOCK;
+
+5 }
+
+6 data = buffer[tail];
+
+7 tail = NEXT(tail);
+
+8 return 0;
+
+9 }
+
+-----------------------------
+
+FastForward queue implementation
+
+==============================
+
+1 enqueue_nonblock(data) {
+
+2 if (NULL != buffer[head]) {              通过避免同时在 读写线程中访问head和tail两个变量来避免cache抖动的的更好的性能
+
+3 return EWOULDBLOCK;
+
+4 }
+
+5 buffer[head] = data;
+
+6 head = NEXT(head);
+
+7 return 0;
+
+8 }
+
+1 dequeue_nonblock(data) {
+
+2 data = buffer[tail];           只访问tail
+
+3 if (NULL == data) {
+
+4 return EWOULDBLOCK;
+
+5 }
+
+6 buffer[tail] = NULL;
+
+7 tail = NEXT(tail);
+
+8 return 0;
+
+9 
+
+ 
+
+ 
+
+ 
+
+2，  Michael ＆Scott 无锁队列    
+
+     支持多个读线程（消费者）和多个写进程(生产者)同时工作
+
+    “Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms”
+
+     这里http://www.cs.rochester.edu/research/synchronization/pseudocode/queues.html  有伪码，
+
+     有人按照这个用C++实现了，http://www.cnblogs.com/napoleon_liu/archive/2010/08/07/1794566.html
+
+    
+
+     其实就是在修改链表指针时，利用intel的CAS（compare and swap交换和赋值）原子指令来做具体的修改赋值。我记得linux内核代码看到比较多的是xchg系列，上面的那个blog利用的lock前缀的“"lock cmpxchg16b”指令，应该一样的道理。一般都是搞个while循环直到修改成功。
+
+ 
+
+ 
+
+另有吕慧伟 缩写的“无锁编程简介An Intro to Lock-free  Programming”  http://www.tektalk.org/wp-content/uploads/2011/07/lock-free-intro1.pdf  给了一个简单的源代码
+
+ 
+
+void enQ(request, queue)
+
+{
+
+    do{
+
+        local_head = queue->head;
+
+        request->next = queue->head;
+
+        val = cmpxchg(&queue->head, 
+
+        local_head, request);
+
+    }while(val != local_head)
+
+}
+
+ 
+
+类似的可以利用CAS实现无锁堆栈 代码同样来自吕慧伟的文章
+
+struct elem {
+
+  elem *link
+
+any data;
+
+}
+
+elem *qhead;
+
+---------------
+
+Push (elem *x)
+
+  do 
+
+    old = qhead;
+
+    x->link = old;
+
+    new = x;
+
+    cc = CAS(qhead, old, new);
+
+  until (cc == old;
+
+--------------
+
+Pop ()
+
+  do 
+
+    old = qhead;
+
+    new = old->link;
+
+    cc = CAS(qhead, old, new);
+
+  until (cc == old;)
+
+return old
+
+-----------------
+
+ 
+
+另外需要的注意点是，文章提到如果不同的线程里面使用一个共享的元素来做插入和删除操作时是有非常严重的“ABA问题”的，会导致元素的丢失， CAS指令不能分辨这个元素是不是在本线程被中断之后，又已经被另外的线程取出（已经被消费了）再重新作为新的元素又被插入的情况，这是CAS就会导致多删了一个元素。这时就要引入个操作的序列号区来进行区分，解决问题。去看一下原文吧。
+
+ 
+
+ 
+
+“钱立兵 陈波 晏涛 徐云?孟金涛 刘涛” 等人写的“多线程并发访问无锁队列的算法研究”  http://www.siat.ac.cn/xscbw/xsqk/200906/W020091127490148897561.pdf
+
+提到一个 Edya Ladan-Mozes和 Nir Shavit 的optimistic算法算法，所示上面的  Michael ＆Scott方法的改进，可以通过 更少的CAS指令来完成操作。 （Edya Ladan-Mozes and Nir Shavit.An optimistic approach to
+
+lock-free FIFO queues. Department of Computer Science, TelAviv University, Israel. Distributed Computing, 30 November 2007） 
+
+ 
+
+可以去找来看一下。
+
+ 
+
+ 
+
+3.  上面的提到的ABA 问题好像是无锁编程里面很主要的一个问题啊。
+
+根据 cds 库的资料，有下面三类解决办法，可以去找论文来看一下。
+
+ 
+
+M.Michael's Hazard Pointer 
+
+--------------------
+
+[2002] Maged M.Michael "Safe memory reclamation for dynamic lock-freeobjects using atomic reads and writes"
+
+[2003] Maged M.Michael "Hazard Pointers: Safe memory reclamation for lock-free objects"
+
+[2004] Andrei Alexandrescy, Maged Michael "Lock-free Data Structures with Hazard Pointers"
+
+--------------------
+
+Gidenstam's memory reclamation schema based on Hazard Pointer and reference counting 
+
+ 
+
+[2006] A.Gidenstam "Algorithms for synchronization and consistency in concurrent system services", Chapter 5 "Lock-Free Memory Reclamation" Thesis for the degree of Doctor of Philosophy
+
+[2005] Anders Gidenstam, Marina Papatriantafilou and Philippas Tsigas "Allocating memory in a lock-free manner", Proceedings of the 13th Annual European Symposium on Algorithms (ESA 2005), Lecture Notes in Computer Science Vol. 3669, pages 229 – 242, Springer-Verlag, 2005
+
+--------------------
+
+M.Herlihy and M.Moir's Pass The Buck algorithm 
+
+ 
+
+[2002] M. Herlihy, V. Luchangco, and M. Moir. The repeat offender problem: A mechanism for supporting dynamic-sized lockfree data structures. Technical Report TR-2002-112, Sun Microsystems Laboratories, 2002
+
+[2002] M. Herlihy, V. Luchangco, P. Martin, and M. Moir. Dynamic-sized Lockfree Data Structures. Technical Report TR-2002-110, Sun Microsystems Laboratories, 2002
+
+[2005] M. Herlihy, V. Luchangco, P. Martin, and M. Moir. Nonblocking Memory Management Support for Dynamic_Sized Data Structures. ACM Transactions on Computer Systems, Vol.23, No.2, May 2005
+
+----------------------
+
+  
+
+4. libcds库提到的其他无锁结构stack 和Split-Ordered List 等相关的论文
+
+Treiber's stack algorithm.
+
+R. K. Treiber. Systems programming: Coping with
+
+parallelism. Technical Report RJ 5118, IBM Almaden
+
+Research Center, April 1986
+
+ 
+
+ 
+
+Danny Hendler 等人的Treiber stack的改进
+
+A Scalable Lock-free Stack Algorithm
+
+http://www.cs.tau.ac.il/~shanir/nir-pubs-web/Papers/Lock_Free.pdf
+
+ 
+
+---------------------
+
+Michael's hash map.
+
+ 
+
+Source:
+
+ 
+
+[2002] Maged Michael "High performance dynamic lock-free hash tables and list-based sets"
+
+-----------------------
+
+Hash table implementation based on split-ordered list algorithm discovered by Ori Shalev and Nir Shavit, see
+
+ 
+
+[2003] Ori Shalev, Nir Shavit "Split-Ordered Lists - Lock-free Resizable Hash Tables"
+
+[2008] Nir Shavit "The Art of Multiprocessor Programming"
+
+ 
+
+5.  C++无锁数据结构支持库 CDS: Concurrent Data Structures library
+
+http://libcds.sourceforge.net/
+
+实现了很多无锁的stack（栈），queue（队列），hashmap ，list 等容器
+
+前面说到的两个queue都有实现
+
+1）Michael & Scott lock-free queue
+
+2）Optimistic queue
+
+3）cds::container::MichaelHashMap cds::container::MichaelHashSet
+
+ 
+
+Intel? Threading Building Blocks  库（http://threadingbuildingblocks.org/）里面也有很多并行的 queue map等容器，但没说是不是无锁设计的。
+
+最初是从 http://hi.baidu.com/ah__fu/blog/item/3081cd341a6364205ab5f5a4.html 看到这个库的介绍的。
+
+ 
+
+6, The Art of Multiprocessor Programming.pdf  
+
+一书对 无锁 queue stack 和skiplist  ABA问题都有所介绍，可以去看一下，写的不错的书。
+
+ 
+
+7. 好像大家都期待一种叫做“Transac1tiona8l Memory”的最终解决方案来来彻底解决内存同步、无锁编程之类问题，不过好像没有到可用的程度吧。
+```
