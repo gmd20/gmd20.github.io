@@ -1,0 +1,552 @@
+    
+```text
+http://man7.org/linux/man-pages/man2/clock_gettime.2.html
+
+
+
+CLOCK_MONOTONIC_COARSE
+
+CLOCK_REALTIME_COARSE
+
+
+
+http://lwn.net/Articles/347811/  
+
+http://patchwork.freedesktop.org/patch/1673/
+
+
+
+参考上面两篇文章，带COARSE的这种应该是不会去访问硬件时钟的，相对来说会快很多，在虚拟机表现的更明显。
+
+在程序的时间超时之类的地方，能用CLOCK_MONOTONIC_COARSE这种就尽量使用吧。 当然能够减少这种时间函数的调用那时最好了。看nginx这种服务器的超时，应该是会自己做了time cache的，不会调用太多次clock_gettime这种函数，只在ngx_time_update的时候才更新一下时间，放到ngx_current_msec 等地方缓存起来，其他的，ngx_process_events_and_timers  ngx_event_find_timer ngx_epoll_process_events 都是使用cache的ngx_current_msec来计算。发现时间函数性能比较大情况，可以考虑这种优化机制。
+
+
+
+虚拟机上面不知道是对rdtsc这种汇编指令做了虚拟解释了还是怎么样，有的非常慢，像在virtualbox里面比实际物理机上面要慢十几倍左右(实际物理机里面只要100多纳秒左右)。
+
+
+
+一个简单的测试程序，看看不同的参数调用clock_gettime，每秒能够执行多少次，还比较了tsc时钟源和acpi_pm的时钟源，好像差距不是很大，但实际应用tsc还是比acpi_pm要好很多，不知道是不是acpi_pm的虚拟virtualbox要做的工作更多。
+
+
+
+---------main.c---------------
+
+#include <time.h>
+
+#include <stdio.h>
+
+#include <linux/types.h>
+
+#include <stdint.h>
+
+
+
+int main(void)
+
+{
+
+	struct timespec  tm;
+
+	long total = 0;
+
+	clockid_t  clk_id[] = {
+
+		CLOCK_REALTIME,
+
+		CLOCK_REALTIME_COARSE,
+
+		CLOCK_MONOTONIC,
+
+		CLOCK_MONOTONIC_COARSE
+
+	};
+
+	const char *  clk_id_str[] = {
+
+		"CLOCK_REALTIME",
+
+		"CLOCK_REALTIME_COARSE",
+
+		"CLOCK_MONOTONIC",
+
+		"CLOCK_MONOTONIC_COARSE"
+
+	};
+
+
+
+	const int kCount = 20000000;
+
+	struct timespec start_tm, end_tm;
+
+	int i = 0;
+
+	int j = 0;
+
+	for (i = 0; i < 4; i++) {
+
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_tm);
+
+		for (j = 0; j < kCount; j++) { 
+
+			clock_gettime(clk_id[i], &tm);
+
+			total += tm.tv_nsec;
+
+		}
+
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_tm);
+
+			
+
+		int64_t nsec = (end_tm.tv_sec - start_tm.tv_sec);
+
+		nsec *= 1000 * 1000 * 1000;
+
+		nsec += (end_tm.tv_nsec - start_tm.tv_nsec);
+
+		/* printf ( "%d , %d <=> %d , %d \n", end_tm.tv_sec, end_tm.tv_nsec, start_tm.tv_sec, start_tm.tv_nsec); */ 
+
+		printf("%s:\n\t run %d times,  total %lld nanoseconds, avarage %lld nanoseconds\n\n",
+
+			  clk_id_str[i], kCount, nsec, nsec/kCount);
+
+	}
+
+
+
+	printf ("total = %d\n", total);
+
+	return 0;
+
+}
+
+------------------Makefile--------------------
+
+all:
+
+	gcc -O2 -o clock_gettime_test -lrt main.c
+
+
+
+test: all
+
+	./clock_gettime_test
+
+-----------------------------------------
+
+---------virtualbox 4.3.2 tscclocksource-------------------------------------
+
+root@debian01:/home/bright/test# uname -a
+
+Linux debian01 3.11-0.bpo.2-686-pae #1 SMP Debian 3.11.8-1~bpo70+1 (2013-11-21) i686 GNU/Linux
+
+
+
+root@debian01:/home/bright/test# make test
+
+gcc -O2 -o clock_gettime_test -lrt main.c
+
+./clock_gettime_test
+
+CLOCK_REALTIME:
+
+	 run 20000000 times,  total 29803374697 nanoseconds, avarage 1490 nanoseconds
+
+
+
+CLOCK_REALTIME_COARSE:
+
+	 run 20000000 times,  total 4018847830 nanoseconds, avarage 200 nanoseconds
+
+
+
+CLOCK_MONOTONIC:
+
+	 run 20000000 times,  total 29841706105 nanoseconds, avarage 1492 nanoseconds
+
+
+
+CLOCK_MONOTONIC_COARSE:
+
+	 run 20000000 times,  total 4096454134 nanoseconds, avarage 204 nanoseconds
+
+
+
+-------virtualbox 4.3.2 acpi_pm clocksource--------------------------------------
+
+root@debian01:/home/bright/test# echo acpi_pm >  /sys/devices/system/clocksource/clocksource0/current_clocksource 
+
+root@debian01:/home/bright/test# cat  /sys/devices/system/clocksource/clocksource0/current_clocksource 
+
+acpi_pm
+
+root@debian01:/home/bright/test# make test
+
+gcc -O2 -o clock_gettime_test -lrt main.c
+
+./clock_gettime_test
+
+CLOCK_REALTIME:
+
+	 run 20000000 times,  total 32163312371 nanoseconds, avarage 1608 nanoseconds
+
+
+
+CLOCK_REALTIME_COARSE:
+
+	 run 20000000 times,  total 4027964034 nanoseconds, avarage 201 nanoseconds
+
+
+
+CLOCK_MONOTONIC:
+
+	 run 20000000 times,  total 31867906249 nanoseconds, avarage 1593 nanoseconds
+
+
+
+CLOCK_MONOTONIC_COARSE:
+
+	 run 20000000 times,  total 4098795530 nanoseconds, avarage 204 nanoseconds
+
+
+
+
+
+
+
+=======================================================================================
+
+------------------vmware tsc clocksource--------------------------------------
+
+root@LINUX-01:/home/bright# uname -a
+
+Linux LINUX-01 3.2.0-4-686-pae #1 SMP Debian 3.2.51-1 i686 GNU/Linux
+
+root@LINUX-01:/home/bright# 
+
+root@LINUX-01:/home/bright# make test
+
+gcc -O2 -o clock_gettime_test -lrt main.c
+
+./clock_gettime_test
+
+CLOCK_REALTIME:
+
+	 run 20000000 times,  total 9295542901 nanoseconds, avarage 464 nanoseconds
+
+
+
+CLOCK_REALTIME_COARSE:
+
+	 run 20000000 times,  total 8665890123 nanoseconds, avarage 433 nanoseconds
+
+
+
+CLOCK_MONOTONIC:
+
+	 run 20000000 times,  total 9628696570 nanoseconds, avarage 481 nanoseconds
+
+
+
+CLOCK_MONOTONIC_COARSE:
+
+	 run 20000000 times,  total 9071892770 nanoseconds, avarage 453 nanoseconds
+
+-----------------vmware acpi_pm clocksource --------------------------------
+
+root@LINUX-01:/home/bright# cat  /sys/devices/system/clocksource/clocksource0/available_clocksource 
+
+tsc hpet acpi_pm 
+
+root@LINUX-01:/home/bright# echo acpi_pm >  /sys/devices/system/clocksource/clocksource0/current_clocksource 
+
+root@LINUX-01:/home/bright# cat  /sys/devices/system/clocksource/clocksource0/current_clocksource 
+
+acpi_pm
+
+root@ILINUX-01:/home/bright# make test
+
+gcc -O2 -o clock_gettime_test -lrt main.c
+
+./clock_gettime_test
+
+CLOCK_REALTIME:
+
+	 run 20000000 times,  total 30341287300 nanoseconds, avarage 1517 nanoseconds
+
+
+
+CLOCK_REALTIME_COARSE:
+
+	 run 20000000 times,  total 8773596596 nanoseconds, avarage 438 nanoseconds
+
+
+
+CLOCK_MONOTONIC:
+
+	 run 20000000 times,  total 30742067611 nanoseconds, avarage 1537 nanoseconds
+
+
+
+CLOCK_MONOTONIC_COARSE:
+
+	 run 20000000 times,  total 8994218437 nanoseconds, avarage 449 nanoseconds
+
+
+
+
+
+---------------------------------------------
+
+
+
+
+
+2013-12-13进一步补充
+
+根据测试virtualbox 设置cpu个数是1的时候，非常快。 多个cpu 的时候就非常慢
+
+有人已经注意到这个问题了
+https://www.virtualbox.org/ticket/11892
+https://www.virtualbox.org/changeset/45436/vbox
+https://www.virtualbox.org/browser/vbox/trunk/src/VBox/VMM/VMMR3/TM.cpp
+
+多cpu 的tsc不同步的bug
+https://www.virtualbox.org/ticket/7915
+
+http://en.wikipedia.org/wiki/Time_Stamp_Counter
+
+vmware关于虚拟tsc等时钟源的解释。
+Timekeeping in VMware Virtual Machines 
+http://www.vmware.com/files/pdf/Timekeeping-In-VirtualMachines.pdf
+
+KVN的相关的文档
+http://docs.fedoraproject.org/en-US/Fedora/13/html/Virtualization_Guide/chap-Virtualization-KVM_guest_timing_management.html
+
+
+
+导致这个问题的代码的解释
+346	346	        else 
+347	347	            pVM->tm.s.fMaybeUseOffsettedHostTSC = true; 
+ 	348	        /** @todo needs a better fix, for now disable offsetted mode for VMs 
+ 	349	         * with more than one VCPU. With the current TSC handling (frequent 
+ 	350	         * switching between offsetted mode and taking VM exits, on all VCPUs 
+ 	351	         * without any kind of coordination) it will lead to inconsistent TSC 
+ 	352	         * behavior with guest SMP, including TSC going backwards. */ 
+ 	353	        if (pVM->cCpus != 1) 
+ 	354	            pVM->tm.s.fMaybeUseOffsettedHostTSC = false; 
+348	355	    } 
+
+
+
+We're aware that this change has consequences. However it was the only realistic short term fix for seriously buggy TSC behavior in the SMP case, because without this change TSC could go backwards 
+
+temporarily, violating the most important specification how TSC is supposed to operate: as a monotonically increasing counter. This "going backwards" misbehavior confuses some software extremely, which is 
+
+why backing out this change is simply not an option. Correctness has priority over performance in this case, however we're planning to develop a better fix.
+
+
+
+
+
+
+
+新的i7 cpu是支持constant_tsc特性的，多cpu的tsc的计数保证单调递增，这样就不会有所谓的smp 环境的tsc回绕问题了吧。
+bright@debian01:~$ cat /proc/cpuinfo |grep constant_tsc
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp constant_tsc pni ssse3
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht nx rdtscp 
+constant_tsc pni ssse3
+
+
+
+
+网上有人提到的intel的手册的介绍
+X86_FEATURE_CONSTANT_TSC + X86_FEATURE_NONSTOP_TSC bits in cpuid (edx=x80000007, bit #8; check unsynchronized_tsc function of linux kernel for more checks)
+
+Intel's Designer's vol3b, section 16.11.1 Invariant TSC it says the following
+
+"16.11.1 Invariant TSC
+
+The time stamp counter in newer processors may support an enhancement, referred to as invariant TSC. Processor's support for invariant TSC is indicated by CPUID.80000007H:EDX[8].
+
+The invariant TSC will run at a constant rate in all ACPI P-, C-. and T-states. This is the architectural behavior moving forward. On processors with invariant TSC support, the OS may use the TSC for wall 
+
+clock timer services (instead of ACPI or HPET timers). TSC reads are much more efficient and do not incur the overhead associated with a ring transition or access to a platform resource."
+
+So, if TSC can be used for wallclock, they are guaranteed to be in sync.
+
+
+
+
+
+virtualbox的几个虚拟tsc相关的几个设置项
+   /*
+ * Determine the TSC configuration and frequency.
+ */
+/* mode */
+/** @cfgm{/TM/TSCVirtualized,bool,true}
+ * Use a virtualize TSC, i.e. trap all TSC access. */
+rc = CFGMR3QueryBool(pCfgHandle, "TSCVirtualized", &pVM->tm.s.fTSCVirtualized);
+if (rc == VERR_CFGM_VALUE_NOT_FOUND)
+	pVM->tm.s.fTSCVirtualized = true; /* trap rdtsc */
+else if (RT_FAILURE(rc))
+	return VMSetError(pVM, rc, RT_SRC_POS,
+					  N_("Configuration error: Failed to querying bool value \"UseRealTSC\""));
+
+/* source */
+/** @cfgm{/TM/UseRealTSC,bool,false}
+ * Use the real TSC as time source for the TSC instead of the synchronous
+ * virtual clock (false, default). */
+rc = CFGMR3QueryBool(pCfgHandle, "UseRealTSC", &pVM->tm.s.fTSCUseRealTSC);
+if (rc == VERR_CFGM_VALUE_NOT_FOUND)
+	pVM->tm.s.fTSCUseRealTSC = false; /* use virtual time */
+else if (RT_FAILURE(rc))
+	return VMSetError(pVM, rc, RT_SRC_POS,
+					  N_("Configuration error: Failed to querying bool value \"UseRealTSC\""));
+if (!pVM->tm.s.fTSCUseRealTSC)
+	pVM->tm.s.fTSCVirtualized = true;
+
+/* TSC reliability */
+/** @cfgm{/TM/MaybeUseOffsettedHostTSC,bool,detect}
+ * Whether the CPU has a fixed TSC rate and may be used in offsetted mode with
+ * VT-x/AMD-V execution.  This is autodetected in a very restrictive way by
+ * default. */
+rc = CFGMR3QueryBool(pCfgHandle, "MaybeUseOffsettedHostTSC", &pVM->tm.s.fMaybeUseOffsettedHostTSC);
+if (rc == VERR_CFGM_VALUE_NOT_FOUND)
+{
+	if (!pVM->tm.s.fTSCUseRealTSC)
+		pVM->tm.s.fMaybeUseOffsettedHostTSC = tmR3HasFixedTSC(pVM);
+	else
+		pVM->tm.s.fMaybeUseOffsettedHostTSC = true;
+	/** @todo needs a better fix, for now disable offsetted mode for VMs
+	 * with more than one VCPU. With the current TSC handling (frequent
+	 * switching between offsetted mode and taking VM exits, on all VCPUs
+	 * without any kind of coordination) it will lead to inconsistent TSC
+	 * behavior with guest SMP, including TSC going backwards. */
+	if (pVM->cCpus != 1)                        //////////////////多个cpu时禁用快速tsc方式
+		pVM->tm.s.fMaybeUseOffsettedHostTSC = false;
+}
+
+/** @cfgm{TM/TSCTicksPerSecond, uint32_t, Current TSC frequency from GIP}
+ * The number of TSC ticks per second (i.e. the TSC frequency). This will
+ * override TSCUseRealTSC, TSCVirtualized and MaybeUseOffsettedHostTSC.
+ */
+rc = CFGMR3QueryU64(pCfgHandle, "TSCTicksPerSecond", &pVM->tm.s.cTSCTicksPerSecond);
+if (rc == VERR_CFGM_VALUE_NOT_FOUND)
+{
+	pVM->tm.s.cTSCTicksPerSecond = tmR3CalibrateTSC(pVM);
+	if (    !pVM->tm.s.fTSCUseRealTSC
+		&&  pVM->tm.s.cTSCTicksPerSecond >= _4G)
+	{
+		pVM->tm.s.cTSCTicksPerSecond = _4G - 1; /* (A limitation of our math code) */
+		pVM->tm.s.fMaybeUseOffsettedHostTSC = false;
+	}
+}
+else if (RT_FAILURE(rc))
+	return VMSetError(pVM, rc, RT_SRC_POS,
+					  N_("Configuration error: Failed to querying uint64_t value \"TSCTicksPerSecond\""));
+else if (   pVM->tm.s.cTSCTicksPerSecond < _1M
+		 || pVM->tm.s.cTSCTicksPerSecond >= _4G)
+	return VMSetError(pVM, VERR_INVALID_PARAMETER, RT_SRC_POS,
+					  N_("Configuration error: \"TSCTicksPerSecond\" = %RI64 is not in the range 1MHz..4GHz-1"),
+					  pVM->tm.s.cTSCTicksPerSecond);
+else
+{
+	pVM->tm.s.fTSCUseRealTSC = pVM->tm.s.fMaybeUseOffsettedHostTSC = false;
+	pVM->tm.s.fTSCVirtualized = true;
+}
+
+/** @cfgm{TM/TSCTiedToExecution, bool, false}
+ * Whether the TSC should be tied to execution. This will exclude most of the
+ * virtualization overhead, but will by default include the time spent in the
+ * halt state (see TM/TSCNotTiedToHalt). This setting will override all other
+ * TSC settings except for TSCTicksPerSecond and TSCNotTiedToHalt, which should
+ * be used avoided or used with great care. Note that this will only work right
+ * together with VT-x or AMD-V, and with a single virtual CPU. */
+rc = CFGMR3QueryBoolDef(pCfgHandle, "TSCTiedToExecution", &pVM->tm.s.fTSCTiedToExecution, false);
+if (RT_FAILURE(rc))
+	return VMSetError(pVM, rc, RT_SRC_POS,
+					  N_("Configuration error: Failed to querying bool value \"TSCTiedToExecution\""));
+if (pVM->tm.s.fTSCTiedToExecution)
+{
+	/* tied to execution, override all other settings. */
+	pVM->tm.s.fTSCVirtualized = true;
+	pVM->tm.s.fTSCUseRealTSC = true;
+	pVM->tm.s.fMaybeUseOffsettedHostTSC = false;
+}
+
+
+
+
+
+virtualbox的文档没看到对其他几个参数的介绍。但前面的vmware的文档解释的比较清楚。商业的就是比这种开源的在这里啊。
+
+按照我的理解，因为以前硬件多个cpu的时候，tsc时钟在不同的cpu上面不是很稳定，在不同的cpu上面不能保证tick数是单调递增的。
+所以导致软件出问题，很多软件要想方设法避开这个问题。这里的virtubox多cpu里面的禁止MaybeUseOffsettedHostTSC就是这样，导致多cpu
+上面的virtual tsc性能很差。 （根据测试打开慢10倍左右，clock_gettime从200微秒到2000微秒的差距）。这样对那些虚拟机运行的频繁获取时间的
+程序有比较大的影响。但现在的cpu，主流的方向都是保证tsc计数在不同的cpu上面也都是单调递增的了，这样就没有这个问题了。
+我的这个3代i7就有 constant_tsc  标志了。这样使用用MaybeUseOffsettedHostTSC 应该是足够安全的吧，可以获取得到更好的性能。
+
+
+参考 http://www.virtualbox.org/manual/ch09.html#warpguest的设置
+强制启用MaybeUseOffsettedHostTSC，应该是vcpu统计时，把vcpu切换出去的时间计数排除在外吧。这样rdtsc返回的时间可能就显得小一些。
+VBoxManage setextradata "VM name" "VBoxInternal/TM/MaybeUseOffsettedHostTSC" 1
+取消设置
+VBoxManage setextradata "VM name" "VBoxInternal/TM/MaybeUseOffsettedHostTSC"
+
+ 使用原始tsc作为时钟源来计算吧，不是使用它自己虚拟tsc的维护的不同cpu同步时间
+VBoxManage setextradata "VM name" "VBoxInternal/TM/UseRealTSC" 1
+取消设置
+VBoxManage setextradata "VM name" "VBoxInternal/TM/UseRealTSC" 
+
+禁用虚拟TSC，不知道是不是类似的vmware文档介绍的禁止对rdtsc做虚拟化？
+C:\Program Files\Oracle\VirtualBox>VBoxManage setextradata "debian_01" "VBoxInte
+rnal/TM/TSCVirtualized" 0
+
+实际操作测试一下
+
+C:\Program Files\Oracle\VirtualBox>VBoxManage.exe --help
+
+C:\Program Files\Oracle\VirtualBox>VBoxManage.exe setextradata "debian_01" "VBoxnternal/TM/MaybeUseOffsettedHostTSC" 1
+C:\Program Files\Oracle\VirtualBox>VBoxManage setextradata "debian_01" "VBoxInternal/TM/UseRealTSC" 1
+
+C:\Program Files\Oracle\VirtualBox>VBoxManage setextradata "debian_01" "VBoxInte
+rnal/TM/TSCVirtualized" 0
+
+检查 D:\VirtualBox VMs\debian_01\debian_01.vbox 这个xml可以看到下面这个，说明已经设置成功了。
+<ExtraDataItem name="VBoxInternal/TM/MaybeUseOffsettedHostTSC" value="1"/>
+<ExtraDataItem name="VBoxInternal/TM/UseRealTSC" value="1"/>
+启动后D:\VirtualBox VMs\debian_01\logs\VBox.log里面也有这几个值的记录。
+
+
+启动虚拟机，重新执行clock_gettime函数的测试，
+
+bright@debian01:~/test$ ./clock_gettime_test 
+CLOCK_REALTIME:
+	 run 20000000 times,  total 4467601141 nanoseconds, avarage 223 nanoseconds
+
+CLOCK_REALTIME_COARSE:
+	 run 20000000 times,  total 4027102630 nanoseconds, avarage 201 nanoseconds
+
+CLOCK_MONOTONIC:
+	 run 20000000 times,  total 4432737422 nanoseconds, avarage 221 nanoseconds
+
+CLOCK_MONOTONIC_COARSE:
+	 run 20000000 times,  total 4097287108 nanoseconds, avarage 204 nanoseconds
+
+total = 1790461225
+
+
+结果看起来非常爽啊， 赶紧给所有的虚拟机都设置一下。有没有什么副作用还要后面观察一下。
+但不确定这3个设置对性能有没有影响。因为这个clock_gettime 返回的是rdtsc的时间，如果使用MaybeUseOffsettedHostTSC返回的偏移值就会显的小一些。
+不过按照vmware的文档，如果不使用virtual tsc，不对rdtsc做虚拟化，而是使用原始tsc，那么计数会准确一些，比如用来做性能测试的时间衡量基准，以前是推荐频繁调用这个时间获取函数的程序使用原始rdtsc的， 性能会更好一些。但可能导致vcpu测量时间不是很准确?有的时候可能会出问题。
+
+```
