@@ -1,0 +1,106 @@
+```text
+    
+
+
+
+
+  下载LOFTER我的照片书  |
+一提到随机数生成，一般联想到类似c的这个代码
+#include<cstdlib>
+#include<ctime>
+srand(time(0));
+int r = rand() % (50) + 10;
+
+用这个 取余操作和 加上偏移来生成一个指定范围的随机数。
+一般应用这个应该是可以了，不过之前看到文章说，这样的其实不是很准确的。如果这个范围不是2的n次方的话(上面那个50就不是).那么这样取余数操作之后得到的随机分布跟以前的默认访问的就不一样了，比如以前人家是比较均衡的随机数来的，你这个%之改了范围之后就不是那么随机了，有可能生成的结果大多落在某个比较小的范围？反正随机性不那么好了。
+
+叫我去弄一个制定范围的真正随机数生成算法，我还真没有这个能力。
+不过还好，现在有了
+boost::random http://www.boost.org/doc/libs/1_54_0/doc/html/boost_random.html
+std::random  http://www.cplusplus.com/reference/random/
+
+应该是boost先有了，然后c++ 0x 里面也支持了吧。
+
+这样生成指定范围的随机数就简单了，C++ 代码如下
+std::default_random_engine generator(time(0));
+std::uniform_int_distribution<int> distribution(1,6);
+int dice_roll = distribution(generator);  // generates number in the range 1..6 
+
+boost的代码也类似的
+http://www.boost.org/doc/libs/1_54_0/doc/html/boost_random/tutorial.html#boost_random.tutorial.generating_integers_in_a_range
+
+这个随机性应该有保证吧，比那个取余数的方法好。
+另外，这个随机库里面，很多有意思的算法，比如除了生成均衡随机数的uniform_int_distribution 
+均匀分布之外，还可以生成正态分布，二项式分布，指定各个范围不同随机性的分布等等。非常强大啊。然后生成随机数的算法也是很多可以选的，可以自己去看一下，boost里面测试了各个算法的性能http://www.boost.org/doc/libs/1_54_0/doc/html/boost_random/performance.html
+
+
+
+
+写个简单的小程序测试随机性，在某些范围比如 0 - 20000的，确实 rand（）% 20000的用法确实随机性不是很好，小于10000和大于10000的比例达到 3:2 了.  c++那个统计就比较均衡
+//#include <winsock2.h>
+//#include <ws2tcpip.h>
+
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <list>
+#include <vector>
+#include <random>
+
+//
+//#include <boost/shared_ptr.hpp>
+//#include <boost/weak_ptr.hpp>
+
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/timeb.h>
+#include <time.h>
+
+#include <Windows.h>
+
+using namespace std;
+
+
+
+
+int main (int, char**)
+{
+
+	int a = 1;
+	std::default_random_engine generator(time(0));
+	std::uniform_int_distribution<int> distribution(0,19999);
+	srand(time(0));
+
+	int a1 =0;
+	int b1 =0;
+	int a2 =0;
+	int b2 =0;
+	for (int i=0; i< 100000; i++) {  
+		int m = rand() % (20000) + 0;
+		if (m < 10000)
+		{
+		  a1++;
+		} else {
+		  b1++;
+		}
+		int n = distribution(generator);
+	    if (n < 10000)
+		{
+		  a2++;
+		} else {
+		  b2++;
+		}
+		//std::cout << m << " " <<n << std::endl;		
+	}
+	std::cout << a1 << "," << b1 << std::endl;
+	std::cout << a2 << "," << b2 << std::endl;
+	std::cin >> a;
+	std::cout << a;
+	return 0;
+}
+
+```
