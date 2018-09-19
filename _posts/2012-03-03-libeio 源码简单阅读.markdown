@@ -1,0 +1,83 @@
+libeio    和 libev同一个作者写的吧，看网上有一篇文章说是node.js用的这个来做异步文件操作的。
+
+http://cvs.schmorp.de/libeio/
+
+ 
+
+大概过了了一下，代码很少，全部放到一个文件里面，也不复杂，只是宏用的有点多，看起来不是很明了。其实就是把异步操作放到request里面，然后启动几个工作线程，工作线程就会去队列里面那request处理。没有看到什么印象特别深刻的地方。
+
+ 
+
+------------------------------
+
+struct eio_req  每个用户的异步操作都放到一个request结构里面去吧。然后后续操作会把这个request放到“待处理队列”，“已经处理的队列”。这个request结构和我代码里面自己写的一个request也差不多呵呵，一些状态啊，缓存指针啊，回调函数啊，等等，看来我水平也不错滴！libeio 源码简单阅读 - widebright - widebright的个人空间
+
+ 
+
+ 
+
+操作这两个队列有两个锁，下面的那些函数，reqq_push 啊等都要事先获取锁。这队列还是有优先级的。
+
+ 
+
+static etp_reqq req_queue;   //待处理的request
+
+static etp_reqq res_queue;   //已经处理完的request
+
+--------------------------------------
+
+etp_submit
+
+    reqq_push (&res_queue, req)  把它加到request队列，等等处理
+
+    etp_maybe_start_thread()  //这个检查线程是否足够了，或者启动工作线程etp_start_thread（）
+
+ 
+
+---------------------------------------
+
+代码里面写了，很多异步函数，最后都是调用etp_submit把request放到队列里面去而已 
+
+eio_req *eio_wd_open (const char *path, int pri, eio_cb cb, void *data)
+
+{
+
+REQ (EIO_WD_OPEN); PATH; SEND;
+
+}
+
+eio_req *eio_read (int fd, void *buf, size_t length, off_t offset, int pri, eio_cb cb, void *data)
+
+{
+
+REQ (EIO_READ); req->int1 = fd; req->offs = offset; req->size = length; req->ptr2 = buf; SEND;
+
+}
+
+ 
+
+REQ这里会申请内存，建一个request，然后初始化那些。SEND其实就是调用的etp_submit函数了。
+
+--------------------------------------
+
+工作线程是
+
+X_THREAD_PROC (etp_proc) 
+
+      req = reqq_shift (&req_queue);   //从request队列里面取出request
+
+      ETP_EXECUTE (self, req);   // 一个wrapper函数，调用实际的系统io函数，比如read、 write啊等等。
+
+      if (!reqq_push (&res_queue, req) && want_poll_cb)  //工作完了，把它放到完成队列里面去。
+
+ 
+
+---------------------------------
+
+etp_poll （）   这个应该是给用户调用的
+
+   etp_maybe_start_thread        
+
+   req = reqq_shift (&res_queue);    //从已经完成的request队列里面取出request，
+
+   done_poll_cb () 调用用户设置的的回调函数
