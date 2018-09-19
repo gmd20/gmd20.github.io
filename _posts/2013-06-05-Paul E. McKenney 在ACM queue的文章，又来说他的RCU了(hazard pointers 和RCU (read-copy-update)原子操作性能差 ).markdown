@@ -1,0 +1,13 @@
+    
+Structured Deferral: Synchronization via Procrastination
+https://queue.acm.org/detail.cfm?id=2488549
+
+提到hazard pointers 和RCU (read-copy-update) 两种技术是如何
+克服reference counters的原子操作在多cpu同步时性能比较差的问题的。
+
+可以认真去看一下，hazard pointers之前在无锁编程数据结构时见到，不是很理解，这里讲的比较清楚。
+
+原子操作的多cpu数据依赖，导致同步代价大，性能差的问题，我前面一篇false sharing文章有提到了，这里又列了个图，可以看到多cpu性能上性能确实线性下降的。
+
+
+RCU 在 read操作多update操作比较少的时候（read 占90% udpate 10%），RCU相比较其他的全局锁等优势还是很明显的。
