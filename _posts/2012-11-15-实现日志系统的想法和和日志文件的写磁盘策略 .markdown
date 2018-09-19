@@ -1,0 +1,70 @@
+   领导叫改造一下现在的log部件，主要用于trace的时候记录调试记录的。
+
+      测试了一下，发现这个trace的日志还是很大的，现有的代码，喜欢每个函数进入退出都加trace记录状态。如果这些trace记录全部打开的话，测试了之前做的一愕功能模块，发现每秒可以产生 50万条trace语句，20M的 日志都有可能。 这还只是单进程的，如果多个同时运行还可能更大了。
+       优化了一下以前代码，应该可以大幅度的提高性能，但相比较trace 全关的时候，性能还是要差20%左右。这个日志怎么保存还是个问题，我个人觉得还是只记录些关键log就行了吧，那样才不会影响关键应用的性能。
+
+      怎么保存这个日志？ 在网上找了一下，觉得mysql 的binlog ，redolog ，leveldb这些的log，应该可以参考的吧？  写磁盘的话，觉得需要考虑的有下面几点：
+------------------------
+1.  磁盘的顺序写入
+     log文件都是追加写入的，应该是顺序写入。但这个日志流量感觉比较大，极限轻快下有几十M了，差不多达到磁盘的写如速度的瓶颈了。  如果同时又几个log文件在进行磁盘写操作，感觉还是影响比较大。最好能一个log文件就好了。
+    log记录可以积累先写入缓存块里面，达到一定数量再批量写入磁盘。 自己写测试程序发现，顺序磁盘操作还是很快的，系统的page cache 也在起作用吧。
+      
+---------------------------
+ 2.  是不是每个 log的磁盘写操作之后，都执行flush 或者sync之类的调用，保证数据一定写入磁盘。
+    根据策略有    定时flush， 每操作完flush 和从不flush等几种。
+   
+    我这个trace 日志不是需要怎么正确性保证的，我估计从不flush就可以了，最多加个定时flush。Google的leveldb说 没操作sync比从不sync慢一千倍？ 我测试看了顺序的操作好像影响不是很大啊。 他那个 log 文件的 http://code.google.com/p/leveldb/source/browse/db/log_writer.cc  也是 每写完log就flush，估计文档指的对随机写的影响吧。
+    mysql 是通过 innodb_flush_log_at_trx_commit  参数来设置这个策略的。
+----------------------------------
+3.   log 的磁盘写入是在 后台线程里面写入，还是同步写入？
+     好像mysql 是有专门的后台io线程，不是很懂这个数据库是怎么做的，好像它管理了很多log buffer，有后台线程去检查写入log。 leveldb好像是在同一个线程里面直接写logfile的。
+     参考后面的文章，对mysql的log有解释，虽然不是很懂。
+------------------------------
+4.  log 日志的 缓存。
+       好像都是要一个缓存的，不能每条日志都写磁盘啊。 linux 的printk那些也是有个缓存的。不过不知道设置多大好，小了容易导致丢失。缓存满了强制写磁盘？
+
+---------------------------------
+5.   时间
+      每秒有50万条日志，总不能每秒调用50万次时间获取函数吧。以前微博看到有人提到这个的代价，oracle都是专门的服务了为其他的需要获取时间的部件提供服务。我看我这个每半秒更新一下也足够了吧？
+---------------------------------
+6. 前面一篇文章说了， log的 语句，生成字符串什么的，避免复制，避免动态内存分配（使用栈上的内存）那是最好了。
+
+
+暂时想到的只有这些，大家有什么好的想法可以教一下我。明天回来写代码，同事希望日志可能远程保存，先把log发送到其他机器再保存。但我看这每秒几十兆的速度对网络和CORBA通讯框架也是个考验啊。暂且留个frontend - backend的接口在那里吧，让后端实现自己觉得把日志保存到什么地方，好像有的log库都是这样设计的。
+
+
+看过的网上的文章：
+
+Mysql Innodb小结 
+http://www.uml.org.cn/sjjm/201207313.asp
+
+MySQL源码学习：InnoDB的ib_logfile写入策略
+http://dinglin.iteye.com/blog/906761
+
+leveldb 源码
+http://code.google.com/p/leveldb/source/browse/#git%2Fdb
+
+ 关于MySQL Innodb log 日志的一点收获
+http://blog.csdn.net/oneyearlater/article/details/7486992
+
+Nginx的log 代码
+
+http://trac.nginx.org/nginx/browser/nginx/trunk/src/core/ngx_times.c
+
+http://trac.nginx.org/nginx/browser/nginx/trunk/src/core/ngx_log.c
+
+可以看到时间是放到ngx_cached_err_log_time 变量里面的，然后适当的时候（定时器？）调用ngx_time_update 来更新时间，
+
+这样每个log语句就不需要调用时间获取函数了，直接使用这个就可以了。 log也是直接写入文件里面的。
+
+log参数直接用sprintf格式化，填充到栈上的局部变量，然后写文件。
+
+
+
+MongoDB 的log
+
+https://github.com/mongodb/mongo/blob/master/src/mongo/util/log.cpp
+
+https://github.com/mongodb/mongo/blob/master/src/mongo/util/logfile.cpp
+
+可以直接写文件，还有LogStream类的重载操作符。
