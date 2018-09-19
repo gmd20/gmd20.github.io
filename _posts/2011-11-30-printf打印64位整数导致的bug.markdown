@@ -1,0 +1,345 @@
+```text
+#include<stdio.h>
+
+ 
+
+void main(void) 
+
+{  
+
+  _int64 a = 1;
+
+ 
+
+  char * str = "hello widebright";
+
+ 
+
+  printf("%d  %s\n",a,str);      //这个是打印32位数的，非预期结果
+
+  printf("%lld  %s\n",a,str);    //正确的打印64位数的写法
+
+ 
+
+  //上面把64位数当作32位数打印的时候，就把这数的高32位当作第二个参数%s使用了，
+
+  //因为这时64位数的高32位还是0，就是空指针，printf程序对空指针专门处理了，
+
+  //所以程序不会崩溃，下面改了高32位的，下面还当作32位打印的时候,%s第二个参数就是
+
+  //访问0x1地址了，程序就崩溃了。
+
+  int * b = (int *)&a;
+
+  *++b = 1;
+
+ 
+
+  printf("%I64X  %s\n",a,str);   //正确的打印64位数的写法
+
+ 
+
+  printf("%I32d  %s\n",a,str);   //这个是打印32位数的，程序崩溃
+
+  printf("%d  %s\n",a,str);      //这个是打印32位数的，程序崩溃
+
+  printf("%ld  %s\n",a,str);     //这个是打印32位数的，程序崩溃   
+
+ 
+
+}
+
+ 
+
+/*
+
+测试一下，输出是这样子的
+
+C:\>cl 1.cpp
+
+用于 80x86 的 Microsoft (R) 32 位 C/C++ 优化编译器 15.00.21022.08 版
+
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+ 
+
+1.cpp
+
+Microsoft (R) Incremental Linker Version 9.00.21022.08
+
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 
+
+/out:1.exe
+
+1.obj
+
+ 
+
+C:\>1.exe
+
+1  (null)
+
+1  hello widebright
+
+100000001  hello widebright
+
+ 
+
+ 
+
+ 
+
+这种写法vc是编译可以通过，连警告都没有，很容易导致错误，很奇怪，printf的这个地方，
+
+编译器做的不好啊，c语言的可变长参数的实现的问题？ 按理说编译器肯定是拿到类型了，
+
+是知道64位和32的区别的，编译时给个警告也好啊。 不知道gcc里面是不是也是这样。
+
+ 
+
+关于printf的格式说明看MSDN的：
+
+Format Specification Fields: printf and wprintf Functions
+
+http://msdn.microsoft.com/en-us/library/56e442dc(v=vs.71).aspx
+
+ 
+
+真正的bug是其实像下面这样的，以前同事写的代码了，是想用time来得到一个随机id吧，估计那个同事都离职了。
+
+ 
+
+char *text = "helll wwidebright"
+
+int len = strlen(text) + 7;
+
+char buffer = new char [len] ;
+
+sprintf ( "%05X %s", time(BULL), text);
+
+ 
+
+ 
+
+time_t time(
+
+   time_t *timer 
+
+);
+
+__time32_t _time32(
+
+   __time32_t *timer 
+
+);
+
+__time64_t _time64(
+
+   __time64_t *timer 
+
+);
+
+ 
+
+在vc6上面编译，time 函数的返回的time_t应该还是32位数来，但vc2008里面编译的话
+
+time_t 默认应该就是__time64_t来的了，除非你定义了USE_32BIT_TIME_T 这个宏。
+
+所以程序就会在sprintf 一句崩溃了。好像以前也碰到这个错误了，这次又遇到了，害我下午跟进去printf函数看了半天，
+
+ 
+
+ 
+
+*/
+
+ //把32位int 数当作64位数打印也是不行的，同样导致后面参数解析出错。
+
+int a =1;
+
+char  str[] = "hello widebright";
+
+printf ("%lld %s\n",a ,str);    //把32位整型当作64位打印，打印出来的数字和后面字符都是乱码了。传禁区的str指针应该会被解析成64位数的一部分了。str被解析成后续的未预期内存了
+
+printf ("%I64X %s\n",a ,str);   //把32位整型当作64位打印，打印出来的数字和后面字符都是乱码了。
+
+ 
+
+short b =1;
+
+printf ("%d %s\n",a ,str);   //但把short单做32位数打印就不会有问题，应该是默认都转换成32位数再传给printf了
+
+ 
+
+ 
+
+//printf sprintf另外一个可能容易误解的地方在于宽度指定参数。
+
+//这个宽度制定参数就不会截断的数字的，只有数字长度不够时才会补齐位数。
+
+ 
+
+int d = 1 << 24| 1;
+
+char * buffer = new char[40];
+
+sprintf(buffer,"%02X\n",d);
+
+ 
+
+cout  << buffer << endl;  //打印1000001 
+
+ 
+
+/*
+
+本来制定宽度2两位，但实际数值比较大，两位并不能完整显示，所以最后输出来的其实是
+
+1000001
+
+如果你之前计算缓存char * buffer 的长度是以这个wide为准的换，这里就可能溢出了，sprintf这里显示出来的有7个字符了
+
+ 
+
+*/
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+----------------------------------------------
+
+short b =1;
+
+printf ("%d %s\n",a ,str);   //但把short单做32位数打印就不会有问题，应该是默认都转换成32位数再传给printf了
+
+ 
+
+ 
+
+ 
+
+short b =1;
+
+0041158B  mov         eax,1 
+
+00411590  mov         word ptr [ebp-4Ch],ax 
+
+printf ("%d %s\n",a ,str);   //但把short单做32位数打印就不会有问题，应该是默认都转换成32位数再传给printf了
+
+00411594  mov         esi,esp 
+
+00411596  lea         eax,[ebp-40h] 
+
+00411599  push        eax  
+
+0041159A  mov         ecx,dword ptr [ebp-24h] 
+
+0041159D  push        ecx                         //还是32数push到栈上的，所以
+
+0041159E  push        offset string "%d %s\n" (417808h) 
+
+004115A3  call        dword ptr [__imp__printf (41A400h)] 
+
+004115A9  add         esp,0Ch 
+
+004115AC  cmp         esi,esp 
+
+004115AE  call        @ILT+415(__RTC_CheckEsp) (4111A4h) 
+
+ 
+
+ 
+
+ 
+
+ 
+
+_int64 a = time(NULL);
+
+a =1;
+
+sprintf(buffer,"%02lX%s\n",a,str);
+
+ 
+
+ 
+
+ 
+
+00411511  push        0    
+
+00411513  call        time (4116D0h) 
+
+00411518  add         esp,4 
+
+0041151B  mov         dword ptr [a],eax 
+
+0041151E  mov         dword ptr [ebp-20h],edx 
+
+a =1;
+
+00411521  mov         dword ptr [a],1 
+
+00411528  mov         dword ptr [ebp-20h],0 
+
+sprintf(buffer,"%02lX%s\n",a,str);
+
+0041152F  mov         esi,esp 
+
+00411531  mov         eax,dword ptr [str] 
+
+00411534  push        eax  
+
+00411535  mov         ecx,dword ptr [ebp-20h] 
+
+00411538  push        ecx           //64数的高32位 被push 进栈了
+
+00411539  mov         edx,dword ptr [a] 
+
+0041153C  push        edx           //64位数的低32位 被push 进栈了
+
+0041153D  push        offset string "%02X\n" (417800h) 
+
+00411542  mov         eax,dword ptr [buffer] 
+
+00411545  push        eax  
+
+00411546  call        dword ptr [__imp__sprintf (41A404h)] 
+
+0041154C  add         esp,14h 
+
+0041154F  cmp         esi,esp 
+
+00411551  call        @ILT+415(__RTC_CheckEsp) (4111A4h) 
+
+ 
+
+-----------------------------------------------------
+
+ 
+
+ 
+
+可以看到 64位的_int64其实是当作两个int被push到栈上了，看起来就像传了多了一个int参数一样，那些可变参数支持的va_list 什么的应该是直接从栈上解析出来这些参数的，所以如果64位和32位格式化参数没有指定好是会导致最后的解析出错的。这种情况应该是32位机器上，64位支持不好导致的？ 系统需要用两个int来模拟一个_int64, printf默认又当作32位int来解析，所以就会出现这种问题。
+```
