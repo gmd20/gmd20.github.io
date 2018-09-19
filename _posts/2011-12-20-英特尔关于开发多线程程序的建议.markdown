@@ -1,0 +1,98 @@
+
+Intel Guide for Developing Multithreaded Applications
+
+http://software.intel.com/en-us/articles/intel-guide-for-developing-multithreaded-applications/
+
+ 
+
+这里有个pdf，很多要点吧，对我这种菜鸟来说，值的一看啊。
+
+最近要看的东西太多了，队列好长了，不知道什么时候看的完哈！英特尔关于开发多线程程序的建议。 - widebright - widebright的个人空间
+
+12月23号补充：
+
+大概看了一下，主要思想有：
+
+
+
+划分子任务要均匀，不要有依赖，避免多cpu之间的内存争用和cache失效，保证数据访问的局部性（cache友好），尽量避免同步开销，避免线程创建和线程切换开销。
+
+
+
+
+
+其他几个比较新鲜的观点有
+
+
+
+-------------------------
+
+便面现线程间的堆上资源的竞争，用 malloc 来申请空间的时候，堆是进程唯一的，如果你多个线程同时申请，操作系统是要做同步的，这个开销有时是很严重的。
+
+
+
+Avoiding Heap Contention Among Threads
+
+Abstract
+
+Allocating memory from the system heap can be an expensive operation due to a lock used by system runtime libraries to synchronize access to the heap. Contention on this lock can limit the performance benefits from multithreading. To solve this problem, apply an allocation strategy that avoids using shared locks, or use third party heap managers.
+
+
+
+
+
+
+
+The system heap (as used by malloc) is a shared resource. To make it safe to use by multiple threads, it is necessary to add synchronization to gate access to the shared heap. Synchronization (in this case lock acquisition), requires two interactions (i.e., locking and unlocking) with the operating system, which is an expensive overhead. Serialization of all memory allocations is an even bigger problem, as threads spend a great deal time waiting on the lock, rather than doing useful work.
+
+
+
+
+
+Avoiding Heap Contention Among Threads
+
+
+
+
+
+--------------------------------------
+
+用线程局部变量来避免同步开销，
+
+
+
+Use Thread-local Storage to Reduce Synchronization
+
+Abstract
+
+Synchronization is often an expensive operation that can limit the performance of a multi-threaded program. Using thread-local data structures instead of data structures shared by the threads can reduce synchronization in certain cases, allowing a program to run faster.
+
+
+
+
+
+-----------------------------------
+
+多线程合起来可以访问超过了内存带宽
+
+Detecting Memory Bandwidth Saturation in Threaded Applications
+
+Abstract
+
+Memory sub-system components contribute significantly to the performance characteristics of an application. As an increasing number of threads or processes share the limited resources of cache capacity and memory bandwidth, the scalability of a threaded application can become constrained. Memory-intensive threaded applications can suffer from memory bandwidth saturation as more threads are introduced. In such cases, the threaded application won‘t scale as expected, and performance can be reduced. This article introduces techniques to detect memory bandwidth saturation in threaded applications.
+
+
+
+---------------------------------------
+
+不同线程之间访问同样的地址内存，导致缓存命中失效。
+
+
+
+Avoiding and Identifying False Sharing Among Threads
+
+Abstract
+
+In symmetric multiprocessor (SMP) systems, each processor has a local cache. The memory system must guarantee cache coherence. False sharing occurs when threads on different processors modify variables that reside on the same cache line. This invalidates the cache line and forces an update, which hurts performance. This article covers methods to detect and correct false sharing.
+
+--------------------------------------------
