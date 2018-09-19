@@ -1,0 +1,84 @@
+    
+
+
+
+ 
+C++ 程序编译之所以慢，应该和他的include头文件依赖相关。
+
+一个cpp文件，include了一个头文件，头文件又include很多头文件。
+
+编译的时候，就需要磁盘不停的打开和加载不同的头文件。
+
+但很多cpp文件，包含了很多头文件的时候，即使每个cpp包含的头文件都是一样的，
+
+而且，同一个cpp文件里面，有可能由于头文件循环include等依赖关系不是很清楚，导致一个头文件被单一一个cpp文件include 几十次之多。
+
+那么磁盘上就同时打开关闭多次这个文件，编译起来就慢了。
+
+
+
+如果你不能理解这个问题，可以看看这篇文章里面关于“C和C++中的依赖”的介绍
+
+Go在谷歌：以软件工程为目的的语言设计
+
+http://www.oschina.net/translate/go-at-google-language-design-in-the-service-of-software-engineering
+
+英文
+
+Go at Google: Language Design in the Service of Software Engineering
+
+http://talks.golang.org/2012/splash.article
+
+go语言通过新的import机制解决了这个问题。编译的时候再也没有这种需要重复编译头文件的问题了。
+
+看了这篇文章，就觉得有必要去学习一下go语言了，
+
+
+
+
+
+这样衍生出来的提高c++编译速度技术有：
+
+
+
+1. 合理的include，通过一些技巧编码在头文件再中include其他头文件，避免循环include等。这样应该就是优化依赖关系，避免cpp引用同一个头文件几十次的问题。
+
+    《大规模C++程序设计》 Large-Scale C++ Software Design 这个书，提供了很多技巧。 大的c++项目需要注意吧。现在有一个c++项目每次编译都要20分钟以上痛苦死了。
+
+   以前读书时看过这本书，看来是不是要复习一下了。
+
+
+
+
+
+2. 预编译头文件技术
+
+   VC 和gcc 里面都支持预编译头文件。 大概就是通过预先编译好的头文件，比啊摹重复的加载和编译同一个头文件了。
+
+   如果去他cpp也是引用同一个头文件，或者引用多次时，就不需要重复的做那些从磁盘加载编译的步骤了。
+
+   统一的从编译好的pch或者gch文件里面直接加载就好了。如果项目里面一些公用的头文件被很多cpp引用，这个应该可以缩短很多的编译时间的。
+
+   
+
+   MSDN的文章Creating Precompiled Header Files
+
+   http://msdn.microsoft.com/en-us/library/szfdksca(v=vs.71).aspx
+
+
+
+3. 好的磁盘读写性能，多线程并行编译  ，多机器并行编译。
+
+   听说很多编译时间都是耗在加载文件的磁盘读写上面了？想想同一个头文件被重复加载多次吧！ 这个应该很容易避免的吧？ 需要大内存），
+
+
+
+
+
+
+
+网上有人写了个总结，好像比较完整一些。
+
+如何加快C++代码的编译速度
+
+http://blog.csdn.net/hoya5121/article/details/5497896   
