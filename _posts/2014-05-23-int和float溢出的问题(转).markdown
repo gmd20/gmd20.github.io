@@ -1,0 +1,39 @@
+    
+
+
+
+
+  下载LOFTER我的照片书  |
+PERFECT PREVENTION OF INT OVERFLOWS
+http://forrestthewoods.ghost.io/perfect-prevention-of-int-overflows/
+
+
+float的精度问题，导致它在表达比较大的数值时，误差比较大，比如1,000,000,000 这个数值时，精度误差就达到64了。
+int和float溢出的问题（转） - widebright - widebright的个人空间
+ 
+
+文章是说int 用来表示时间的秒，毫秒时和float转换的时候可能会溢出的问题。
+很多int本来没有溢出的，转换成float，再转回来精度原因就会导致不是以前那个值了，会导致溢出。
+
+文章里面举的例子，溢出导致的问题，比较不不对。
+int x = (int)(float)2147483647; // OVERFLOW!
+(int_max - 190) < (int)(float)(int_max - 190)  
+(int_max - 127) == (int)(float)(int_max - 127)
+(int_max - 64) > (int)(float)(int_max - 64)
+提到的几个预测溢出的办法。
+bool float_to_int_safe(float f) {  
+    const float max_safe = 2147483520.f;  // 2^31 - 128
+    const float low_safe = -2147483648.f;  // -2^31
+    return std::isfinite(f) && f <= max_safe && f >= low_safe;
+}
+bool int_add_safe(int a, int b) {  
+    if (a >= 0 && b >= 0)
+        return INT_MAX - a >= b;
+    if (a < 0 && b < 0)
+        return INT_MIN - a <= b;
+    return true;
+}
+
+float还是没有double精度高吧。
+
+比较好的文章，找原文看一下
