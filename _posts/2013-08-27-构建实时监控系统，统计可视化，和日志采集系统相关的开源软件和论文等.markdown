@@ -1,0 +1,188 @@
+```text
+    
+
+
+
+
+  下载LOFTER我的照片书  |
+关键字(log trace Tracing metric monitor statistics Observability Visibility )
+
+直到2014年3月7号所了解到的资料或者开源软件有。
+
+logstash  +  Elasticsearch  http://logstash.net/
+
+Mozilla Heka    http://heka-docs.readthedocs.org/en/latest/
+
+	hekad   http://hekad.readthedocs.org/en/latest/
+
+Linkedin kafka  http://kafka.apache.org/
+
+Twiter Zipkin  http://twitter.github.io/zipkin/
+
+facebook scribe https://github.com/facebook/scribe
+
+Google的 Dapper, a Large-Scale Distributed Systems Tracing Infrastructur
+
+http://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/36356.pdf
+
+---------------
+
+
+Google公司的 
+
+     “Dapper, a Large-Scale Distributed Systems Tracing Infrastructure”
+
+etsy 公司的
+
+    “ Bring the Noise_ Making Effective Use of a Quarter Million Metrics Presentation.pdf”
+
+
+
+
+
+Google的说了Dapper这个内部tracing framework的实现和使用的细节，比如rpc调用的延时，tracing span tree的设计等。etsy说了很多实时监控相关的软件和系统，怎么支持大量的统计事件。
+
+
+
+twitter 根据Google的dapper论文实现了一个 “distributed tracing system” zipkin
+
+https://github.com/twitter/zipkin
+
+http://twitter.github.io/zipkin/
+
+他是利用facebook开源的Scribe 就是通过thrift 这个rpc库从不同的机器上面收集trace吧，有一个 web UI可以查看统计信息，看起来也不错。不知道和后面说到的skyline那个更好用一些。
+
+
+
+2013-09-14补充
+
+最近 twitter的博客上面又出来一篇文章
+
+Observability at Twitter  （需要翻墙）
+
+https://blog.twitter.com/2013/observability-at-twitter      
+
+介绍 twitter的“可视化”监控系统架构。
+
+
+
+看了一下介绍，相比较etsy的实现，他自己实现了居于http的数据收集接口取代了StatsD ， 
+
+然后自己实现存储部件，可以把数据保存到Cassandra集群，不是数字类型的数据也可以保存到HDFS以供后续分析。
+
+自己实现了webUI的可视化和查询接口，异常监控通知等接口。后面的Graphite可以用作存储和可视化接口的，可能tiwtter自己开发的这个扩展性更好，更适合大规模使用？但现在都没看到这些系统开源出来。不过这个graphite和skyline使用比较简单，把数据提交到这个系统进行可视化监控也很容易，看我后面的试用文章。
+
+
+
+2014-02-25 补充，又有文档介绍twitter的监控系统的，详细介绍了各个功能模块
+
+How Twitter Monitors Millions of Time series
+
+https://speakerdeck.com/theatrus/how-twitter-monitors-millions-of-time-series
+
+
+
+下面这篇说的github的流量监控，也算有点关系吧
+
+Analytics at GitHub
+http://johnnunemaker.com/analytics-at-github/
+
+
+---------------------------
+
+etsy文档提到的很多工具或者开源代码
+
+
+
+StatsD 
+
+     A network daemon that runs on the Node.js platform and listens for statistics, like counters and timers, sent over UDP and sends aggregates to one or more pluggable backend services (e.g., Graphite).
+
+     https://github.com/etsy/statsd/ 
+
+     文档说这个只能做到10秒级
+
+     好像这个用的也比较多？
+
+
+
+
+
+Ganglia   
+
+     a scalable distributed monitoring system for high-performance computing systems such as clusters and Grids
+
+     \http://ganglia.sourceforge.net/ 
+
+     文档说这个是分钟级别的，估计性能比StatsD 
+
+
+
+graphite
+
+   Graphite provides real-time visualization and storage of numeric time-series data
+
+   Scalable Realtime Graphing
+
+   https://launchpad.net/graphite
+
+   http://graphite.readthedocs.org/en/latest
+
+   https://github.com/graphite-project
+
+   http://www.aosabook.org/en/graphite.html
+
+   http://graphite.wikidot.com/
+
+   很多绘制统计监控图形的后端绘图引擎，分为 carbon（接受数据前端）whisper（统计信息存储数据库）和一个Web UI应用查看前端。 carbon 支持多路复制，一致性哈希负载均衡的等，下面的skyline就依赖于这个carbon service把统计信息转发给它。
+
+carbon支持最简单的文本格式的tcp协议的统计信息提交接口，只要每个统计信息按照 <metric path> <metric value> <metric timestamp> 这个格式作为独立的一行内容发给它就可以了。这个应该很多语言都可以很容易的实现这个接口。
+
+The format is one line of text per data point where each line contains the dotted metric name, value, and a Unix epoch timestamp separated by spaces. For example, a client might send:
+
+servers.www01.cpuUsage 42 1286269200
+products.snake-oil.salesPerMinute 123 1286269200
+servers.www01.cpuUsageUser 44 1286269260
+products.snake-oil.salesPerMinute 119 1286269260
+
+
+
+
+Nagios
+
+     一个服务器监控  //Nagios Is The Industry Standard In IT Infrastructure Monitoring
+
+     http://www.nagios.org/
+
+
+
+
+
+Skyline   
+
+    A real time anomaly detection system
+
+    https://github.com/etsy/skyline
+
+    自动从统计信息里面发现异常
+
+    可以接收来自StatsD 或者Graphite的统计（可以通过Graphite carbon-relay service 的tcp协议的，或者UDP messagepack协议发过来的），。
+
+    统计信息会是 以<metric name> <timestamp> <value> 这样 MessagePack 格式保存到redis。后台有个服务会从redis取出数据然后用算法分析异常。
+
+    有一个web界面查看
+
+    这个比较有意思，说是可以支持上百万统计信息，可以有时间可以研究一下
+
+
+
+Oculus   https://github.com/etsy/oculus
+
+Elasticsearch  作为Oculus用来查找统计图形的匹配的搜索引擎
+
+
+
+redis.append
+
+messagepack binary porotocol
+```
