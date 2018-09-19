@@ -1,0 +1,1 @@
+ -Wl,-Bstatic -l需要静态链接的库 -Wl,-Bdynamic  -l需要动态链接的库
