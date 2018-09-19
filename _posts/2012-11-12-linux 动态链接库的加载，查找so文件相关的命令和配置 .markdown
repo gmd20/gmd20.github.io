@@ -1,0 +1,12 @@
+```text
+ldd           查看依赖的 动态链接库。
+objdump -p /path/to/program | grep NEEDED
+
+man ld.so     解释   ld.so 是如何搜索 动态链接库的。      
+ldconfig     配置ld.so 的搜索路径配置，生成cache那些
+readelf -d   查看编译时指定的  DT_SONAME     DT_RUNPATH 等的值。
+
+ld -soname 等链接选项。  
+
+一般修改   /etc/ld.so.conf 指定路径，或者 直接字啊 /usr/lib 创建so到文件的链接。 导出 $LD_LIBRARY_PATH  变量这种不大推荐。自己查看 “man ld.so  ”的帮助文档。
+```
