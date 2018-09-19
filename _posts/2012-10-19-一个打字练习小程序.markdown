@@ -1,0 +1,340 @@
+一直以来我打字都比较慢啊。刚刚断网，弄个小程序，来练习一下数字键，特殊字符什么的。下次每天来练习几分钟。我就不信我敲键盘还要看键盘。
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+
+namespace anjianlianxi
+{
+    public partial class Form1 : Form
+    {
+
+
+        const string all_keys = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!##$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?";
+
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+
+        private void SetNumber()
+        {
+
+
+            System.Random ram = new System.Random();
+            label1.Text = ram.Next(0, 9).ToString();
+            label2.Text = ram.Next(0, 9).ToString();
+            label3.Text = ram.Next(0, 9).ToString();
+            label4.Text = ram.Next(0, 9).ToString();
+
+
+            label1.Visible = true;
+            label2.Visible = true;
+            label3.Visible = true;
+            label4.Visible = true;
+
+
+        }
+
+
+        private void SetChar(string keys)
+        {
+            int length = keys.Length;
+            if (length <= 0) return;
+            System.Random ram = new System.Random();
+            label1.Text = keys[ram.Next(0, length)].ToString();
+            label2.Text = keys[ram.Next(0, length)].ToString();
+            label3.Text = keys[ram.Next(0, length)].ToString();
+            label4.Text = keys[ram.Next(0, length)].ToString();
+
+
+            if (label1.Text[0] == '&') label1.Text = "&&";
+            if (label2.Text[0] == '&') label2.Text = "&&";
+            if (label3.Text[0] == '&') label3.Text = "&&";
+            if (label4.Text[0] == '&') label4.Text = "&&";
+
+
+            label1.Visible = true;
+            label2.Visible = true;
+            label3.Visible = true;
+            label4.Visible = true;
+
+
+        }
+        private void label2_Click(object sender, EventArgs e)
+        {
+            label2.Visible = false;
+        }
+
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+            label3.Visible = false;
+        }
+
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            label1.Visible = false;
+        }
+
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+            label4.Visible = false;
+            if (checkBox1.Checked == true)
+            {
+                SetNumber();
+            }
+            else if (checkBox2.Checked == true)
+            {
+                SetChar(textBox1.Text);
+            }
+            else
+            {
+                SetChar(all_keys);
+            }
+        }
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+
+            if (label3.Visible == false && e.KeyChar == label4.Text[0])
+            {
+                label4.Visible = false;
+                if (checkBox1.Checked == true)
+                {
+                    SetNumber();
+                }
+                else if (checkBox2.Checked == true)
+                {
+                    SetChar(textBox1.Text);
+                }
+                else
+                {
+                    SetChar(all_keys);
+                }
+            }
+            else if (label2.Visible == false && e.KeyChar == label3.Text[0])
+            {
+                label3.Visible = false;
+            }
+            else if (label1.Visible == false && e.KeyChar == label2.Text[0])
+            {
+                label2.Visible = false;
+            }
+            else if (label1.Visible == true && e.KeyChar == label1.Text[0])
+            {
+                label1.Visible = false;
+            }
+
+
+        }
+
+
+
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            SetNumber();
+            this.textBox1.Text = "-_+=()90pP[][]\\|;':\"/?.>,<";
+            this.KeyPreview = true;
+            this.KeyPress += Form1_KeyPress;
+        }
+
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked)
+            {
+                checkBox1.Checked = false;
+            }
+        }
+
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                checkBox2.Checked = false;
+            }
+        }
+
+
+ 
+    }
+}
+
+
+
+
+//=====================================
+
+
+namespace anjianlianxi
+{
+    partial class Form1
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+
+        #region Windows Form Designer generated code
+
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.SuspendLayout();
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Honeydew;
+            this.label1.Font = new System.Drawing.Font("YouYuan", 99.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.ForeColor = System.Drawing.Color.LimeGreen;
+            this.label1.Location = new System.Drawing.Point(35, 53);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(124, 133);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "1";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.Honeydew;
+            this.label2.Font = new System.Drawing.Font("YouYuan", 99.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.ForeColor = System.Drawing.Color.LimeGreen;
+            this.label2.Location = new System.Drawing.Point(189, 53);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(124, 133);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "1";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Honeydew;
+            this.label3.Font = new System.Drawing.Font("YouYuan", 99.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label3.ForeColor = System.Drawing.Color.LimeGreen;
+            this.label3.Location = new System.Drawing.Point(343, 53);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(124, 133);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "1";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.Honeydew;
+            this.label4.Font = new System.Drawing.Font("YouYuan", 99.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.ForeColor = System.Drawing.Color.LimeGreen;
+            this.label4.Location = new System.Drawing.Point(497, 53);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(124, 133);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "1";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(35, 271);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(86, 17);
+            this.checkBox1.TabIndex = 4;
+            this.checkBox1.Text = "仅练习数字";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(35, 305);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(146, 17);
+            this.checkBox2.TabIndex = 5;
+            this.checkBox2.Text = "仅下面文本框中的字符";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(35, 340);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(566, 20);
+            this.textBox1.TabIndex = 6;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(656, 397);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Name = "Form1";
+            this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+
+        }
+
+
+        #endregion
+
+
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.TextBox textBox1;
+    }
+}
+```
