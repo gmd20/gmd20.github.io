@@ -1,0 +1,87 @@
+
+```text
+Automated Locality Optimization Based on the
+
+Reuse Distance of String Operations
+
+http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en/us/pubs/archive/40679.pdf
+
+
+
+
+
+Abstract—String operations such as memcpy, memset and
+
+memcmp account for a nontrivial amount of Google datacenter
+
+resources. String operations hurt processor cache ef?ciency when
+
+the data accessed is not reused shortly thereafter. Such cache
+
+pollution can be avoided by using nontemporal memory access
+
+to bypass L2/L3 caches. As reuse distance varies greatly across
+
+different memcpy static call contexts in the same program, an
+
+ef?cient solution needs to be call context sensitive. We propose a
+
+novel solution to this problem using the page protection mechanism to measure reuse distance and the GCC feedback directed
+
+optimization mechanism to generate nontemporal memory access
+
+instructions at the appropriate static code contexts. First, the
+
+compiler inserts instrumentation for calls to string operations.
+
+Then a run time library measures reuse distance using the page
+
+protection mechanism during a representative pro?ling run. The
+
+compiler ?nally generates calls to specialized string operations
+
+that use nontemporal operations for the arguments with large
+
+reuse distance. We present a full implementation and initial
+
+results including speedup on large datacenter applications.
+
+Index Terms—memcpy; nontemporal; reuse distance
+
+
+
+1.先是用mprotect和 page fault handler记录下 memcpy的操作信息。（上次看到有人用这个办法来调试c++的内存的越界访问错误）
+
+
+
+2. 然后根据记录下来的测试信息，用gcc的 Feedback-Directed Optimizations特性生成优化代码。
+
+参考：
+
+Feedback-Directed Optimizations in GCC with Estimated Edge Pro?les
+
+from Hardware Event Sampling
+
+http://bbs.chinaunix.net/thread-1928590-1-1.html
+
+http://ols.fedoraproject.org/GCC/Reprints-2008/ramasamy-reprint.pdf
+
+
+
+gcc应该是可以根据profile的信息来生成优化代码？
+
+
+
+3. 主要是根据memcpy的内存访问的距离，看是不是采用不采用 nontemporal memory access策略。
+
+论文的一开始对这个做了详细的介绍可以看一下。大概是说不同的cache策略可能对字符串操作性能影响很大，memcpy导致flush了cpu的全部内存cache，而这个cache区域有没有马上用到的话，以后用到的话，cpu中间的cache加载的重复刷写影响性能。
+
+这个优化都做到cpu内存的cache的更新策略上去了！Google的优化也太深入了吧。
+
+主要是prefetchnta 和movntq 汇编指令，prefetchnta进行数据预先读取， movntq进行WC(Write-combining)模式 操作。
+
+微博有人给了优化过的memcpy一个参考 
+
+内存拷贝的优化方法(草稿) [2]   http://www.cnblogs.com/flier/archive/2004/07/08/22352.html
+
+```
