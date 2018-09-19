@@ -1,0 +1,172 @@
+```text
+    
+
+
+
+
+  下载LOFTER我的照片书  |
+最近碰到一个问题，vc 6.0的new是不抛出异常的，只是返回空指针。但后来c++ 标准规定new造作符分配不到哦啊内存时抛出std::bad_alloc异常了，vc后来的版本也就跟着改了。但之前的vc6.0过来的代码，很多都是以前的旧风格判断返回的是不是NULL的。明显这个地方需要改一下了，如果要在新的vc比如 vc2010里面正常工作的话。
+
+c++ 标准里面也是可以进行不抛出异常的new的，要写成 new (std::nothrow) 这样。另外vc还可以让你链接到旧风格的不抛出异常的new函数去。但stl的代码里面默认都是加载new操作符会抛出异常的，如果通过链接参数 nothrownew.obj禁止new抛出异常的话，stl的代码里面不进行空指针的判断，应该是会导致非法内存访问的。比如 vector.resize这种操作是会抛出异常的，如果禁止了话，应该会导致resize里面使用空指针吧。
+
+
+
+在vc2010 windows xp下面release版的测试了一下，看看上面说的集中情况的调用的new函数的代码.
+
+
+
+1. 默认的会抛出异常的new
+
+========================
+
+char * temp = new char[3 *1024 *1024 *1024];
+
+默认的new会抛出 std::bad_alloc异常，他使用的是下面这个代码。
+
+
+
+std::set_new_handler可以设置一个new分配内存失败时的回调函数。可以自己在那里回收内存或者抛出其他类型的异常。
+
+http://www.cplusplus.com/reference/new/set_new_handler/
+
+“Effective C++（第三版 中文翻译） 条款7：预先准备好内存不够的情况”
+
+提到这个std::set_new_handler的用法，不过感觉用处不大。在这个回调函数里面也只能退出程序或者抛出异常吧。一般都不能自己回收内存的了ba ?
+
+http://www.kuqin.com/effectivec2e/ch02b.htm
+
+
+
+
+
+new.cpp 
+
+-------------------
+
+/***
+*new.cxx - defines C++ new routine
+*
+*       Copyright (c) Microsoft Corporation.  All rights reserved.
+*
+*Purpose:
+*       Defines C++ new routine.
+*
+*******************************************************************************/
+
+#include <cstdlib>
+#include <new>
+
+_C_LIB_DECL
+int __cdecl _callnewh(size_t size) _THROW1(_STD bad_alloc);
+_END_C_LIB_DECL
+
+void *__CRTDECL operator new(size_t size) _THROW1(_STD bad_alloc)
+        {       // try to allocate size bytes
+        void *p;
+        while ((p = malloc(size)) == 0)
+                if (_callnewh(size) == 0)  ///循环调用你std::set_new_handler 设置的回调函数直到分配成功为止。 
+                {       // report no memory
+                static const std::bad_alloc nomem;
+                _RAISE(nomem);
+                }
+
+        return (p);
+        }
+
+/*
+ * Copyright (c) 1992-2002 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Consult your license regarding permissions and restrictions.
+ V3.13:0009 */
+
+
+
+
+2.显示的调用不抛出异常的new
+
+=============================
+
+char * temp = new (std::nothrow) char[30];
+
+如果像上面这样，调用不抛出异常的new，可以看到调用的是下面这个代码。
+
+太帮你做了try catch这些操作了。
+
+
+
+newopnt.cpp  
+
+
+
+
+
+void * __CRTDECL operator new(size_t count, const std::nothrow_t&)
+	_THROW0()
+	{	// try to allocate count bytes
+	void *p;
+	_TRY_BEGIN
+	p = operator new(count);
+	_CATCH_ALL
+	p = 0;
+	_CATCH_END
+	return (p);
+	}
+
+
+
+3. 通过nothrownew.obj链接选项链接到旧的不抛出异常的new
+
+===========================================
+
+如果给项目属性的Link Options ->command line -> additional option,加上 nothrownew.obj 选项。
+
+“nothrownew.obj” 是特殊选项，就会链接到旧的不遵守c++规范的不抛出异常的new，
+
+
+
+new and delete Operators
+
+http://msdn.microsoft.com/en-us/library/kftdy56f.aspx
+
+http://msdn.microsoft.com/en-us/library/ms235330.aspx
+
+
+
+
+
+他使用的是这个代码 nothrownew.cpp
+
+
+
+void * operator new( size_t cb )
+{
+    void *res;
+
+    for (;;) {
+
+        //  allocate memory block
+        res = malloc(cb);
+
+        //  if successful allocation, return pointer to memory
+
+        if (res)
+            break;
+
+        //  call installed new handler
+        if (!_callnewh(cb))
+            break;
+
+        //  new handler was successful -- try to allocate again
+    }
+
+    RTCCALLBACK(_RTC_Allocate_hook, (res, cb, 0));
+
+    return res;
+}
+
+
+
+
+这样改了是不会抛出异常了二十返回空指针了，但是也是不能使用这个配置的。因为c++ stl库假设 new 是会抛出异常的，stl是不会判断返回的是不是空指针的，如果使用了这个选项，stl的代码就会出现非法内存访问了。
+
+
+```
