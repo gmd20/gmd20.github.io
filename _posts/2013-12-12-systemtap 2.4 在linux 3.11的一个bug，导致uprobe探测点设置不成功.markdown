@@ -1,0 +1,544 @@
+```text
+systemtap 2.4 在内核3.11里面注册uprobe点失败，stapiu_probe_prehandler 函数返回UPROBE_HANDLER_REMOVE。导致probe点注册不成功。
+如果你的用的用户程序探测，use space probe点触发频率很高就会发现这个问题。经常看到只有第一个probe点起作用，或者probe点全部设置不成功。
+kprobe没有这个问题。原因是stapiu_change_minus函数里面 设置uprobe_register 在&target->processes之前注册的，结果uprobe断点触发了，
+后面的&target->processes还没设置。
+
+
+
+
+root@debian01:/home/bright/uprobes# cat uprobe_register.stp 
+#! /usr/bin/env stap
+
+probe kernel.function("uprobe_register"){
+	print ("uprobe_regeister is called\n")
+}
+
+probe kernel.function("__replace_page"){
+	printf ("_______________replace_page  addr=%d\n", $addr)
+		print_backtrace();
+	printf ("_______________\n")
+}
+
+probe kernel.function("prepare_uprobe"){
+	printf ("prepare_uprobe vaddr=%d\n", $vaddr)
+}
+
+probe kernel.function("remove_breakpoint"){
+	printf ("remove_breakpoint\n")
+}
+
+probe kernel.function("unapply_uprobe"){
+	printf ("unapply_uprobe\n")
+}
+
+/* probe kernel.function("uprobe_notify_resume"){ */
+/* 	printf ("uprobe_notify_resume ip=%d\n", $regs->ip) */
+/* } */
+
+/* probe kernel.function("handle_swbp"){ */
+/* 	printf ("handle_swbp ip=%d\n", $regs->ip) */
+/* } */
+
+/* probe kernel.function("handler_chain"){ */
+/* 	if ($uprobe->consumers) { */
+/* 		printf ("handler_chain %p\n", $uprobe->consumers->handler) */
+/* 	} */
+/* } */
+
+
+
+
+
+
+
+
+
+Pass 5: starting run.
+uprobe_regeister is called
+prepare_uprobe vaddr=3077445040
+__replace_page  addr=3077445040
+uprobe_regeister is called
+prepare_uprobe vaddr=3077446176
+__replace_page  addr=3077446176
+
+正常的
+Pass 5: starting run.
+uprobe_regeister is called
+prepare_uprobe vaddr=3077445040
+__replace_page  addr=3077445040
+uprobe_regeister is called
+prepare_uprobe vaddr=3077446176
+__replace_page  addr=3077446176
+
+
+uprobe_regeister is called
+prepare_uprobe vaddr=3077445040
+_______________replace_page  addr=3077445040
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f1eb1 : install_breakpoint.isra.15.part.16+0x31/0x70 [kernel]
+ 0xc10f2297 : register_for_each_vma+0x387/0x440 [kernel]
+ 0xc10f25cb : uprobe_register+0x16b/0x260 [kernel]
+ 0xf85a90dc [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498]
+ 0xf85a8eb0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a9355 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a96e6 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a9c29 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a97bb [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a3023 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a5b2c [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a5ab0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xc101a4fd : syscall_trace_leave+0xbd/0x100 [kernel] (inexact)
+ 0xc140b87e : syscall_exit_work+0x1a/0x1f [kernel] (inexact)
+_______________
+uprobe_regeister is called
+prepare_uprobe vaddr=3077446176
+_______________replace_page  addr=3077446176
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f1eb1 : install_breakpoint.isra.15.part.16+0x31/0x70 [kernel]
+ 0xc10f2297 : register_for_each_vma+0x387/0x440 [kernel]
+ 0xc10f25cb : uprobe_register+0x16b/0x260 [kernel]
+ 0xf85a90dc [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498]
+ 0xf85a8eb0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a9355 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a96e6 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a9c29 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a97bb [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a3023 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a5b2c [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xf85a5ab0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7498] (inexact)
+ 0xc101a4fd : syscall_trace_leave+0xbd/0x100 [kernel] (inexact)
+ 0xc140b87e : syscall_exit_work+0x1a/0x1f [kernel] (inexact)
+_______________
+
+
+
+
+不正常的，有三次replace
+uprobe_regeister is called
+prepare_uprobe vaddr=3077445040
+__replace_page  addr=3077445040
+uprobe_regeister is called
+__replace_page  addr=3077445040
+prepare_uprobe vaddr=3077446176
+__replace_page  addr=3077446176
+
+uprobe_regeister is called
+prepare_uprobe vaddr=3077445040
+__replace_page  addr=3077445040
+uprobe_regeister is called
+__replace_page  addr=3077445040
+prepare_uprobe vaddr=3077446176
+__replace_page  addr=3077446176
+
+
+
+uprobe_regeister is called
+prepare_uprobe vaddr=3077445040
+_______________replace_page  addr=3077445040          //////// store
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f1eb1 : install_breakpoint.isra.15.part.16+0x31/0x70 [kernel]
+ 0xc10f2297 : register_for_each_vma+0x387/0x440 [kernel]
+ 0xc10f25cb : uprobe_register+0x16b/0x260 [kernel]
+ 0xf85a90dc [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439]
+ 0xf85a8eb0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a9355 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a96e6 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a9c29 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a3023 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a5b2c [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a5ab0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xc101a4fd : syscall_trace_leave+0xbd/0x100 [kernel] (inexact)
+ 0xc140b87e : syscall_exit_work+0x1a/0x1f [kernel] (inexact)
+_______________
+uprobe_regeister is called
+_______________replace_page  addr=3077445040        ////////store 
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f301d : uprobe_notify_resume+0x3ad/0x860 [kernel]
+ 0xc1010164 : do_notify_resume+0x84/0xb0 [kernel]
+ 0xc140b831 : work_notifysig+0x30/0x37 [kernel]
+_______________
+prepare_uprobe vaddr=3077446176
+_______________replace_page  addr=3077446176     //////////fetch
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f1eb1 : install_breakpoint.isra.15.part.16+0x31/0x70 [kernel]
+ 0xc10f2297 : register_for_each_vma+0x387/0x440 [kernel]
+ 0xc10f25cb : uprobe_register+0x16b/0x260 [kernel]
+ 0xf85a90dc [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439]
+ 0xf85a8eb0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a9355 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a96e6 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a9c29 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a3023 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a5b2c [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xf85a5ab0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_7439] (inexact)
+ 0xc101a4fd : syscall_trace_leave+0xbd/0x100 [kernel] (inexact)
+ 0xc140b87e : syscall_exit_work+0x1a/0x1f [kernel] (inexact)
+_______________
+
+
+
+
+
+
+
+
+root@debian01:/home/bright/uprobes# stap -v uprobe_register.stp 
+Pass 1: parsed user script and 96 library script(s) using 24744virt/15492res/2224shr/13908data kb, in 180usr/10sys/191real ms.
+Pass 2: analyzed script: 6 probe(s), 3 function(s), 0 embed(s), 0 global(s) using 184988virt/110332res/81176shr/29680data kb, in 560usr/20sys/579real ms.
+Pass 3: using cached /root/.systemtap/cache/9d/stap_9d2213fdaad64b3b509e56a254c7fd33_3424.c
+Pass 4: using cached /root/.systemtap/cache/9d/stap_9d2213fdaad64b3b509e56a254c7fd33_3424.ko
+Pass 5: starting run.
+WARNING: Missing unwind data for module, rerun with 'stap -d stap_fa386fd5f39b78ab392cce4a8cb319a6_9186'
+uprobe_regeister is called
+remove_breakpoint
+prepare_uprobe vaddr=3077445040
+_______________replace_page  addr=3077445040
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f1eb1 : install_breakpoint.isra.15.part.16+0x31/0x70 [kernel]
+ 0xc10f2297 : register_for_each_vma+0x387/0x440 [kernel]
+ 0xc10f25cb : uprobe_register+0x16b/0x260 [kernel]
+ 0xf85a90dc [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186]
+ 0xf85a8eb0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a9355 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a96e6 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a9c29 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a96ab [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a3023 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a5b2c [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a5ab0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xc101a4fd : syscall_trace_leave+0xbd/0x100 [kernel] (inexact)
+ 0xc140b87e : syscall_exit_work+0x1a/0x1f [kernel] (inexact)
+_______________
+uprobe_regeister is called
+unapply_uprobe             //////可以确定是发的太快，导致systemtap 的handler（）
+返回失败，导致断点被uprobe内核撤销了。
+remove_breakpoint
+_______________replace_page  addr=3077445040
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f301d : uprobe_notify_resume+0x3ad/0x860 [kernel]
+ 0xc1010164 : do_notify_resume+0x84/0xb0 [kernel]
+ 0xc140b831 : work_notifysig+0x30/0x37 [kernel]
+_______________
+remove_breakpoint
+prepare_uprobe vaddr=3077446176
+_______________replace_page  addr=3077446176
+ 0xc10f1a98 : write_opcode+0x1b8/0x3f0 [kernel]
+ 0xc10f1eb1 : install_breakpoint.isra.15.part.16+0x31/0x70 [kernel]
+ 0xc10f2297 : register_for_each_vma+0x387/0x440 [kernel]
+ 0xc10f25cb : uprobe_register+0x16b/0x260 [kernel]
+ 0xf85a90dc [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186]
+ 0xf85a8eb0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a9355 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a96e6 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a9c29 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a96ab [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a3023 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a5b2c [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xf85a5ab0 [stap_fa386fd5f39b78ab392cce4a8cb319a6_9186] (inexact)
+ 0xc101a4fd : syscall_trace_leave+0xbd/0x100 [kernel] (inexact)
+ 0xc140b87e : syscall_exit_work+0x1a/0x1f [kernel] (inexact)
+_______________
+
+
+
+
+
+1609 static void handler_chain(struct uprobe *uprobe, struct pt_regs *regs)
+1610 {
+1611         struct uprobe_consumer *uc;
+1612         int remove = UPROBE_HANDLER_REMOVE;
+1613         bool need_prep = false; /* prepare return uprobe, when needed */
+1614 
+1615         down_read(&uprobe->register_rwsem);
+1616         for (uc = uprobe->consumers; uc; uc = uc->next) {
+1617                 int rc = 0;
+1618 
+1619                 if (uc->handler) {
+1620                         rc = uc->handler(uc, regs);
+1621                         WARN(rc & ~UPROBE_HANDLER_MASK,
+1622                                 "bad rc=0x%x from %pf()\n", rc, uc->handler);
+1623                 }
+1624 
+1625                 if (uc->ret_handler)
+1626                         need_prep = true;
+1627 
+1628                 remove &= rc;
+1629         }
+1630 
+1631         if (need_prep && !remove)            
+1632                 prepare_uretprobe(uprobe, regs); /* put bp at return */
+1633 
+1634         if (remove && uprobe->consumers) {
+1635                 WARN_ON(!uprobe_is_active(uprobe));
+1636                 unapply_uprobe(uprobe, current->mm);
+//////////////应该是这里导致的取消了断点。
+1637         }
+1638         up_read(&uprobe->register_rwsem);
+1639 }
+1640 
+
+
+
+看看systemtap生成的代码
+=====================
+
+systemtap_module_init   {   这个函数初始化
+
+
+rc = stapiu_init (stap_inode_uprobe_targets, ARRAY_SIZE(stap_inode_uprobe_targets), stap_inode_uprobe_consumers, ARRAY_SIZE(stap_inode_uprobe_consumers));
+
+
+   if (atomic_read (session_state()) == STAP_SESSION_STARTING)                   
+1216     atomic_set (session_state(), STAP_SESSION_RUNNING);
+   ///这里设置状态。
+1217     /* ---- task finder ---- */                                                 
+1218     stap_task_finder_post_init();                                               
+1219   return 0;    
+
+"
+
+这个函数是注册的回调函数
+stapiu_probe_handler  {
+   if (atomic_read (session_state()) != STAP_SESSION_RUNNING)
+	   ///这里会检查状态              
+ 946     goto probe_epilogue;  
+
+
+但仔细看stapiu_probe_handler这个函数不会返回非0值。
+那么错误应该就是在上一级返回被内核的了。
+
+
+
+ 看看systemtap的源码
+ ======================
+  ../systemtap-2.4/runtime/linux/uprobes-inode.c
+
+
+
+ static int                                                                      
+ stapiu_probe_prehandler (struct uprobe_consumer *inst, struct pt_regs *regs)    
+ {                                                                               
+     int ret;                                                                    
+     struct stapiu_consumer *sup =                                               
+         container_of(inst, struct stapiu_consumer, consumer);                   
+     struct stapiu_target *target = sup->target;                                 
+                                                                                 
+     struct stapiu_process *p, *process = NULL;                                  
+                                                                                 
+ #if defined(UPROBES_HITCOUNT)                                                   
+     atomic_inc(&prehandler_hitcount);                                           
+ #endif                                                                          
+                                                                                 
+     /* First find the related process, set by stapiu_change_plus.               
+      * NB: This is a linear search performed for every probe hit!               
+      * This could be an algorithmic problem if the list gets large, but         
+      * we'll wait until this is demonstratedly a hotspot before optimizing.     
+      */                                                                         
+     read_lock(&target->process_lock);                                           
+     list_for_each_entry(p, &target->processes, target_process) {                
+         if (p->tgid == current->tgid) {                                         
+             process = p;                                                        
+             break;                                                              
+         }                                                                       
+     }                                                                           
+     read_unlock(&target->process_lock);                                         
+     if (!process) {                                                             
+ #ifdef UPROBE_HANDLER_REMOVE                                                    
+         /* Once we're past the starting phase, we can be sure that any          
+          * processes which are executing code in a mapping have already         
+          * been through task_finder.  So if it's not in our list of             
+          * target->processes, it can safely get removed.  */                    
+         if (stap_task_finder_complete())                                        
+             return UPROBE_HANDLER_REMOVE;
+//////////这里找不到返回错误了。                               
+ #endif                                                                          
+         return 0;                                                               
+     }                                                                           
+                                                                                 
+ #ifdef STAPIU_NEEDS_REG_IP                                                      
+     /* Make it look like the IP is set as it would in the actual user task      
+      * before calling the real probe handler.  */                               
+     {                                                                           
+     unsigned long saved_ip = REG_IP(regs);                                      
+     SET_REG_IP(regs, uprobe_get_swbp_addr(regs));                               
+ #endif                                                                          
+                                                                                 
+ #if defined(UPROBES_HITCOUNT)                                                   
+     atomic_inc(&handler_hitcount);                                              
+ #endif                                                                          
+                                                                                 
+     ret = stapiu_probe_handler(sup, regs); /////这里调用自动生成代码里面那个函数
+                                                                                 
+ #ifdef STAPIU_NEEDS_REG_IP                                                      
+     /* Reset IP regs on return, so we don't confuse uprobes.  */                
+     SET_REG_IP(regs, saved_ip);                                                 
+     }                                                                           
+ #endif                                                                          
+                                                                                 
+     return ret;                                                                 
+ }      
+
+
+ static int                                                                      
+ stapiu_register (struct inode* inode, struct stapiu_consumer* c)                
+ {                                                                               
+     if (!c->return_p) {                                                         
+         c->consumer.handler = stapiu_probe_prehandler;                          
+     } else {                                                                    
+ #if defined(STAPCONF_INODE_URETPROBES)                                          
+         c->consumer.ret_handler = stapiu_retprobe_prehandler;                   
+ #else                                                                           
+         return EINVAL;                                                          
+ #endif                                                                          
+     }                                                                           
+     return uprobe_register (inode, c->offset, &c->consumer);                    
+ }   
+
+
+
+
+
+应该是 stapiu_probe_prehandler 返回UPROBE_HANDLER_REMOVE导致的问题。
+可以看到是在下面这次修改里面引入的问题
+https://sourceware.org/git/?p=systemtap.git;a=commitdiff;h=caed6403a47a5146e354a5ea20216b048f0f7cae
+
+
+
+
+
+
+看看systemtap源码里面 uprobe的注册流程
+
+
+             
+stapiu_init  
+	stapiu_init_targets 
+            stap_register_task_finder_target(&ut->finder); ////////////查找，并且调用预先注册的回调函数吧               
+         
+
+
+
+自动生成代码里面  stapiu_target的回调是
+static struct stapiu_target stap_inode_uprobe_targets[] = {                     
+{ .finder={  .purpose="inode-uprobes", .mmap_callback=&stapiu_mmap_found,  .munmap_callback=&stapiu_munmap_found,  .callback=&stapiu_process_munmap, }, 
+
+.filename="/usr/lib/libfdcore.so.1.2.0", },    
+};     
+
+
+
+
+
+stapiu_mmap_found               
+	stapiu_change_plus
+	    （1）stapiu_target_reg(target, task);         /////先注册内核回调
+					stapiu_register(target->inode, c);   ///////这里注册uprobe内核模块
+		（2）list_add(&p->target_process, &target->processes); ///再注册查找进程到链表
+
+这就是为什么
+	内核uprobe的回调被调用的时候，processer还没有找到，导致probe点被撤销。
+	如果 程序很忙，probe 触发很快的话。:
+
+
+
+
+
+想修复这个问题，最简单的把前面 那个返回UPROBE_HANDLER_REMOVE的地方注释掉。
+
+我尝试做下面的修改，就是把 （1） 和 （2）的顺序颠倒一下.
+这样就可以保证uprobe中断下来的时候就可以找到对应的target了。
+找到systemtap安装目录下的uprobes-inode.c 文件，比如我的是
+/root/systemtap-2.4-24828/share/systemtap/runtime/linux/uprobes-inode.c 
+
+这个文件应该是stap编译脚本生成的那个内核模块的时候用到吧。
+然后做下面的修改， 改完记得清空一下systemtap的cache （我的是/root/.systemtap/cache/*）
+不让它用旧的版本。 再重新stap运行你的脚本就可以了。
+
+
+root@debian01:/home/bright/uprobes# diff -upN /home/bright/systemtap-2.4/runtime/linux/uprobes-inode.c /root/systemtap-2.4-
+
+24828/share/systemtap/runtime/linux/uprobes-inode.c
+--- /home/bright/systemtap-2.4/runtime/linux/uprobes-inode.c	2013-12-12 21:59:14.249383177 +0800
++++ /root/systemtap-2.4-24828/share/systemtap/runtime/linux/uprobes-inode.c	2013-12-12 22:24:56.849352846 +0800
+@@ -470,7 +470,9 @@ stapiu_exit(struct stapiu_target *target
+ #endif
+ }
+ 
+-
++static int
++stapiu_change_minus(struct stapiu_target* target, struct task_struct *task,                                                                                  
+
+                                   
++		unsigned long relocation, unsigned long length);
+ /* Task-finder found a process with the target that we're interested in.
+  * Grab a process slot and associate with this target, so the semaphores
+  * and filtering can work properly.  */
+@@ -514,10 +516,36 @@ stapiu_change_plus(struct stapiu_target*
+ 			return rc;
+ 		}
+ 
++        /*This must be down before registering uprobe in stapiu_target_reg() */
++		/* Associate this target with this process. */
++		spin_lock(&stapiu_process_slots_lock);
++		write_lock(&target->process_lock);
++		for (i = 0; i < MAXUPROBES; ++i) {
++			p = &stapiu_process_slots[i];
++			if (!p->tgid) {
++				p->tgid = task->tgid;
++				p->relocation = relocation;
++
++							/* The base is used for relocating semaphores.  If the
++							 * probe is in an ET_EXEC binary, then that offset
++							 * already is a real address.  But stapiu_process_found
++							 * calls us in this case with relocation=offset=0, so
++							 * we don't have to worry about it.  */
++				p->base = relocation - offset;
++
++				list_add(&p->target_process, &target->processes);
++				break;
++			}
++		}
++		write_unlock(&target->process_lock);
++		spin_unlock(&stapiu_process_slots_lock);
++
++
+ 		/* OK, we've checked the target's buildid. Now
+ 		 * register all its consumers. */
+ 		rc = stapiu_target_reg(target, task);
+ 		if (rc) {
++			stapiu_change_minus(target, task, relocation, length);
+ 			/* Be sure to release the inode on failure. */
+ 			iput(target->inode);
+ 			target->inode = NULL;
+@@ -527,28 +555,6 @@ stapiu_change_plus(struct stapiu_target*
+ 	}
+ 	stapiu_target_unlock(target);
+ 
+-	/* Associate this target with this process. */
+-	spin_lock(&stapiu_process_slots_lock);
+-	write_lock(&target->process_lock);
+-	for (i = 0; i < MAXUPROBES; ++i) {
+-		p = &stapiu_process_slots[i];
+-		if (!p->tgid) {
+-			p->tgid = task->tgid;
+-			p->relocation = relocation;
+-
+-                        /* The base is used for relocating semaphores.  If the
+-                         * probe is in an ET_EXEC binary, then that offset
+-                         * already is a real address.  But stapiu_process_found
+-                         * calls us in this case with relocation=offset=0, so
+-                         * we don't have to worry about it.  */
+-			p->base = relocation - offset;
+-
+-			list_add(&p->target_process, &target->processes);
+-			break;
+-		}
+-	}
+-	write_unlock(&target->process_lock);
+-	spin_unlock(&stapiu_process_slots_lock);
+ 
+ 	return 0; /* XXX: or an error? maxskipped? */
+ }
+
+```
