@@ -1,0 +1,44 @@
+```text
+Linux下面的pahole命令可以直观的打印出c++对象的内存布局，cache line那些。
+不过vc里面没有方便的命令。不知道一些调试命令行不行，类似gdb ptype那些。
+好像windbg 有个 dt 命令。不知道 vc的调试器，有没有类似的命令？？
+
+不过在网上找到一个微软c++编译器的一个未公开选项，可以生成所有的对象的内存布局。
+
+这种工具可以方面有何程序内存的使用，布局和cache之类的优化吧。
+
+
+
+Visual Studio 2008 和 Visual Studio 2013里面下面这个选择都可以使用
+cl /d1 reportAllClassLayout sourc_name.cpp
+其实就是使用命令行的不公开的编译选项， 在Visual Studio的IDE里面，可以直接
+右键 cpp源码文件，然后选“property” ->"c/ c++ " -> "Command line" 
+里面手工添加  /d1 reportAllClassLayout  这个，然后点compile就可以了。
+直接用命令行cl.exe的话，有可能头文件包含目录没设置跟麻烦。
+
+就会输出所有c++类型的内存布局.像下面这样，不过还是没有 linux的pahole命令的结果好看啊。
+1>  class ?$basic_stringstream@DU?$char_traits@D@std@@V?$allocator@D@2@	size(176):
+1>  	+---
+1>  	| +--- (base class ?$basic_iostream@DU?$char_traits@D@std@@)
+1>  	| | +--- (base class ?$basic_istream@DU?$char_traits@D@std@@)
+1>   0	| | | {vbptr}
+1>   8	| | | _Chcount
+1>    	| | | <alignment member> (size=4)
+1>  	| | +---
+1>  	| | +--- (base class ?$basic_ostream@DU?$char_traits@D@std@@)
+1>  16	| | | {vbptr}
+1>  	| | +---
+1>    	| | <alignment member> (size=4)
+1>    	| | <alignment member> (size=4)
+1>  	| +---
+1>  24	| ?$basic_stringbuf@DU?$char_traits@D@std@@V?$allocator@D@2@ _Stringbuffer
+1>    	| <alignment member> (size=4)
+1>    	| <alignment member> (size=4)
+1>  	+---
+
+记得做完之后把这个选项关了吧
+
+
+有人还提到这个，但我实际测试发现无论是2008还是2010里面都没有支持这个选项。
+cl /d1 reportSingleClassLayout ClassName source_name.cpp  
+```
