@@ -1,0 +1,11 @@
+
+Optimizing Linux Memory Management for Low-latency / High-throughput Databases
+http://engineering.linkedin.com/performance/optimizing-linux-memory-management-low-latency-high-throughput-databases
+'
+禁用内核里面zone reclaim ，可以获得巨大的性能提升
+
+Linux's NUMA optimizations can be effectively disabled by doing the following:
+
+Turn zone reclaim mode off: add vm.zone_reclaim_mode = 0 to /etc/sysctl.conf and runsysctl -p to load the new settings.
+Enable NUMA interleaving for your application: run with numactl --interleave=all COMMAND
+These are now the defaults on all our production systems.
