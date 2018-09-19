@@ -1,0 +1,6 @@
+微博看到有人分析一篇文章  “Memory Access Patterns Are Important”
+通过java的例子来测试 内存访问时的“线性访问” “随机跨page访问” “随机跨大范围的heap访问”， 当然是第一个缓存局部性好，混存命中率更好了。
+文章结合源码和perf使用的例子，用perf查看程序的 第一级 第二级 第三级缓存的命中率， Translation Lookaside Buffers (TLBs) 命中，Hardware Pre-Fetchers等，实在是个不错的参考。
+      原文http://mechanical-sympathy.blogspot.com/2012/08/memory-access-patterns-are-important.html  但需要翻墙，有人在这里转了一个 http://java.dzone.com/articles/memory-access-patterns-are 不需要翻墙啦。
+
+随便贴一下 程序在 i7 的测试结果,  线性的访问 （一级缓存命中） 差不多 1 纳秒读一个字，跨page就变成3纳秒了，范围再大点就需要9纳秒了。硬件越来越高级了，其他的久的cpu，第3个是 30多纳秒的都有。
