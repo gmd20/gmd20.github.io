@@ -1,0 +1,86 @@
+
+来自Apache Kafka项目，一个高吞吐量分布式消息系统，需要做消息的序列化，项目文档提到这个磁盘读写的文档不错，需要仔细学习一下相关思想。
+
+http://incubator.apache.org/kafka/design.html
+
+ 
+
+值的关注的几个地方：
+
+ 
+
+1. 随机读写和顺序读写操作的性能差异。 两者性能差距一万倍，为了更好的磁盘性能，只能尽量保证你的操作是顺序的了。
+
+原文：
+
+As a result the performance of linear writes on a 6 7200rpm SATA RAID-5 array is about 300MB/sec but the performance of random writes is only about 50k/sec—a difference of nearly 10000X. 
+
+
+
+2. 充分利用操作系统的磁盘缓存或者说page cache功能，而不是自己管理缓存。 
+
+尽量的让操作系统去管理磁盘操作的cache，避免自己管理磁盘缓存，然后操作系统文件系统还有缓存的情况。自己程序肯定没有操作系统级实现好，管理复杂，而且浪费内存。文件的系统的预读和缓存机制应该对顺序读写很好支持的了。
+
+ 
+
+具体的做法是：
+
+       采用的是和“尽量自己缓存多的数据在内存里面然后在适当的时机再提交（flush）数据到文件系统”完全相反的做法。所有的数据马上被立即写到磁盘（就是写下去给文件系统的cache层了），但不调用flush操作（已经写到page cache里面了，由操作系统的文件缓存机去确定以后什么时候真正的写数据到磁盘。）
+
+原文是这样说的：
+
+This suggests a design which is very simple: rather than maintain as much as possible in-memory and flush to the filesystem only when necessary, we invert that. All data is immediately written to a persistent log on the filesystem without any call to flush the data. In effect this just means that it is transferred into the kernel's pagecache where the OS can flush it later. Then we add a configuration driven flush policy to allow the user of the system to control how often data is flushed to the physical disk (every N messages or every M seconds) to put a bound on the amount of data "at risk" in the event of a hard crash.
+
+This style of pagecache-centric design is described in an article on the design of Varnish here (along with a healthy helping of arrogance).
+
+ 
+
+提到关于varnish 服务器的文档： https://www.varnish-cache.org/trac/wiki/ArchitectNotes
+
+varnish提到利用文件内存映射，和操作系统页管理的一些要点。这种磁盘策略应该也是varnish 提到的思想来的。
+
+
+Redis 应该是 提供每个操作flush和每秒 flush和从来不主动flush操作的,可以到Redis主页看一下文档，这点做的比较好，很多设计都写成文档了，其中一个技巧是做程序内存快照（保存数据到磁盘）的时候，fork一个子进程出来然后再保存，利用操作系统的copy-on-write特性，这个记得以前在“云风”的blog上面看过，说他做游戏服务器的时候，备份游戏数据也是这样做法（他数据都直接保存到文件里面没有使用数据库），不知道是不是跟redis学的。 Google的 LevelDB应该也是采用Redis一样的策略，可以给用有多种选择。可以肯定的是每个操作都flush或者说同步（sync）的是最慢点，自己从不flush而是让操作系统自己去做的是性能最好的。
+
+LevelDB的随机性能很好，有人说是实现了LSMTree(B-tree的改进)，这个东西应该可以参考一下。常规的数据库引擎，听说写的性能也很不错，像Mysql的开源InnoDB引擎这些不知道有没有参考价值。这些可能专门针对数据库优化，利用b-tree这些，可能和单纯的磁盘读写不是很一样。
+
+        可以找一下 "The Log-Structured Merge-Tree (LSM-Tree).pdf" 这个论文来看一下，LevelDB应该是根据论文的原理来实现的，就是利用优化的LSM-tree来减少随机写，编程批量的连续写。其思想可嫩来自 Ousterhout和Rosenblum在1991年发表的经典论文 <<The Design and Implementation of a Log-Structured File System >>  。这个基于log 结构的文件系统，可以充分利用磁盘的带宽。看上去特写适合用来做为管理我后面说的那种多路视频的存储服务器的设计啊。（搜索LSM-tree从http://duanple.blog.163.com/blog/static/7097176720120391321283/  这看到的这个论文）
+
+         Google groups里面有个帖子，高手讨论了一下rabbitMQ的磁盘操作问题，可以看一下，很有意思的帖子。
+
+ Messaging queue 
+
+https://groups.google.com/forum/#!topic/nosql-databases/laU5v8YZ3Ww
+
+
+3.   数据结构不采用BTree 而是采用简单的“persistent queue” 。  复杂的树结构，可能有好时间常数属性O(log N)  ，但在磁盘物理上面保存不连续，磁盘操作时就会需要更多的磁盘寻道（disk seek ）时间。一个磁盘在一个时刻里面只能做一此寻道操作，不能并行！所以少数的几个寻道代价都很高了。存储系统同时混合着快速缓存和实际的物理操作，所以观察到的BTree结构的性能通常都是超线性的。而且树结构通常都需要复杂的“锁操作”来保证。多磁盘寻道的操作导致不能利用高磁盘密度的特性，只能采用小的(< 100GB) 的高转速的SAS 磁盘。
+
+       所以采用一个有简单的读操作和追加操作组成的“持久队列（persistent queue）”是 日志系统的通常做法。虽然这个结构没有BTree的特性，但有所有操作都是O(1) 的优点，读操作和写操作也不会相互阻塞。这样性能和数据量大小就没有耦合性，一台机器就可以利用多块大容量的 低转速的1TB 以上SATA 磁盘。虽然这种盘的磁盘寻道时间没有那么好，但用于通常用三分之一的价格就可以获得相当的大量数据读写的性能和3倍以上的容量。
+
+ 原文：
+
+ 
+
+The persistent data structure used in messaging systems metadata is often a BTree. BTrees are the most versatile data structure available, and make it possible to support a wide variety of transactional and non-transactional semantics in the messaging system. They do come with a fairly high cost, though: Btree operations are O(log N). Normally O(log N) is considered essentially equivalent to constant time, but this is not true for disk operations. Disk seeks come at 10 ms a pop, and each disk can do only one seek at a time so parallelism is limited. Hence even a handful of disk seeks leads to very high overhead. Since storage systems mix very fast cached operations with actual physical disk operations, the observed performance of tree structures is often superlinear. Furthermore BTrees require a very sophisticated page or row locking implementation to avoid locking the entire tree on each operation. The implementation must pay a fairly high price for row-locking or else effectively serialize all reads. Because of the heavy reliance on disk seeks it is not possible to effectively take advantage of the improvements in drive density, and one is forced to use small (< 100GB) high RPM SAS drives to maintain a sane ratio of data to seek capacity.
+
+ 
+
+Intuitively a persistent queue could be built on simple reads and appends to files as is commonly the case with logging solutions. Though this structure would not support the rich semantics of a BTree implementation, but it has the advantage that all operations are O(1) and reads do not block writes or each other. This has obvious performance advantages since the performance is completely decoupled from the data size--one server can now take full advantage of a number of cheap, low-rotational speed 1+TB SATA drives. Though they have poor seek performance, these drives often have comparable performance for large reads and writes at 1/3 the price and 3x the capacity.
+
+ 
+
+Having access to virtually unlimited disk space without penalty means that we can provide some features not usually found in a messaging system. For example, in kafka, instead of deleting a message immediately after consumption, we can retain messages for a relative long period (say a week).
+
+ 
+
+4. 利用Linux的 sendfile系统调用，减少内存拷贝，
+
+ 
+
+还是看原文吧，很多有用信息，比如不采用Paxos的同步机制的技巧，push 和pull模式比较等，需要去学习一下哈。
+
+ 
+
+上次找工作是，有个公司想叫我过去写多路视频服务器的的存储模块的程序。 面试官说存储方面有些问题，需要重写，我差点就去了。呵呵。
+
+不知道以后有没有机会接触这个。
