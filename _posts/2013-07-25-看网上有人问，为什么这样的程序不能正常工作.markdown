@@ -1,0 +1,172 @@
+```text
+看网上有人问，为什么这样的程序不能正常工作
+_declspec (noinline) void helloworld()
+{
+    printf("hello world");
+}
+ 
+int main (int, char**)
+{  
+    const int kfunctionSize = 50;
+    DWORD dwOldProtect;
+    char *buf =
+    new char [200];
+    if (!VirtualProtect(buf,kfunctionSize,PAGE_EXECUTE_READWRITE,&dwOldProtect))
+    {
+        std::cout << "VirtualProtect error" <<std::endl;
+    }
+        // 使用下面这个更好吧
+    //(char *)VirtualAlloc(NULL, kfunctionSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+         
+    std::cout << (void *) buf << "  " << (void*) helloworld <<std::endl;
+    helloworld();
+ 
+    memcpy(buf, helloworld, kfunctionSize);
+    //if (memcmp(buf,   helloworld,50) ==0 ) {
+    //  std::cout << "good" << std::endl;
+    //}
+    typedef void (*phelloworld)(void);
+    phelloworld func = (phelloworld)buf;
+    //FlushInstructionCache(::GetCurrentProcess(),NULL,NULL);
+    func();
+ 
+    int bbbb;
+    std::cin >>bbbb;
+    return 0;
+}
+看了一下，是由于 调用printf 函数这里，生成的call汇编是采用相对地址的
+__declspec (noinline) void helloworld()
+{
+	printf("hello world");
+004017C0 68 E0 21 42 00       push        offset string "hello world" (4221E0h)  
+004017C5 E8 78 A4 00 00       call        printf (40BC42h)  
+004017CA 59                   pop         ecx  
+}
+
+
+
+查intel手册可以知道 e8 开头的call机器码表示采用的相对地址。
+
+E8 cd CALL rel32 M Valid Valid Call near, relative,
+
+displacement relative to
+
+next instruction. 32-bit
+
+displacement sign extended
+
+to 64-bits in 64-bit mode.
+
+
+
+
+
+如果自己把helloworld 函数复制一遍，这个地址和printf函数的相对偏移肯定就变了，程序就就会出错了。
+
+所以只能自己做重定位修正这个偏移了。 gcc里面有  -fpic编译选项可以生成位置无关的代码（Position-independent code），不知道在这种情况下用到上不。但vc里面找了一下是没有这个选项的。
+
+只能手写汇编，让它生成采用绝对地址的指令，位置无关的代码。
+
+__declspec (noinline) void helloworld()
+{
+	//printf("hello world");
+	__asm
+	{
+		mov  eax, offset world
+		push eax
+		mov  eax, offset hello
+		push eax
+		mov  eax, offset format
+		push eax
+		//call printf
+		mov eax, printf_addr
+		call eax
+		//clean up the stack so that main can exit cleanly
+		//use the unused register ebx to do the cleanup
+		pop  ebx
+		pop  ebx
+		pop  ebx
+	}
+}
+
+
+
+
+int main (int, char**)
+{
+	
+	const int kfunctionSize = 50;
+	DWORD dwOldProtect;
+	char *buf = 
+	new char [200];
+	if (!VirtualProtect(buf,kfunctionSize,PAGE_EXECUTE_READWRITE,&dwOldProtect))
+	{
+		std::cout << "VirtualProtect error" <<std::endl;
+	}
+	//(char *)VirtualAlloc(NULL, kfunctionSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+		
+	std::cout << (void *) buf << "  " << (void*) helloworld <<std::endl;
+	helloworld();
+
+	memcpy(buf, helloworld, kfunctionSize);
+	//if (memcmp(buf,	helloworld,50) ==0 ) {
+	//	std::cout << "good" << std::endl;
+	//}
+	typedef void (*phelloworld)(void);
+	phelloworld func = (phelloworld)buf;
+	//FlushInstructionCache(::GetCurrentProcess(),NULL,NULL);
+	func();
+
+	int bbbb;
+	std::cin >>bbbb;
+	return 0;
+
+}
+
+上面照着MSDN的一个printf的例子，修改一下，生成的汇编指令call那里采用的就是绝对地址引用了。
+
+
+__declspec (noinline) void helloworld()
+{
+004017C0 53                   push        ebx  
+	//printf("hello world");
+	__asm
+	{
+		mov  eax, offset world
+004017C1 B8 18 69 42 00       mov         eax,offset world (426918h)  
+		push eax
+004017C6 50                   push        eax  
+		mov  eax, offset hello
+004017C7 B8 10 69 42 00       mov         eax,offset hello (426910h)  
+		push eax
+004017CC 50                   push        eax  
+		mov  eax, offset format
+004017CD B8 08 69 42 00       mov         eax,offset format (426908h)  
+		push eax
+004017D2 50                   push        eax  
+		//call printf
+		mov eax, printf_addr
+004017D3 A1 20 69 42 00       mov         eax,dword ptr [world+8 (426920h)]  
+		call eax
+004017D8 FF D0                call        eax  
+		//clean up the stack so that main can exit cleanly
+		//use the unused register ebx to do the cleanup
+		pop  ebx
+004017DA 5B                   pop         ebx  
+		pop  ebx
+004017DB 5B                   pop         ebx  
+		pop  ebx
+004017DC 5B                   pop         ebx  
+	}
+}
+可以看到call指令一句编程了ff开头的绝对地址的用法了
+
+所以这个程序，测试可以正常工作了。
+
+看来这种注入代码的，还是要手写汇编，然后注意这个 “位置无关”还有堆栈平衡才行。
+
+
+
+2013-08-01补充： 这篇文章的重定位和动态链接库加载的重定位(Relocation)是不一样的，动态链接库加载时，用的-fpic编译，这种相对地址应该还是可以使用的，因为他整个可执行文件一块被加载，里面的代码相对位置没变，只是起始地址变了，所以那些采用绝对值地的就要做重定位了。可以自己搜索一下 动态链接库重定位相关的资料，像elf这些执行文件，应该都要有重定位表的。
+     这篇文章里面不一样，只是复制一个函数到另外一个地方，反过来，采用相对对峙的地方需要做重定位了。
+     ```
