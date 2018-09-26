@@ -1,4 +1,4 @@
-```
+```text
 cmake_minimum_required(VERSION 2.8)
 
 # 包含其他cmake文件
@@ -133,6 +133,7 @@ endif()
  add_library(bar SHARED IMPORTED)
  set_property(TARGET bar PROPERTY IMPORTED_LOCATION c:/path/to/bar.dll)
  set_property(TARGET bar PROPERTY IMPORTED_IMPLIB c:/path/to/bar.lib)
+ 
  add_executable(myexe src1.c src2.c)
  target_link_libraries(myexe bar)
 
@@ -249,4 +250,17 @@ add_custom_target(smsc_cdr_build_golang_program ALL
                   COMMENT "build smsc_cdr"
                   )
 install(PROGRAMS ${TEST_CDR_BIN} DESTINATION ${TEST_BIN_INSTALL_SUFFIX})
+
+
+
+
+
+# 执行一个外部命令，把输出赋值给cmake变量
+execute_process(COMMAND date  '+%Y%m%d' OUTPUT_VARIABLE DATE_TIME)
+
+
+# 常用的模块，引用第三方库, 比如curl等等，比如用的FindCURL查找curl库的头文件和链接库，具体参考cmake模块文档的说明
+INCLUDE(FindCURL)
+
+
 ```
