@@ -279,6 +279,7 @@ Suffix:
 
 
 # CPack 模块打包安装文件RPM
+参考CPack模块的说明 https://cmake.org/cmake/help/v2.8.12/cmake.html#module:CPack 
 
 set(CPACK_PACKAGE_NAME test_package)
 set(CPACK_PACKAGE_VENDOR test_vendor)
@@ -290,7 +291,7 @@ set(CPACK_STRIP_FILES true)
 set(CPACK_GENERATOR RPM)
 set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE rpm_pre_install.sh)
 set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE rpm_post_install.sh)
-INCLUDE(CPACK)
+INCLUDE(CPack)
 
 然后调用下面的命令编译和打包rpm
   mkdir -p build
