@@ -268,4 +268,14 @@ install(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
                                 ../test.so
                                 \$ENV{DESTDIR}/usr/lib/test.so.1)
              ")
+	     
+	     
+# 改变 动态链接库的输出名字  libxxx.so,  默认都是有lib开头的可以删掉
+    set_target_properties(my_lib PROPERTIES PREFIX "")
+    set_target_properties(my_lib PROPERTIES OUTPUT_NAME "new_lib")
+Suffix:
+
+    set_target_properties(my_lib PROPERTIES SUFFIX ".so.1")
+
+
 ```
