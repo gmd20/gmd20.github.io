@@ -299,5 +299,5 @@ INCLUDE(CPack)
   cmake -DCMAKE_INSTALL_PREFIX=/usr/test -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath=/usr/test/lib" ..
   cmake --build .
 
-  cpack -D CPACK_GENERATOR="RPM;TGZ"
+   cpack -D CPACK_GENERATOR="ZIP;TGZ" /path/to/build/tree
 ```
