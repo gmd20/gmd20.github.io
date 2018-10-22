@@ -98,3 +98,11 @@ Total: 308993762 objects
 
 --gv选项生成的图示，还有--callgrind  等格式的输出的，参考google-pprof （源码里面 pprof脚本） 的参数说明
 ```
+
+
+# CentOS 7.5
+```
+yum install gperftools-libs
+git clone https://github.com/gperftools/gperftools
+gperftools/src/pprof --text
+```
