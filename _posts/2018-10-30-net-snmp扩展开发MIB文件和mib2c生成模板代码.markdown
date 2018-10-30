@@ -51,6 +51,7 @@ dlmod test /usr/lib64/test.so
 ```text
 snmpwalk -v 1 localhost -c public system
 snmpwalk -v 2c localhost -c public iftable
+snmpwalk -v 2c 192.168.1.246  -c public  interfaces
 MIBS="+XYZ-MIB" snmpwalk -v 2c localhost -c public enterprises.<申请到的或者测试用的id>
 ···
 
