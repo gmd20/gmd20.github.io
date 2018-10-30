@@ -34,8 +34,8 @@ mib2c.scalar.conf
 
 一般的table 使用 mib2c.mfd.conf这个就可以了, man mib2c 查看帮助
 ```text
-MIBS+=XYZ-MIB mib2c -c mib2c.mfd.conf XYZTable
-MIBS+=XYZ-MIB mib2c -c mib2c.mfd.conf -f <output_filename> XYZTable
+MIBS="+XYZ-MIB" mib2c -c mib2c.mfd.conf XYZTable
+MIBS="+XYZ-MIB" mib2c -c mib2c.mfd.conf -f <output_filename> XYZTable
 ```
 /usr/bin/mib2c 是一个perl脚本，可以看一下
 
@@ -51,6 +51,6 @@ dlmod test /usr/lib64/test.so
 ```text
 snmpwalk -v 1 localhost -c public system
 snmpwalk -v 2c localhost -c public iftable
-snmpwalk -v 2c localhost -c public enterprises.<申请到的或者测试用的id>
+MIBS="+XYZ-MIB" snmpwalk -v 2c localhost -c public enterprises.<申请到的或者测试用的id>
 ···
 
