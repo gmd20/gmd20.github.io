@@ -1,0 +1,87 @@
+vlan-filter
+# ethtool -k eth0  | grep rx-vlan-filter 
+rx-vlan-filter: on [fixed]
+
+# ethtool -k eth0 | grep rx-all
+rx-all: off
+
+# ethtool -k eth0  | grep cha
+vlan-challenged: off [fixed]  vlan-challenged为on表示网卡不支持vlan
+
+
+硬件寄存器里面的 E1000_RCTL_VFE 标志位控制
+进入 IFF_PROMISC 模式或者 rx-all: off 模式，驱动都会自动禁用vlan-filter，但  rx-all还会接受损坏的包
+		/* According to definition of SI mode, iface in promisc mode
+		 * should receive matched and unmatched (in resolution of port)
+		 * unicast packets.
+		 */
+
+e1000 驱动 只有配置了至少一个 vlan 才会启用E1000_RCTL_VFE, 参考代码 e1000_vlan_filter_on_off e1000_vlan_rx_add_vid
+e1000e 实际测试默认好像E1000_RCTL_VFE就没开
+igb （i210）实际测试默认会打开E1000_RCTL_VFE，不接受任何vlan
+ixgbe   IXGBE_VLNCTRL_VFE
+     vlan filter的配置应该是保存在 adapter->active_vlans 里面通过 for_each_set_bit_from(vid, adapter->active_vlans, VLAN_N_VID) 来设置
+static void ixgbe_restore_vlan(struct ixgbe_adapter *adapter)
+{
+	u16 vid = 1;
+
+	ixgbe_vlan_rx_add_vid(adapter->netdev, htons(ETH_P_8021Q), 0);  // 这个应该是清空所有vlan filter
+
+	for_each_set_bit_from(vid, adapter->active_vlans, VLAN_N_VID)
+		ixgbe_vlan_rx_add_vid(adapter->netdev, htons(ETH_P_8021Q), vid);
+}
+/**
+ * ixgbe_set_rx_mode - Unicast, Multicast and Promiscuous mode set
+ * @netdev: network interface device structure
+ *
+ * The set_rx_method entry point is called whenever the unicast/multicast
+ * address list or the network interface flags are updated.  This routine is
+ * responsible for configuring the hardware for proper unicast, multicast and
+ * promiscuous mode.
+ **/
+void ixgbe_set_rx_mode(struct net_device *netdev)
+
+e1000的硬件  e1000_82543 以后版本都支持 NETIF_F_HW_VLAN_CTAG_FILTER
+	if (hw->mac_type >= e1000_82543) {
+		netdev->hw_features = NETIF_F_SG |
+				   NETIF_F_HW_CSUM |
+				   NETIF_F_HW_VLAN_CTAG_RX;
+		netdev->features = NETIF_F_HW_VLAN_CTAG_TX |
+				   NETIF_F_HW_VLAN_CTAG_FILTER;
+	}
+
+
+所有的 e1000e  82571 82572 82573 82574 82583 都支持  NETIF_F_HW_VLAN_CTAG_FILTER;
+
+e1000        
+		/* disable VLAN receive filtering */
+		rctl = er32(RCTL);
+		rctl &= ~E1000_RCTL_VFE;
+		ew32(RCTL, rctl);
+
+e1000e
+		/* disable VLAN receive filtering */
+		rctl = er32(RCTL);
+		rctl &= ~(E1000_RCTL_VFE | E1000_RCTL_CFIEN);
+		ew32(RCTL, rctl);
+
+bnx2x  如果不配置 vlan，默认好像也是acdept_any_vlan
+
+static const struct net_device_ops e1000e_netdev_ops = {
+        .ndo_set_rx_mode	= e1000e_set_rx_mode,         /// 可以调用来设置 IFF_PROMISC， 会根据标志位启用还是禁用VLAN receive filtering
+	.ndo_vlan_rx_add_vid	= e1000_vlan_rx_add_vid,   添加一个vlan filter 
+	.ndo_vlan_rx_kill_vid	= e1000_vlan_rx_kill_vid,    删除一个vlan filter 
+
+虚拟vlan 设备的实现 vlan_vid_add里面会这个ndo_vlan_rx_add_vid	
+
+根据 int register_netdevice(struct net_device *dev) 代码，只要驱动net_device支持 NETIF_F_HW_VLAN_CTAG_FILTER
+都必须提供.ndo_vlan_rx_add_vid .ndo_vlan_rx_kill_vid 这两个接口的
+
+
+
+查看各个网卡的规格文档说明
+https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/i210-ethernet-controller-datasheet.pdf
+7.1.1.2 VLAN Filtering
+
+
+内核netdev_drivername 函数可以判断网络设备的驱动是不是igb
