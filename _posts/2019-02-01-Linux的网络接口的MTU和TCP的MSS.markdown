@@ -34,3 +34,7 @@ tracepath baidu.com
 # TCP 的MSS 
 TCP的建立的时候在syn包中会设置一个MSS选项，用于通知对端最大的MSS大小。MSS = MTU - header_size
 iptables 中有个TCPMSS模块可以修改syn中mss，这样在中间设备上就可以修改MSS为新的值。交换机路由器上面好像一般都可以配置规则修改MSS，错误的修改应该会导致两端的通讯出问题。
+
+
+# 网上的这个文章好像讲的还挺详细的
+[MTU & MSS 详解记录](http://blog.51cto.com/infotech/123859)
