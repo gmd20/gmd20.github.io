@@ -130,7 +130,7 @@ struct skb_shared_info {
   gso_type = 0, 
   ip6_frag_id = 0, 
   frag_list = 0x0, 
-  frags = {{
+  frags = {
       page = 0xffff810103eb5a00, 
       page_offset = 0, 
       size = 4096
@@ -142,7 +142,7 @@ struct skb_shared_info {
       page = 0xffff81011b9daca8, 
       page_offset = 0, 
       size = 4096
-    }, {
+    }, 
 
 
 http://people.redhat.com/anderson/crash_whitepaper/help_pages/mod.html
