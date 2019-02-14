@@ -1,3 +1,4 @@
+bash 发送udp数据包
 ```text
 echo -n "hello" > /dev/udp/192.168.56.1/8000
 echo -n "$1" | nc -4u -w1 $HOST $PORT
