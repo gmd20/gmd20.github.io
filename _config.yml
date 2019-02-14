@@ -7,7 +7,7 @@ paginate_path: "blog/page:num/"
 paginate: 5
 permalink: blog/:title/ 
 markdown: redcarpet
-highlighter: pygments
+highlighter: rouge
 
 navigation:
  - title: Home
