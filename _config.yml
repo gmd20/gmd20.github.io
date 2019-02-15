@@ -12,11 +12,11 @@ navigation:
  - title: Home
    url: /index.html
  - title: Archives
-   url: /archives
+   url: /archives.html
  - title: About
-   url: /about
+   url: /about.html
  - title: Contact
-   url: /contact
+   url: /contact.html
 
 defaults:
   -
