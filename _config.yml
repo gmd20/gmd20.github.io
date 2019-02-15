@@ -12,6 +12,8 @@ highlighter: rouge
 navigation:
  - title: Home
    url: /index.html
+ - title: Archives
+   url: /archives
  - title: About
    url: /about
  - title: Contact
