@@ -7,7 +7,8 @@ layout: default
   <ul class="posts noList">
     {% for post in site.posts %}
       <li>
-        <h3><span class="date">{{ post.date | date: '%Y-%m-%d  ' }}</span> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
+        <span class="date">{{ post.date | date: '%Y-%m-%d  ' }}</span>
+        <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> 
       </li>
     {% endfor %}
   </ul>
