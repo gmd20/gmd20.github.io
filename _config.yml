@@ -7,7 +7,6 @@ paginate_path: "blog/page:num/"
 paginate: 10
 permalink: blog/:title/ 
 highlighter: rouge
-include: [archives.html,about.html,contact.html]
 
 navigation:
  - title: Home
