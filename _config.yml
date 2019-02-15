@@ -1,7 +1,7 @@
 title: gmd20
 description:  personal blog
 
-url: http://gmd20.github.io
+url: https://gmd20.github.io
 baseurl: ""
 paginate_path: "blog/page:num/"
 paginate: 5
