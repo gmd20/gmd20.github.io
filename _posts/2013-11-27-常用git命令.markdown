@@ -56,6 +56,12 @@ git checkout -b fixes 1b6d
 git branch -m  work/issue93  work/issue/93
 ```
 
+查看本地分支与远程分支关联关系
+============================
+```text
+git branch -vv
+```
+
 rebase调整分支的继承结构
 =======================
 ```text
@@ -122,6 +128,18 @@ git show a0a394bc5fd6
 
 git reflog
 查看分支历史，比git log 看起来方便一些。
+
+按commit 消息内容查找
+git log -g --grep="查找关键字"
+
+按时间查找
+git log --after="2019-01-20 00:00" --before="2019-01-21 12:00"
+
+显示指定文件的历史记录
+git log -p filename
+
+按文件内容变化查找
+git log --all -S "文件内容关键字" filename
 ```
 
 制作patch
@@ -221,15 +239,16 @@ git rebase [-i | --interactive]  <commit_hash|branch>
 把commit之前的pick改成reword就可以重新该commit的信息了。
 参考 git help rebase的文档，这个一个非常强大的命令
 
-
 git commit -a --fixup 34bda33
 git rebase --interactive --autosquash master
 
 --fixup 表示这次提交时对之前34bda33 那个commit的存在问题的修复。
 --autosquash 就会自动把这两个关联问题的commit合并成一个commit
 
- 如果是重排commit顺序和丢掉一些commit，那个更简单了，修改那个 列表就可以了，
+如果是重排commit顺序和丢掉一些commit，那个更简单了，修改那个 列表就可以了，
 参考git help rebase的文档INTERACTIVE MODE的章节。
+
+
 ```
 
 
@@ -285,8 +304,8 @@ git log --stat  显示commit历史的修改行数
 git log --pretty=format:"%h %s" --graph
 ```
 
-远程分支
-=========
+远程服务器地址修改
+=================
 ```text
 git remote -v     查看远程仓库
 git remote add pb git://github.com/paulboone/ticgit.git 添加远程仓库pb
@@ -294,6 +313,11 @@ git fetch pb  从远程仓库pb取内容
 git remote rename pb paul 远程仓库的删除和重命名
 git remote rm paul
 git remote show origin  查看远程仓库内容
+
+git remote -v
+origin	http://192.168.100.105:8080/git/repos/myproject.git (fetch)
+origin	http://192.168.100.105:8080/git/repos/myproject.git (push)
+git remote set-url origin http://192.168.4.203:8080/git/repos/myproject.git
 ```
 
 选择性的把某个分支上面的某次commit  merge过来
@@ -319,14 +343,8 @@ git archive --format=zip -o  webrtc_latest.zip HEAD
 可以方便的把git的目录打包到一个压缩包里面，可以指定某个branch之类的。
 ```
 
-更改远程服务器地址
-================
-```text
-git remote -v
-origin	http://192.168.100.105:8080/git/repos/myproject.git (fetch)
-origin	http://192.168.100.105:8080/git/repos/myproject.git (push)
-git remote set-url origin http://192.168.4.203:8080/git/repos/myproject.git
-```
+
+
 
 使用内置的git server 来在windows 和linux 机器之间同步文件 ，使用多个remote仓库
 =========================================================
