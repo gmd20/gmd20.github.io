@@ -99,6 +99,9 @@ $ git reset ORIG_HEAD
 
 git checkout -f   force选项可以强制checkout，并且丢弃本地位未提交的修改
 
+git checkout -- <pathspec>  丢弃某个文件未提交的修改 
+
+
 重做多个commit的记录，把多个commit合并到一个里面里面
 先用reset回撤到commit e20bec14，但保留文件修改, 然后再重写提交记录，把多个commit的记录换成一个等
 
