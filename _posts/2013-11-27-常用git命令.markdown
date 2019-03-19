@@ -143,6 +143,10 @@ git log -p filename
 
 按文件内容变化查找
 git log --all -S "文件内容关键字" filename
+
+指定格式化，生成两个版本的changelog 等，可以插入html模板，markdown模板等
+git log v3.1...v3.0 --pretty=format:'%H %s'
+
 ```
 
 制作patch
