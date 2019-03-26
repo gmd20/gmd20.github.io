@@ -1,0 +1,56 @@
+huawei s3700
+------------
+```text
+console 默认密码 admin@huawei.com
+```
+
+进入配置模式
+------------
+```text
+system-view
+```
+
+查看状态
+--------
+```text
+display
+display vlan
+display interface Ethernet 0/0/24
+```
+
+端口镜像
+--------
+```text
+observe-port 1 interface gigabitethernet 1/0/1  千兆端口
+observe-port 1 interface Ethernet 0/0/22 创建镜像端口，s3700只支持Ethernet百兆端口
+interface Ethernet 0/0/23
+  port-mirroring to observe-port 1 both 把23镜像到22
+quit
+```
+
+配置端口为vlan trunk
+--------------------
+```text
+interface Ethernet 0/0/24  进入端口配置
+undo port default vlan
+undo port link-type
+port link-type trunk
+port trunk allow-pass vlan 1001 添加vlan
+quit
+```
+
+保存设置
+--------
+```text
+quit 退出system-view模式
+save all
+```
+
+参考手册
+-------
+```text
+S1720&S2700&S3700&S5700&S6700&S7700&S9700系列交换机_常见操作指南(pdf)
+S2700&S3700 V100R006C05 配置指南-基础配置.pdf
+S2700&S3700 V100R006C05 配置指南-接口管理.pdf
+S2700&S3700 V100R006C05 配置指南-以太网.pdf
+```
