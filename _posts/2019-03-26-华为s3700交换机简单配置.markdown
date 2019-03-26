@@ -39,6 +39,20 @@ port trunk allow-pass vlan 1001 添加vlan
 quit
 ```
 
+关闭某个端口的STP
+----------------
+```text
+[HW]interface Ethernet 0/0/24
+[HW-Ethernet0/0/24]stp disable 
+[HW-Ethernet0/0/24]quit
+
+STP开启的时候，系统link变成up状态后， 还要经过7、8秒的“Forward Delay Timer”才会真正的开始转发数据包，中间要经过STP learning 阶段，
+关闭STP应该可以快速恢复端口的数据联通性吧。
+
+http://support.huawei.com/enterprise/docinforeader!loadDocument1.action?contentId=DOC1000057411&partNo=10212
+https://support.huawei.com/enterprise/zh/doc/EDOC1000057409?section=j02d
+```
+
 保存设置
 --------
 ```text
