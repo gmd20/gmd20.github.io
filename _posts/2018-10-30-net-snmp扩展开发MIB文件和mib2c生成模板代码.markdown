@@ -47,6 +47,11 @@ http://pen.iana.org/pen/PenApplication.page
 dlmod test /usr/lib64/test.so
 ```
 
+#  调试日志
+```text
+snmpd -Lf /tmp/snmpd.log  -D
+```
+
 # 测试扩展模块
 ```text
 snmpwalk -v 1 localhost -c public system
