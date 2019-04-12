@@ -23,7 +23,7 @@ static int dev_new_index(struct net *net)
 
 不过手工创建时应该是可以指定index的
 ```text
-# ip link add name team0 type team
-# /usr/sbin/ip link add name team0 index 10 type team  
-# ip link delete team0
+# ip link add name bond0 type bond
+# /usr/sbin/ip link add name bond0 index 10 type bond  
+# ip link delete bond0
 ```
