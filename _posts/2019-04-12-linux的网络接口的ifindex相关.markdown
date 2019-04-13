@@ -24,6 +24,10 @@ Definition at line 1404 of file link.c.
 References nl_send_sync(), and rtnl_link_build_add_request().
 
 Referenced by rtnl_link_bond_add(), rtnl_link_bridge_add(), and rtnl_link_veth_add().
+
+设置ifindex
+extern void	rtnl_link_set_ifindex(struct rtnl_link *, int);
+extern int	rtnl_link_get_ifindex(struct rtnl_link *);
 ```
 
 # 创建的新的interface（net_device), 如果不指定内核创建时默认的ifindex是不停的增长的，
