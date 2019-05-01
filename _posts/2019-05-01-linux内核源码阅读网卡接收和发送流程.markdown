@@ -1,0 +1,49 @@
+```text
+netif_rx    // 网卡驱动里面调用这个函数上传skb
+  netif_rx_internal 
+    do_xdp_generic    // xdp的处理
+      netif_receive_generic_xdp
+    get_rps_cpu       // rps的cpu调度
+      u16 index = skb_get_rx_queue(skb);
+      flow_table = rcu_dereference(rxqueue->rps_flow_table);
+      sock_flow_table = rcu_dereference(rps_sock_flow_table);
+      rflow = &flow_table->flows[hash & flow_table->mask];
+      rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
+    enqueue_to_backlog  // 添加skb到cpu的backoog队列
+      ____napi_schedule(sd, &sd->backlog);
+        __raise_softirq_irqoff(NET_RX_SOFTIRQ); 
+
+
+net_rx_action   // 软中断NET_RX_SOFTIRQ处理函数
+  napi_poll
+    process_backlog
+
+process_backlog
+  __netif_receive_skb
+    __netif_receive_skb_one_core
+      __netif_receive_skb_core
+
+napi_complete_done
+  ____napi_schedule
+    __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+
+
+dev_queue_xmit
+__dev_queue_xmit
+  dev_hard_start_xmit
+    xmit_one
+      netdev_start_xmit
+        ops->ndo_start_xmit(skb, dev);
+
+netif_schedule_queue
+netif_tx_wake_queue
+__netif_schedule
+  net_tx_action
+    qdisc_run(q);
+      qdisc_restart
+        txq = skb_get_tx_queue(dev, skb);
+        sch_direct_xmit
+          dev_hard_start_xmit
+      __netif_schedule(q);
+
+```
