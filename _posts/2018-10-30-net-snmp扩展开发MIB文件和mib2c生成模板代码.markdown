@@ -47,7 +47,7 @@ http://pen.iana.org/pen/PenApplication.page
 dlmod test /usr/lib64/test.so
 ```
 
-#  调试日志
+#  开启snmpagent的调试日志
 ```text
 snmpd -Lf /tmp/snmpd.log  -D
 ```
@@ -58,5 +58,28 @@ snmpwalk -v 1 localhost -c public system
 snmpwalk -v 2c localhost -c public iftable
 snmpwalk -v 2c 192.168.1.246  -c public  interfaces
 MIBS="+XYZ-MIB" snmpwalk -v 2c localhost -c public enterprises.<申请到的或者测试用的id>
+
+snmpget -v 2c 192.168.1.246 -c public .1.3.6.1.2.1.4.1.0
+snmpgetnext -v 2c 192.168.1.246 -c public .1.3.6.1.2.1.4.33.0
+snmpset -Os -OQ -Ou -c private -v 2c 192.168.1.246 enterprises.<申请到的或者测试用的id>.x.x.x i 0
 ···
+
+# centos 7 上面netsnmp 5.7.2 的mib2c bug
+```text
+
+table类型的netsnmp_handler_registration_create，默认生成的 NETSNMP_NO_WRITE_SUPPORT宏的有问题，
+HANDLER_CAN_RWRITE和HANDLER_CAN_RONLY可读写的判断刚好反过来了
+
+        netsnmp_handler_registration_create("testTable", handler,
+                                            testTable_oid,
+                                            testTable_oid_size,
+                                            HANDLER_CAN_BABY_STEP |
+#if !(defined(NETSNMP_NO_WRITE_SUPPORT) || defined(NETSNMP_DISABLE_SET_SUPPORT))
+                                            HANDLER_CAN_RWRITE
+#elseHANDLER_CAN_RONLY
+                                            HANDLER_CAN_RONLY
+#endif                          /* NETSNMP_NO_WRITE_SUPPORT || NETSNMP_DISABLE_SET_SUPPORT */
+···
+
+
 
