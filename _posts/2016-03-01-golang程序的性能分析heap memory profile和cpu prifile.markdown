@@ -120,6 +120,22 @@ Dropped 28 nodes (cum <= 0.40MB)
 ```
 
 
+# 通过http接口
+http://docs.studygolang.com/pkg/net/http/pprof/
+```golang
+import  "http"
+import _ "net/http/pprof"
+go func() {
+	log.Println(http.ListenAndServe("localhost:6060", nil))
+}()
+```
+就可以通过下面这些命令，直接连接远程http接口来做性能分析了
+```text
+go tool pprof http://localhost:6060/debug/pprof/heap
+go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30
+wget http://localhost:6060/debug/pprof/trace?seconds=5
+go tool pprof http://localhost:6060/debug/pprof/mutex
+```
 
 
 
