@@ -137,5 +137,9 @@ wget http://localhost:6060/debug/pprof/trace?seconds=5
 go tool pprof http://localhost:6060/debug/pprof/mutex
 ```
 
-
+# 导出svg格式的函数调用树
+```text
+(pprof) svg
+Generating report in profile001.svg
+```
 
