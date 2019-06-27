@@ -45,3 +45,10 @@ vi /etc/grafana/grafana.ini
 2. 添加dashboard， 添加panel，添加query
 3. dashboard 右上角选择时间段
 ```
+
+# telegraf的配置里面配置把数据写到influxdb
+```text
+[[outputs.influxdb]]
+  urls = ["http://192.168.1.4:8086"]                                            
+  database = "test" 
+```
