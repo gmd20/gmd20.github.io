@@ -56,5 +56,80 @@ make
 	/lib64/ld-linux-x86-64.so.2 (0x00007f6a173d7000)
 ```
 
+# 修改php.ini加载这两个扩展模块
+```text
+extension=protobuf.so
+extension=grpc.so
+```
+
+
+# 生成php的grpc代码
+```text
+protoc --proto_path=./ --php_out=./ --grpc_out=./ --plugin=protoc-gen-grpc=../../bin/grpc_php_plugin.exe ./test.proto
+```
+这个命令会生成所有的grpc的proto文件里面的方法和类
+
+# php 代码调用 grpc的接口
+要引用grpc源代码里面的所有grpc/src/php/lib/Grpc 目录下的文件，还有上一步编译生成的所有PHP代码， 其中
+GPBMetadata这个比较重要，好像缺少了protobuf.so会直接段错误崩溃了
+```php
+<?php
+
+include_once dirname(__FILE__).'/Grpc/AbstractCall.php';
+include_once dirname(__FILE__).'/Grpc/BaseStub.php';
+include_once dirname(__FILE__).'/Grpc/BidiStreamingCall.php';
+include_once dirname(__FILE__).'/Grpc/CallInvoker.php';
+include_once dirname(__FILE__).'/Grpc/ClientStreamingCall.php';
+include_once dirname(__FILE__).'/Grpc/DefaultCallInvoker.php';
+include_once dirname(__FILE__).'/Grpc/Interceptor.php';
+include_once dirname(__FILE__).'/Grpc/Internal/InterceptorChannel.php';
+include_once dirname(__FILE__).'/Grpc/ServerStreamingCall.php';
+include_once dirname(__FILE__).'/Grpc/UnaryCall.php';
+
+
+include_once dirname(__FILE__).'/GPBMetadata/Test.php';
+include_once dirname(__FILE__).'/Test/AuthClient.php';
+include_once dirname(__FILE__).'/Test/ListAccountsRequest.php';
+include_once dirname(__FILE__).'/Test/ListAccountsResponse.php';
+include_once dirname(__FILE__).'/Test/Account.php';
+include_once dirname(__FILE__).'/Test/AuthRequest.php';
+include_once dirname(__FILE__).'/Test/AuthResponse.php';
+include_once dirname(__FILE__).'/Test/Result.php';
+
+function CreatAccounts()
+{
+    $client = new Test\AuthClient('127.0.0.1:10001', [
+        'credentials' => Grpc\ChannelCredentials::createInsecure(),
+    ]);
+    $request = new Test\Account();
+    $request->setUsername("user1");
+    $request->setPassword("pass1");
+    $request->setDescription("user1 test test");
+
+    list($reply, $status) = $client->CreateAccount($request)->wait();
+    var_dump($status);
+}
+
+
+function ListAccounts($name)
+{
+    $client = new Test\AuthClient('127.0.0.1:10001', [
+        'credentials' => Grpc\ChannelCredentials::createInsecure(),
+    ]);
+    $request = new Test\ListAccountsRequest();
+    $request->setPageSize(100);
+    $request->setNextPageToken("");
+    list($reply, $status) = $client->ListAccounts($request)->wait();
+    $accounts = $reply->GetAccounts();
+    return $accounts;
+}
+
+
+CreatAccounts();
+var_dump(ListAccounts("test"));
+echo "\n";
+
+
+```
 
 
