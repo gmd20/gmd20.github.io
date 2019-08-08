@@ -55,6 +55,7 @@ make
 	libc.so.6 => /lib64/libc.so.6 (0x00007f6a16da2000)
 	/lib64/ld-linux-x86-64.so.2 (0x00007f6a173d7000)
 ```
+*最好用编译grpc源码自动下载的源码grpc/third_party/protobuf/php/ext/google/protobuf的这个版本来编译*
 
 # 修改php.ini加载这两个扩展模块
 ```text
