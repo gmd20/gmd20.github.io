@@ -42,6 +42,7 @@ make
 protoc --cpp_out=. ./test.proto
 ```
 
+
 # protobuf的例子
 ```text
 https://github.com/protocolbuffers/protobuf/blob/master/examples/
@@ -80,9 +81,8 @@ string DebugString(): Return a string giving the `text_format` representation of
   https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/message_lite.h
   https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/message.h
   
-  
 ```
-
+*protoc和头文件和.a的库文件要用来自同一个版本的，直接用grpc编译时自动下载grpc/third_party/protobuf/php/ext/google/protobuf这个就可以吧*
 
 # grpc的接口设计和命名规范
 ```text
