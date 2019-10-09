@@ -92,7 +92,7 @@ Sockets:
 
 概念：qdisc 是队列，下面可以包含多个class，每个class就是分类了，可以多个树形结构的级别，
 filter是就是分类规则了，每个class可以设置不同的filter来分类决定包被分到那个子级别的class里面去。
-
+可以先看一下 tc的man page里面THEORY OF OPERATION   小节的说明
 
 
 tc qdisc show dev eth1
