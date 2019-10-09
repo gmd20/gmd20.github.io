@@ -3,6 +3,8 @@
 
 手册：
 http://man7.org/linux/man-pages/man8/tc.8.html
+http://man7.org/linux/man-pages/man8/tc-ematch.8.html  filter分类支持简单的表达式，cmp/and/or/字节检查/ipset/xtables等等的
+http://man7.org/linux/man-pages/man8/tc-bpf.8.html     filter也是支持bpf的自定义扩展的
 http://man7.org/linux/man-pages/man8/tc-htb.8.html
 http://man7.org/linux/man-pages/man8/tc-fq_codel.8.html
 
@@ -15,6 +17,7 @@ https://www.cnblogs.com/acool/p/7779159.html
 https://www.docum.org/docum.org/tests/htb/burst/
 
 源码：
+https://elixir.bootlin.com/linux/latest/source/net/sched/em_meta.c
 https://elixir.bootlin.com/linux/latest/source/net/sched/sch_tbf.c
 https://elixir.bootlin.com/linux/latest/source/net/sched/sch_htb.c
 https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/tree/tc/sch_tbf.c
@@ -27,6 +30,70 @@ man tc
 man tc-htb
 man tc-tbf
 man tc-fc_codel
+
+
+centos 7 中 基本表达式中支持的meta
+/usr/sbin/tc filter add dev eth1 basic match 'meta(list)'
+--------------------------------------------------------
+  ID               Type       Description
+--------------------------------------------------------
+Generic:
+  random           INT        Random value (32 bit)
+  loadavg_1        INT        Load average in last minute
+  loadavg_5        INT        Load average in last 5 minutes
+  loadavg_15       INT        Load average in last 15 minutes
+
+Interfaces:
+  dev              INT,VAR    Device the packet is on
+
+Packet attributes:
+  priority         INT        Priority of packet
+  protocol         INT        Link layer protocol
+  pkt_type         INT        Packet type (uni|multi|broad|...)cast
+  pkt_len          INT        Length of packet
+  data_len         INT        Length of data in packet
+  mac_len          INT        Length of link layer header
+
+Netfilter:
+  nf_mark          INT        Netfilter mark
+  fwmark           INT        Alias for nf_mark
+
+Traffic Control:
+  tc_index         INT        TC Index
+
+Routing:
+  rt_classid       INT        Routing ClassID (cls_route)
+  rt_iif           INT        Incoming interface index
+  vlan             INT        Vlan tag
+
+Sockets:
+  sk_family        INT        Address family
+  sk_state         INT        State
+  sk_reuse         INT        Reuse Flag
+  sk_bind_if       INT,VAR    Bound interface
+  sk_refcnt        INT        Reference counter
+  sk_shutdown      INT        Shutdown mask
+  sk_proto         INT        Protocol
+  sk_type          INT        Type
+  sk_rcvbuf        INT        Receive buffer size
+  sk_rmem          INT        RMEM
+  sk_wmem          INT        WMEM
+  sk_omem          INT        OMEM
+  sk_wmem_queue    INT        WMEM queue
+  sk_snd_queue     INT        Send queue length
+  sk_rcv_queue     INT        Receive queue length
+  sk_err_queue     INT        Error queue length
+  sk_fwd_alloc     INT        Forward allocations
+  sk_sndbuf        INT        Send buffer size
+--------------------------------------------------------
+
+
+
+
+概念：qdisc 是队列，下面可以包含多个class，每个class就是分类了，可以多个树形结构的级别，
+filter是就是分类规则了，每个class可以设置不同的filter来分类决定包被分到那个子级别的class里面去。
+
+
 
 tc qdisc show dev eth1
 tc -s qdisc show dev eth1
