@@ -102,18 +102,24 @@ tc --g -s class show dev eth1
 tc -s filter show dev eth1
 
 tc qdisc del dev eth1 root
-tc qdisc add dev eth1 root handle 1: htb default 13
+tc qdisc add dev eth1 root handle 1: htb default 13  r2q 10
 tc class add dev eth1 parent 1: classid 1:1 htb rate 1000mbit ceil 1000mbit burst 3000 cburst 3000
 tc class add dev eth1 parent 1:1 classid 1:11 htb rate 100mbit ceil 1000mbit burst 3000 cburst 3000 prio 1
-tc class add dev eth1 parent 1:1 classid 1:12 htb rate 200mbit ceil 1000mbit burst 3000 cburst 3000 prio 2
-tc class add dev eth1 parent 1:1 classid 1:13 htb rate 700mbit ceil 1000mbit burst 3000 cburst 3000 prio 3
+tc class add dev eth1 parent 1:1 classid 1:12 htb rate 500mbit ceil 1000mbit burst 3000 cburst 3000 prio 2
+tc class add dev eth1 parent 1:1 classid 1:13 htb rate 50mbit ceil 50mbit burst 3000 cburst 3000 prio 3
+tc class add dev eth1 parent 1:13 classid 1:14 htb rate 20mbit ceil 20mbit burst 3000 cburst 3000 prio 1
+tc class add dev eth1 parent 1:13 classid 1:15 htb rate 30mbit ceil 30mbit burst 3000 cburst 3000 prio 1
 
 tc qdisc add dev eth1 parent 1:11 handle 110: fq_codel limit 1024 ecn
-tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel limit 1024 noecn
-tc qdisc add dev eth1 parent 1:13 handle 130: fq_codel limit 1024 noecn
+tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel limit 1024 ecn
+tc qdisc add dev eth1 parent 1:14 handle 140: fq_codel limit 1024 ecn
+tc qdisc add dev eth1 parent 1:15 handle 150: fq_codel limit 1024 noecn
 
-tc filter add dev eth1 basic match 'meta(rt_iif eq 2)' flowid 1:11
-tc filter add dev eth1 handle 200 fw flowid 1:12
+tc filter add dev eth1 basic match 'meta(pkt_len gt 0)' flowid 1:13
+tc filter add dev eth1 parent 1:13 handle 256 fw flowid 1:14
+tc filter add dev eth1 parent 1:13 handle 257 fw flowid 1:14
+tc filter add dev eth1 parent 1:13 basic match 'meta(fwmark gt 24)' flowid 1:15
+
 
 
 tc 本身会自动计算burst和cburst，设置为
