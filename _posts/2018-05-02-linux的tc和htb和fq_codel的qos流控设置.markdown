@@ -115,11 +115,13 @@ tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel limit 1024 ecn
 tc qdisc add dev eth1 parent 1:14 handle 140: fq_codel limit 1024 ecn
 tc qdisc add dev eth1 parent 1:15 handle 150: fq_codel limit 1024 noecn
 
-tc filter add dev eth1 basic match 'meta(pkt_len gt 0)' flowid 1:13
+# tc filter add dev eth1 basic match 'meta(pkt_len gt 0)' flowid 1:13
+# tc filter add dev eth1 protocol ip basic match 'meta(pkt_len gt 0)'  flowid 1:13
+# tc filter add dev eth1 basic match 'meta(dev eq 8)' flowid 1:13
+# tc filter add dev eth1 basic match 'meta(rt_iif gt 0)' flowid 1:14
+tc filter add dev eth1 basic match 'meta(fwmark gt 24)' flowid 1:15
 tc filter add dev eth1 parent 1:13 handle 256 fw flowid 1:14
-tc filter add dev eth1 parent 1:13 handle 257 fw flowid 1:14
-tc filter add dev eth1 parent 1:13 basic match 'meta(fwmark gt 24)' flowid 1:15
-
+tc filter add dev eth1 parent 1:13 handle 257 fw flowid 1:1
 
 
 tc 本身会自动计算burst和cburst，设置为
