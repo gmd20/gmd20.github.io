@@ -97,8 +97,9 @@ filter是就是分类规则了，每个class可以设置不同的filter来分类
 
 tc qdisc show dev eth1
 tc -s qdisc show dev eth1
-tc -s -d qdisc show dev eth1
 tc -s -d class show dev eth1
+tc --g -s class show dev eth1
+tc -s filter show dev eth1
 
 tc qdisc del dev eth1 root
 tc qdisc add dev eth1 root handle 1: htb default 13
@@ -110,6 +111,10 @@ tc class add dev eth1 parent 1:1 classid 1:13 htb rate 700mbit ceil 1000mbit bur
 tc qdisc add dev eth1 parent 1:11 handle 110: fq_codel limit 1024 ecn
 tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel limit 1024 noecn
 tc qdisc add dev eth1 parent 1:13 handle 130: fq_codel limit 1024 noecn
+
+tc filter add dev eth1 basic match 'meta(rt_iif eq 2)' flowid 1:11
+tc filter add dev eth1 handle 200 fw flowid 1:12
+
 
 tc 本身会自动计算burst和cburst，设置为
 /* compute minimal allowed burst from rate; mtu is added here to make
