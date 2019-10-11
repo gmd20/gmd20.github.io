@@ -92,7 +92,8 @@ Sockets:
 
 概念：qdisc 是队列，下面可以包含多个class，每个class就是分类了，可以多个树形结构的级别，
 filter是就是分类规则了，每个class可以设置不同的filter来分类决定包被分到那个子级别的class里面去。
-可以先看一下 tc的man page里面THEORY OF OPERATION   小节的说明
+可以先看一下 tc的man page里面THEORY OF OPERATION。小节的说明。 htb的话，根据http://man7.org/linux/man-pages/man8/tc-htb.8.html的说明，
+一个包只有被分类的叶子节点了才会正在的被认为分类成功，如果在中间节点就没有被filter分到叶子节点，最后还是会放到htb 创建时设置的default class id去。  
 
 
 tc qdisc show dev eth1
