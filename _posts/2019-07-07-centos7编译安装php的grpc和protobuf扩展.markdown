@@ -3,6 +3,9 @@ grpc php extension
 
 # 先按照官方文档编译grpc
 ```text
+https://github.com/grpc/grpc/blob/master/BUILDING.md
+git clone https://github.com/grpc/grpc
+git submodule update --init
 make install
 ```
 
