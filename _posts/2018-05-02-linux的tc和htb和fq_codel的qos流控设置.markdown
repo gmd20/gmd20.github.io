@@ -125,6 +125,22 @@ tc filter add dev eth1 parent 1:13 handle 100 fw flowid 1:14
 tc filter add dev eth1 parent 1:13 handle 101 fw flowid 1:15
 tc filter add dev eth1 parent 1:13 priority 10 matchall classid 1:15
 
+# 通常来说队列是应用于出去的就流量的，也就是内核发网络包到网卡之前的，但 ingres 这个qdisc可以
+# 对接收上了的包应用tc队列，可以把收上来的转到一个ifb然后在那个ifb 设备上面限制接收方向的流量吧，
+# 不过一般很少用这个吧。
+# ingres qdisc的id 不能添加子qdisc
+tc qdisc add dev eth1 handle ffff: ingress
+modprobe ifb
+ip link set dev ifb0 up
+
+# 使用ifb0做输入方向的重定向
+tc filter add dev bond0 parent ffff: protocol ip u32 match u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0
+
+# 使用ifb0做输出方向的重定向
+tc filter add dev bond0 parent 1: protocol ip u32 match u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0
+
+
+
 
 tc 本身会自动计算burst和cburst，设置为
 /* compute minimal allowed burst from rate; mtu is added here to make
