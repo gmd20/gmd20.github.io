@@ -1,0 +1,17 @@
+内核文档比较详细
+===============
+https://www.kernel.org/doc/html/latest/admin-guide/lockup-watchdogs.html
+
+nmi watchdog
+============
+```text
+[root@localhost ~]# cat /proc/sys/kernel/nmi_watchdog
+1
+[root@localhost ~]# cat /proc/sys/kernel/softlockup_panic
+0
+[root@localhost ~]# cat /proc/sys/kernel/hardlockup_panic
+1
+[root@localhost ~]# cat /proc/sys/kernel/watchdog_thresh
+10
+```
+出现死锁系统没有响应的时候，softlockup默认不会重启， hardlockup会重启
