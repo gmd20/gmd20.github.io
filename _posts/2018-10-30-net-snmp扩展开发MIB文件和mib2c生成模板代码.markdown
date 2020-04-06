@@ -22,7 +22,9 @@ MIBS="+XYZ-MIB" snmptranslate -IR -Tp XYZTable
 # mib2c 生成代码
 
 ```text
-yum install net-snmp-perl
+安装包： yum install net-snmp-perl
+源代码： https://github.com/net-snmp/net-snmp/blob/master/local/mib2c
+
 mib2c.array-user.conf
 mib2c.create-dataset.conf
 mib2c.int_watch.conf
