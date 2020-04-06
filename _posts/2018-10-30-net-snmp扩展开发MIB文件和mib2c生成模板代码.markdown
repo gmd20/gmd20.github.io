@@ -20,7 +20,9 @@ mibfile FILE 或者 mibs MIBLIST 来执行要加载的MIB文件，参考man snmp
 MIBS="+XYZ-MIB" snmptranslate -IR -Tp XYZTable
 
 # mib2c 生成代码
+
 ```text
+yum install net-snmp-perl
 mib2c.array-user.conf
 mib2c.create-dataset.conf
 mib2c.int_watch.conf
