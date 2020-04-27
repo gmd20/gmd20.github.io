@@ -61,6 +61,9 @@ static inline void sock_rps_save_rxhash(struct sock *sk,
 
 
 ```
+
+
+# 这个val又两部分组成，上半部分是hash值用于校验，下半部分rps_cpu_mask位记录当前cpu id。
 https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L716
 ```c
 static inline void rps_record_sock_flow(struct rps_sock_flow_table *table,
