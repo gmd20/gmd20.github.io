@@ -220,3 +220,6 @@ configured as 2048.
 
 ```
 
+# 网上也有人写的介绍文章
+https://zhuanlan.zhihu.com/p/27176715       
+https://wsgzao.github.io/post/rps/     
