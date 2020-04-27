@@ -50,6 +50,16 @@ static inline void sock_rps_record_flow_hash(__u32 hash)
 #endif
 }
 
+static inline void sock_rps_save_rxhash(struct sock *sk,
+					const struct sk_buff *skb)
+{
+#ifdef CONFIG_RPS
+	if (unlikely(sk->sk_rxhash != skb->hash))
+		sk->sk_rxhash = skb->hash;
+#endif
+}
+
+
 ```
 https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L716
 ```c
