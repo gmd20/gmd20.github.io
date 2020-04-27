@@ -4,6 +4,11 @@
 手册：
 http://man7.org/linux/man-pages/man8/tc.8.html
 http://man7.org/linux/man-pages/man8/tc-ematch.8.html  filter分类支持简单的表达式，cmp/and/or/字节检查/ipset/xtables等等的
+http://man7.org/linux/man-pages/man8/tc-flow.8.html    filter分类支持使用flow流表里面的src，dst，iif和NAT前后的nfct-src, nfct-dst，rxhash
+                                                       来计算hash分类。比如默认fq_codel 是保证流的公平性的吧，但下面这个fq_codel使用NAT前的源ip地址来做fair-queue的队列选择。
+      tc qdisc add dev eth0 parent 1:1 handle 11: fq_codel
+      tc filter add dev eth0 parent 11: handle 11 protocol all flow hash keys nfct-src divisor 1024         
+                                                       
 http://man7.org/linux/man-pages/man8/tc-bpf.8.html     filter也是支持bpf的自定义扩展的
 http://man7.org/linux/man-pages/man8/tc-htb.8.html
 http://man7.org/linux/man-pages/man8/tc-fq_codel.8.html
