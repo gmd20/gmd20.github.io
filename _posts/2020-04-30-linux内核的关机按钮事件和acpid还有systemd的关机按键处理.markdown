@@ -186,6 +186,10 @@ static int button_dispatch(sd_event_source *s, int fd, uint32_t revents, void *u
         return 0;
 }
 ```
+好像systemd是读取/dev/input的按键事件，不是用netlink acpi event ？
+https://github.com/systemd/systemd/tree/master/src/libsystemd/sd-netlink
+
+
 # systemd 的配置文件
 ```text
 [root@localhost]# cat /etc/systemd/logind.conf 
@@ -252,7 +256,3 @@ JobTimeoutAction=poweroff-force
 #InhibitorsMax=8192
 #SessionsMax=8192
 ```
-
-
-
-
