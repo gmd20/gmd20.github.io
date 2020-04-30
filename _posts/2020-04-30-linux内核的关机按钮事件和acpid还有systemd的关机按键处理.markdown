@@ -1,7 +1,9 @@
 # 发现有的虚拟机系统不能接收“正常关机”的菜单命令，就来找一下资料
 
-# 用户按下物理按键，会发送一个ACPI按键信号, 内核里面的acpi驱动这个event.c进行处理的。
+# 用户按下物理按键，会发送一个ACPI按键信号, 内核里面的acpi驱动这个event.c button.c进行处理的。
+这个事件看上去netlink和/dev/input/event里面都能收到KEY_POWER按键事件
 https://elixir.bootlin.com/linux/latest/source/drivers/acpi/event.c#L148
+https://elixir.bootlin.com/linux/latest/source/drivers/acpi/button.c
 ```c
 
 static struct genl_family acpi_event_genl_family __ro_after_init = {
@@ -70,16 +72,64 @@ static int __init acpi_event_genetlink_init(void)
 {
 	return genl_register_family(&acpi_event_genl_family);
 }
+
+
+
+static void acpi_button_notify(struct acpi_device *device, u32 event)
+{
+	struct acpi_button *button = acpi_driver_data(device);
+	struct input_dev *input;
+	int users;
+
+	switch (event) {
+	case ACPI_FIXED_HARDWARE_EVENT:
+		event = ACPI_BUTTON_NOTIFY_STATUS;
+		/* fall through */
+	case ACPI_BUTTON_NOTIFY_STATUS:
+		input = button->input;
+		if (button->type == ACPI_BUTTON_TYPE_LID) {
+			mutex_lock(&button->input->mutex);
+			users = button->input->users;
+			mutex_unlock(&button->input->mutex);
+			if (users)
+				acpi_lid_update_state(device, true);
+		} else {
+			int keycode;
+
+			acpi_pm_wakeup_event(&device->dev);
+			if (button->suspended)
+				break;
+
+			keycode = test_bit(KEY_SLEEP, input->keybit) ?
+						KEY_SLEEP : KEY_POWER;
+			input_report_key(input, keycode, 1);
+			input_sync(input);
+			input_report_key(input, keycode, 0);
+			input_sync(input);
+
+			acpi_bus_generate_netlink_event(
+					device->pnp.device_class,
+					dev_name(&device->dev),
+					event, ++button->pushed);
+		}
+		break;
+	default:
+		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+				  "Unsupported event [0x%x]\n", event));
+		break;
+	}
+}
 ```
 
 
-# acpid，以前这个内核驱动出了netlink，还支持procfs接口的事件通知的
-参考acpid和busybox源码的处理。    
+# acpid，以前这个内核驱动除了netlink，还支持procfs接口的事件通知的
+参考acpid和busybox源码的处理，  
 https://linux.die.net/man/8/acpid   
 https://git.busybox.net/busybox/tree/util-linux/acpid.c    
-但新版本的/proc接口被废弃了，基本所有内核事件都要换成netlink了吧，我看了一下centos 8是不支持procfs的acpi event了。
+但新版本的/proc接口被废弃了，基本所有内核事件都要换成netlink了吧，我看了一下centos 8是不支持procfs的acpi ev
+但这个事件还是能通过/dev/input/event借口收到，busybox的acpid和systemd用的就是这个接口吧
 
-应用都换成netlink接口了，比如
+不过也有直接netlink接口的，比如
 https://sourceforge.net/projects/acpid2/     
 ```c
 /* initialize the ACPI IDs */
@@ -186,7 +236,7 @@ static int button_dispatch(sd_event_source *s, int fd, uint32_t revents, void *u
         return 0;
 }
 ```
-好像systemd是读取/dev/input的按键事件，不是用netlink acpi event ？
+好像systemd是读取/dev/input/event的按键事件，不是用netlink acpi event ？
 https://github.com/systemd/systemd/tree/master/src/libsystemd/sd-netlink
 
 
