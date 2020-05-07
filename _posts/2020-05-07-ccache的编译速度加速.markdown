@@ -27,5 +27,8 @@ declare -x PATH="/usr/lib64/ccache:$PATH"
 # environment variable in their personal profile.
 ```
 
+试了一个实际的项目，编译速度从4分钟左右降到2分钟左右吧。
+
+
 # man ccache
 https://github.com/ccache/ccache/blob/master/doc/MANUAL.adoc
