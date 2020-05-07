@@ -13,8 +13,19 @@ lrwxrwxrwx. 1 root root 16 Apr  9 15:12 x86_64-redhat-linux-c++ -> ../../bin/cca
 lrwxrwxrwx. 1 root root 16 Apr  9 15:12 x86_64-redhat-linux-g++ -> ../../bin/ccache
 lrwxrwxrwx. 1 root root 16 Apr  9 15:12 x86_64-redhat-linux-gcc -> ../../bin/ccache
 ```
+
 所以先执行
 ```bash
 declare -x PATH="/usr/lib64/ccache:$PATH"
 ```
 再编译就会使用ccache，ccache默认创建的缓存会放到个人$HOME目录 ~/.ccache 这个位置里面去。
+
+其实centos 8安装完他默认就启用了，要禁用ccache需要在自己的~/.bash_profilew文件里面 export CCACHE_DISABLE=1 禁用了才行
+```text
+[root@localhost ]# cat /etc/profile.d/ccache.sh 
+# Use ccache by default.  Users who don't want that can set the CCACHE_DISABLE
+# environment variable in their personal profile.
+```
+
+# man ccache
+https://github.com/ccache/ccache/blob/master/doc/MANUAL.adoc
