@@ -1,0 +1,20 @@
+c++的编译真的是太慢了，
+ccache说是能提高编译速度，安装ccache会在/usr/lib64/ccache目录创建工具的链接
+```text
+[root@localhost]# ls  -lh /usr/lib64/ccache/
+total 0
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 c++ -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 cc -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 clang -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 clang++ -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 g++ -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 gcc -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 x86_64-redhat-linux-c++ -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 x86_64-redhat-linux-g++ -> ../../bin/ccache
+lrwxrwxrwx. 1 root root 16 Apr  9 15:12 x86_64-redhat-linux-gcc -> ../../bin/ccache
+```
+所以先执行
+```bash
+declare -x PATH="/usr/lib64/ccache:$PATH"
+```
+再编译就会使用ccache，ccache默认创建的缓存会放到个人$HOME目录 ~/.ccache 这个位置里面去。
