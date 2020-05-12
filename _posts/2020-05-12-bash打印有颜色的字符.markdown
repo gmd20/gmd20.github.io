@@ -1,0 +1,7 @@
+bash有个针对终端的颜色表的，，调用方法是这样的
+
+```bash
+printf "\e[91minactive\e[0m"
+printf "\e[92mactive\e[0m"
+```
+perl里面也有专门的一个库吧。
