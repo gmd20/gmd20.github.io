@@ -225,6 +225,13 @@ A suffix ~<n> to a revision parameter means the commit object that is the <n>th 
 原文有个图示，解释的比较清楚，<rev>^加数字是多继承的第几个parent节点，<rev>~是前面的第几代parent
 所下面这个命令在单继承树上等价于 git format-patch -2 命令
 $ git format-patch HEAD~2
+
+
+应用补丁
+git apply --stat  001.patch
+git apply --check 001.patch
+git apply  001.patch
+git am --signoff < fix_empty_poster.patch
 ```
 
 修改最后一次提交的信息
