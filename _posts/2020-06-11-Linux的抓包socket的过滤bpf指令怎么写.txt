@@ -34,3 +34,19 @@ https://docs.cilium.io/en/latest/bpf/  对bpf的实现架构也有点说明
               Both classic and extended BPF are explained in the kernel
               source file Documentation/networking/filter.txt
 ```
+
+那些bpf指令宏是在这个头文件定义的
+https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/filter.h
+```c
+/*
+ * Macros for filter block array initializers.
+ */
+#ifndef BPF_STMT
+#define BPF_STMT(code, k) { (unsigned short)(code), 0, 0, k }
+#endif
+#ifndef BPF_JUMP
+#define BPF_JUMP(code, k, jt, jf) { (unsigned short)(code), jt, jf, k }
+#endif
+```
+jump指令里面jt和jf都是相对地址，跳过几行吧，这里讲的比较清楚
+https://blog.csdn.net/u013837209/article/details/54926309
