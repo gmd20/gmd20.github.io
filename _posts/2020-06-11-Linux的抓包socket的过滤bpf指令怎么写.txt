@@ -1,4 +1,5 @@
 在内核源码的Documentation/networking/filter.txt 文件列出了怎么在程序里面写bpf代码
+https://docs.cilium.io/en/latest/bpf/  对bpf的实现架构也有点说明
 ```text
        SO_ATTACH_FILTER (since Linux 2.2), SO_ATTACH_BPF (since Linux 3.19)
               Attach a classic BPF (SO_ATTACH_FILTER) or an extended BPF
