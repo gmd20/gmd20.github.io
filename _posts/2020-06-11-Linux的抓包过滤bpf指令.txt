@@ -1,0 +1,34 @@
+在内核源码的Documentation/networking/filter.txt 文件列出了怎么在程序里面写bpf代码
+```text
+       SO_ATTACH_FILTER (since Linux 2.2), SO_ATTACH_BPF (since Linux 3.19)
+              Attach a classic BPF (SO_ATTACH_FILTER) or an extended BPF
+              (SO_ATTACH_BPF) program to the socket for use as a filter of
+              incoming packets.  A packet will be dropped if the filter pro‐
+              gram returns zero.  If the filter program returns a nonzero
+              value which is less than the packet's data length, the packet
+              will be truncated to the length returned.  If the value
+              returned by the filter is greater than or equal to the
+              packet's data length, the packet is allowed to proceed unmodi‐
+              fied.
+
+              The argument for SO_ATTACH_FILTER is a sock_fprog structure,
+              defined in <linux/filter.h>:
+
+                  struct sock_fprog {
+                      unsigned short      len;
+                      struct sock_filter *filter;
+                  };
+
+              The argument for SO_ATTACH_BPF is a file descriptor returned
+              by the bpf(2) system call and must refer to a program of type
+              BPF_PROG_TYPE_SOCKET_FILTER.
+
+              These options may be set multiple times for a given socket,
+              each time replacing the previous filter program.  The classic
+              and extended versions may be called on the same socket, but
+              the previous filter will always be replaced such that a socket
+              never has more than one filter defined.
+
+              Both classic and extended BPF are explained in the kernel
+              source file Documentation/networking/filter.txt
+```
