@@ -12,9 +12,11 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 	"time"
 )
 
+var verbose bool
 var dnsServer string
 var localIp string
 
@@ -23,13 +25,13 @@ type ReverseProxy struct{}
 func (h *ReverseProxy) ProxyHTTPS(rw http.ResponseWriter, req *http.Request) {
 	hij, ok := rw.(http.Hijacker)
 	if !ok {
-		log.Printf("http server does not support hijacker")
+		log.Printf("http server does not support hijacker\n")
 		return
 	}
 
 	clientConn, _, err := hij.Hijack()
 	if err != nil {
-		log.Printf("http: proxy error: %v", err)
+		log.Printf("http: proxy error: %v\n", err)
 		return
 	}
 
@@ -55,7 +57,7 @@ func (h *ReverseProxy) ProxyHTTPS(rw http.ResponseWriter, req *http.Request) {
 	}
 	proxyConn, err := d.Dial("tcp", req.URL.Host)
 	if err != nil {
-		log.Printf("http: proxy error: %v", err)
+		log.Printf("http: proxy error: %v\n", err)
 		return
 	}
 
@@ -64,18 +66,18 @@ func (h *ReverseProxy) ProxyHTTPS(rw http.ResponseWriter, req *http.Request) {
 
 	err = clientConn.SetDeadline(deadline)
 	if err != nil {
-		log.Printf("http: proxy error: %v", err)
+		log.Printf("http: proxy error: %v\n", err)
 		return
 	}
 	err = proxyConn.SetDeadline(deadline)
 	if err != nil {
-		log.Printf("http: proxy error: %v", err)
+		log.Printf("http: proxy error: %v\n", err)
 		return
 	}
 
 	_, err = clientConn.Write([]byte("HTTP/1.0 200 OK\r\n\r\n"))
 	if err != nil {
-		log.Printf("http: proxy error: %v", err)
+		log.Printf("http: proxy error: %v\n", err)
 		return
 	}
 
@@ -92,7 +94,6 @@ func (h *ReverseProxy) ProxyHTTPS(rw http.ResponseWriter, req *http.Request) {
 
 func (h *ReverseProxy) ProxyHTTP(w http.ResponseWriter, r *http.Request) {
 	director := func(req *http.Request) {
-		log.Print("222", req.URL)
 	}
 	proxy := &httputil.ReverseProxy{Director: director}
 
@@ -141,7 +142,9 @@ func (h *ReverseProxy) ProxyHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println("", r.URL)
+	if verbose {
+		log.Println("", r.URL)
+	}
 
 	if r.Method == "CONNECT" {
 		h.ProxyHTTPS(w, r)
@@ -152,11 +155,17 @@ func (h *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var bindAddr string
-	flag.StringVar(&bindAddr, "bind", "127.0.0.1:1080", "bind address")
-	flag.StringVar(&dnsServer, "dns_server", "", "dns server to use(1.1.1.1:53)")
-	flag.StringVar(&localIp, "local_ip", "", "local ip address for http request")
+	flag.BoolVar(&verbose, "v", false, "print url")
+	flag.StringVar(&bindAddr, "b", "127.0.0.1:1080", "bind address")
+	flag.StringVar(&dnsServer, "d", "", "dns server to use(1.1.1.1:53)")
+	flag.StringVar(&localIp, "l", "", "local ip address for http request")
 	flag.Parse()
 
+	if len(dnsServer) > 0 {
+		if strings.Index(dnsServer, ":") < 0 {
+			dnsServer += ":53"
+		}
+	}
 	var h ReverseProxy
 	log.Fatal(http.ListenAndServe(bindAddr, &h))
 }
