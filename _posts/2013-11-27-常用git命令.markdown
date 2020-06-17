@@ -332,6 +332,16 @@ git log --stat  显示commit历史的修改行数
 git log --pretty=format:"%h %s" --graph
 ```
 
+
+查看某个分支/tag是否包含某个提交commit在里面
+==========================================
+```text
+git branch --contains  xxxxx
+git tag --contains  xxxxx
+```
+
+
+
 远程服务器地址修改
 =================
 ```text
