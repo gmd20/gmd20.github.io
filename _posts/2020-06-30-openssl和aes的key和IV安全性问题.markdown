@@ -13,6 +13,6 @@ salt会保存在加密后的文件头里面。  hash 算法可以用过 -md参�
 
 # openssl 使用的例子
 ```text
-openssl enc -k 12345 -aes-256-cbc -in 1.txt -out 
-openssl enc -d -k 12345 -aes-256-cbc -in encrypted.txt -out 1.txt 
+openssl enc -k mypassword -md sha512 -iter 256 -pbkdf2 -aes-256-cfb -in 1.txt -out 2.txt
+openssl enc -d -k mypassword -md sha512 -iter 256 -pbkdf2 -aes-256-cbc -in 2.txt -out 1.txt 
 ```
