@@ -59,6 +59,9 @@ POSIX_FADV_DONTNEED attempts to free cached pages associated with the specified 
 
 Pages that have not yet been written out will be unaffected, so if the application wishes to guarantee that pages will be released, it should call fsync(2) or fdatasync(2) first.
 ```
+这个应该对应内核代码里面  generic_fadvise 函数
+https://elixir.bootlin.com/linux/latest/source/mm/fadvise.c#L30
+
 
 
 
