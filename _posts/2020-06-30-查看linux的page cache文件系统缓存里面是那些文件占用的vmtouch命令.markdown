@@ -54,7 +54,11 @@ Stream data using just the read-ahead cache
 https://linux.die.net/man/2/posix_fadvise
 https://linux.die.net/man/2/fadvise
 
+```text
+POSIX_FADV_DONTNEED attempts to free cached pages associated with the specified region. This is useful, for example, while streaming large files. A program may periodically request the kernel to free cached data that has already been used, so that more useful cached pages are not discarded instead.
 
+Pages that have not yet been written out will be unaffected, so if the application wishes to guarantee that pages will be released, it should call fsync(2) or fdatasync(2) first.
+```
 
 
 
