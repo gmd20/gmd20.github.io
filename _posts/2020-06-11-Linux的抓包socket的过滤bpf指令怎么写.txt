@@ -1,4 +1,4 @@
-在内核源码的Documentation/networking/filter.txt 文件列出了怎么在程序里面写bpf代码
+在内核源码的 https://elixir.bootlin.com/linux/latest/source/Documentation/networking/filter.txt 文件列出了怎么在程序里面写bpf代码
 https://docs.cilium.io/en/latest/bpf/  对bpf的实现架构也有点说明
 “tcpdump ether multicast -dd”  这个也可以用tcpdump直接生成指定bfp表达式的code，然后在程序里面使用这个code数组
 ```text
@@ -50,3 +50,18 @@ https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/filter.h
 ```
 jump指令里面jt和jf都是相对地址，跳过几行吧，这里讲的比较清楚
 https://blog.csdn.net/u013837209/article/details/54926309
+
+
+
+tcpdump
+=======
+tcpdump可以用-dd 或者-d命令生成 表达式的 bpf 指令数组吧，
+```text
+       -d     Dump the compiled packet-matching code in a human readable form to standard output
+              and stop.
+
+       -dd    Dump packet-matching code as a C program fragment.
+
+       -ddd   Dump packet-matching code as decimal numbers (preceded with a count).
+
+```
