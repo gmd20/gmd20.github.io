@@ -77,3 +77,18 @@ void main(void)
 }
 
 ```
+
+默认编译的出来libic.a 文件特别大，链接时gcc好像也不会选择某个函数来链接进去。 可以把 fp.c文件复制一份改一下，把没有用到的 函数都删掉，只编译自己用到的函数，这样编译出来的.a文件就特别小了。
+
+```text
+查看默认的编译选项
+[root@localhost TurboPFor-Integer-Compression]# make fp.o
+gcc -O3 -march=corei7-avx -mtune=corei7-avx  -w -Wall  -fstrict-aliasing -falign-loops  -Iext   fp.c -c -o fp.o
+
+gcc -O3 -march=corei7-avx -mtune=corei7-avx  -w -Wall  -fstrict-aliasing -falign-loops  -Iext my_fp.c -c -o my_fp.o
+rm -f libTurboPFor.a
+ar -r libTurboPFor.a my_fp.o
+
+测试程序
+gcc -O2 -lm test.c libTurboPFor.a
+```
