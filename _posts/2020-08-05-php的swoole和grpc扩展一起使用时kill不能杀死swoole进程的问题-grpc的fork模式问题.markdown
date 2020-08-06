@@ -56,7 +56,7 @@ https://github.com/grpc/grpc//src/php/README.md
 https://github.com/grpc/grpc/blob/master/src/php/README.md
 https://github.com/grpc/grpc/issues/13412
 https://github.com/grpc/grpc/issues/20250
-
+https://github.com/grpc/grpc/pull/22774
 
 因为swoole本身就是fork子进程的，所以刚好跟grpc有冲突吗。这个看代码，像是grpc fork后，有些条件变量状态不对了，shutdown流程死锁了。看堆栈看出来是 
 grpc_shutdown_internal_locked 调用的哪个子函数调用这个gpr_cv_wait。  
