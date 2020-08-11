@@ -13,3 +13,5 @@ cur_freq
 1999688
 
 ```
+
+centos 8 上面有一个 cpupower 可以用来设置修改主频
