@@ -43,3 +43,15 @@ echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 2799829
 ```
 内核相关驱动在 kernel/drivers/cpufreq 这个目录下吧
+
+
+下面这个文章提到intel默认应该是powersave模式，但一般都会自动提高主频的。
+https://wiki.archlinux.org/index.php/CPU_frequency_scaling
+```text
+Depending on the scaling driver, one of these governors will be loaded by default:
+
+ondemand for AMD and older Intel CPU.
+powersave for Intel CPUs using the intel_pstate driver (Sandy Bridge and newer).
+Note: The intel_pstate driver supports only the performance and powersave governors, but they both provide dynamic scaling. The performance governor should give better power saving functionality than the old ondemand governor.
+```
+
