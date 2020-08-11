@@ -61,3 +61,12 @@ powersave for Intel CPUs using the intel_pstate driver (Sandy Bridge and newer).
 Note: The intel_pstate driver supports only the performance and powersave governors, but they both provide dynamic scaling. The performance governor should give better power saving functionality than the old ondemand governor.
 ```
 
+
+intel_pstate驱动好像配置参数比较多，
+https://www.kernel.org/doc/html/v4.12/admin-guide/pm/intel_pstate.html
+```text
+/ # cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference 
+balance_performance
+/ # cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences
+default performance balance_performance balance_power power 
+```
