@@ -37,6 +37,9 @@ performance
 / # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 powersave
 
-echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+设置了性能模式后，马上就可以看到CPU当前的工作主频升上去了
+#  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+2799829
 ```
 内核相关驱动在 kernel/drivers/cpufreq 这个目录下吧
