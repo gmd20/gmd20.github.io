@@ -15,3 +15,16 @@ cur_freq
 ```
 
 centos 8 上面有一个 cpupower 可以用来设置修改主频
+```text
+NAME
+       cpupower-frequency-set - A small tool which allows to modify cpufreq settings.
+
+SYNTAX
+       cpupower [ -c cpu ] frequency-set [options]
+
+DESCRIPTION
+       cpupower  frequency-set allows you to modify cpufreq settings without having to type e.g.
+       "/sys/devices/system/cpu/cpu0/cpufreq/scaling_set_speed" all the time.
+       cpupower [ -c cpu ] frequency-set [options]
+
+```
