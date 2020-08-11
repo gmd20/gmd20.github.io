@@ -12,6 +12,7 @@ max_freq
 cur_freq 
 1999688
 
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 ```
 
 centos 8 上面有一个 cpupower命令 可以用来设置修改主频
@@ -32,8 +33,12 @@ DESCRIPTION
 这个cpufreq好像是还有几个默认模式的governor， 到底是最求性能还是省电模式。
 
 ```text
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors 
+performance powersave
+
 / # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 performance
+
 / # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 powersave
 
@@ -42,6 +47,7 @@ echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 #  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 2799829
 ```
+
 内核相关驱动在 kernel/drivers/cpufreq 这个目录下吧
 
 
