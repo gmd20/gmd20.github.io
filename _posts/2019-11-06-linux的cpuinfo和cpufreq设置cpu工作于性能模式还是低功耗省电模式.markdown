@@ -14,7 +14,7 @@ cur_freq
 
 ```
 
-centos 8 上面有一个 cpupower 可以用来设置修改主频
+centos 8 上面有一个 cpupower命令 可以用来设置修改主频
 ```text
 NAME
        cpupower-frequency-set - A small tool which allows to modify cpufreq settings.
@@ -38,7 +38,7 @@ performance
 powersave
 
 echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-设置了性能模式后，马上就可以看到CPU当前的工作主频升上去了
+设置了性能模式后，马上就可以看到CPU当前的工作主频升上去了。不过好像这个好像和cpu有关，有的在powersave模式，cpu 20% 了好像主频也不会自动升上去。
 #  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 2799829
 ```
