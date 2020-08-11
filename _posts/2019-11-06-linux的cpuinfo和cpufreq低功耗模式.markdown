@@ -28,3 +28,15 @@ DESCRIPTION
        cpupower [ -c cpu ] frequency-set [options]
 
 ```
+
+这个cpufreq好像是还有几个默认模式的governor， 到底是最求性能还是省电模式。
+
+```text
+/ # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+performance
+/ # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+powersave
+
+echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+```
+内核相关驱动在 kernel/drivers/cpufreq 这个目录下吧
