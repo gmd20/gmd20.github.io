@@ -284,7 +284,7 @@ git rebase --interactive --autosquash master
 ==========================
 ```text
 git fsck --lost-found  查看文件状态
-git reflog show  查看HEAD的修改记录
+git reflog show  查看HEAD的修改记录，找到被删commit的hash值，然后git reset恢复
 git reset HEAD@{1} 最简单的还原HEAD到上次修改之前的状态
 ```
 
