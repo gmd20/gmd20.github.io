@@ -1,0 +1,12 @@
+./configure --enable-zip --with-libzip 使用自己编译的libzip-1.7.3时，出现下面这个错误
+```text
+checking size of off_t... 0
+configure: error: off_t undefined; check your library configuration
+```
+看网上介绍应该是php的配置脚本有问题，它的实际错误其实是ld 找不到libzip.so 文件吧，
+不知道php7.4有没有这个问题，上次编译php-7.4时用是系统l自带的ibzip安装包是没有问题的。
+
+libzip-1.7.3编译默认so文件是安装到/usr/local/lib 目录，php这个configure是能认出来的，但ld 不忍/usr/local/目录有点奇怪。
+
+使用下面这个rpath指定 so文件的查找目录后，就可以配置编译成功了。
+./configure --enable-zip --with-libzip LDFLAGS="-Wl,-rpath=/usr/local/lib"
