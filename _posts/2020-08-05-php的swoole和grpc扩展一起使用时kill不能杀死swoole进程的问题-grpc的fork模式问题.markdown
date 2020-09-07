@@ -97,3 +97,33 @@ void postfork_child() {
 20202-08-21补充：  有人开了一个帖子了，应该是类似的问题
 https://github.com/grpc/grpc/issues/23833
 
+
+
+
+20202-09-07：
+另外一个感觉更好的解决方法是，最开始php.ini 里面不要加载grpc.so和扩展和配置grpc.enable_fork_support ，在swoole的worker进程启动后再使用的php的dl函数动态加载grpc.so extension，
+这样测试也没有出现死锁的情况。
+``php
+function onWorkerStart($server, $worker_id)
+{
+    if (!extension_loaded('grpc')) {
+        if (dl('grpc.so')) {
+            error_log("load grpc.so successfully");
+            include_once(dirname(__FILE__)."/GrpcInterface.php");
+        } else {
+            error_log("failed to load grpc.so");
+        }
+    } else {
+        error_log("grpc.so has been loaded");
+    }
+    
+     $server->tick(300000, function ($id) {
+            G::$serv->task(TaskType::TIMER_TICK);
+     });
+    
+}
+```
+
+另外swoole的定时器，不用使用在全局的地方使用 swoole_timer_tick（） 这个函数来设置定时器，这个是使用alarm信号来实现的，应该用  $server->tick 的这个epoll的timer实现的。
+不然也会出现 kill -15  主进程， 主进程没有处理信号退出的情况。
+ 
