@@ -2,6 +2,7 @@
 看上去现在tc的还是htb加fq_codel的组合为主流。看一下介绍和源码，还有别人的例子。
 
 手册：
+====
 http://man7.org/linux/man-pages/man8/tc.8.html
 http://man7.org/linux/man-pages/man8/tc-ematch.8.html  filter分类支持简单的表达式，cmp/and/or/字节检查/ipset/xtables等等的
 http://man7.org/linux/man-pages/man8/tc-flow.8.html    filter分类支持使用flow流表里面的src，dst，iif和NAT前后的nfct-src, nfct-dst，rxhash
@@ -14,6 +15,7 @@ http://man7.org/linux/man-pages/man8/tc-htb.8.html
 http://man7.org/linux/man-pages/man8/tc-fq_codel.8.html
 
 介绍：
+=====
 https://www.bufferbloat.net/projects/codel/wiki/Best_practices_for_benchmarking_Codel_and_FQ_Codel/
 http://luxik.cdi.cz/~devik/qos/htb/manual/userg.htm
 http://tldp.org/HOWTO/Traffic-Control-HOWTO/classful-qdiscs.html#qc-htb
@@ -22,6 +24,7 @@ https://www.cnblogs.com/acool/p/7779159.html
 https://www.docum.org/docum.org/tests/htb/burst/
 
 源码：
+=====
 https://elixir.bootlin.com/linux/latest/source/net/sched/em_meta.c
 https://elixir.bootlin.com/linux/latest/source/net/sched/sch_tbf.c
 https://elixir.bootlin.com/linux/latest/source/net/sched/sch_htb.c
@@ -29,8 +32,13 @@ https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/tree/tc/sch_tbf.c
 https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/tree/tc/q_htb.c
 
 openwrt的例子：
+==============
 https://github.com/tohojo/sqm-scripts/blob/master/src/simple.qos
 
+
+
+系统帮助
+=======
 man tc
 man tc-htb
 man tc-tbf
@@ -95,12 +103,16 @@ Sockets:
 
 
 
-概念：qdisc 是队列，下面可以包含多个class，每个class就是分类了，可以多个树形结构的级别，
+概念：
+======
+qdisc 是队列，下面可以包含多个class，每个class就是分类了，可以多个树形结构的级别，
 filter是就是分类规则了，每个class可以设置不同的filter来分类决定包被分到那个子级别的class里面去。
 可以先看一下 tc的man page里面THEORY OF OPERATION。小节的说明。 htb的话，根据http://man7.org/linux/man-pages/man8/tc-htb.8.html的说明，
 一个包只有被分类的叶子节点了才会正在的被认为分类成功，如果在中间节点就没有被filter分到叶子节点，最后还是会放到htb 创建时设置的default class id去。  
 
 
+实例
+====
 tc qdisc show dev eth1
 tc -s qdisc show dev eth1
 tc -s -d class show dev eth1
@@ -109,17 +121,17 @@ tc -s filter show dev eth1
 
 tc qdisc del dev eth1 root
 tc qdisc add dev eth1 root handle 1: htb default 13  r2q 10
-tc class add dev eth1 parent 1: classid 1:1 htb rate 1000mbit ceil 1000mbit burst 3000 cburst 3000
-tc class add dev eth1 parent 1:1 classid 1:11 htb rate 100mbit ceil 1000mbit burst 3000 cburst 3000 prio 1
-tc class add dev eth1 parent 1:1 classid 1:12 htb rate 500mbit ceil 1000mbit burst 3000 cburst 3000 prio 2
+tc class add dev eth1 parent 1: classid 1:1 htb quatotum 125000 rate 1000mbit ceil 1000mbit burst 125000 cburst 125000
+tc class add dev eth1 parent 1:1 classid 1:11 htb quatotum 12500 rate 100mbit ceil 1000mbit burst 12500 cburst 12500 prio 1
+tc class add dev eth1 parent 1:1 classid 1:12 htb rate 500mbit ceil 1000mbit burst 15000 cburst 125000 prio 2
 tc class add dev eth1 parent 1:1 classid 1:13 htb rate 50mbit ceil 50mbit burst 3000 cburst 3000 prio 3
 tc class add dev eth1 parent 1:13 classid 1:14 htb rate 20mbit ceil 20mbit burst 3000 cburst 3000 prio 1
 tc class add dev eth1 parent 1:13 classid 1:15 htb rate 30mbit ceil 30mbit burst 3000 cburst 3000 prio 1
 
-tc qdisc add dev eth1 parent 1:11 handle 110: fq_codel limit 1024 ecn
-tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel limit 1024 ecn
-tc qdisc add dev eth1 parent 1:14 handle 140: fq_codel limit 1024 ecn
-tc qdisc add dev eth1 parent 1:15 handle 150: fq_codel limit 1024 noecn
+tc qdisc add dev eth1 parent 1:11 handle 110: fq_codel quatotum 300 limit 1024 flows 2048 ecn
+tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel quatotum 300 limit 1024 flows 1024 ecn
+tc qdisc add dev eth1 parent 1:14 handle 140: fq_codel quatotum 300 limit 1024 flows 1024 ecn
+tc qdisc add dev eth1 parent 1:15 handle 150: fq_codel quatotum 300 limit 1024 flows 1024 noecn
 
 # tc filter add dev eth1 basic match 'meta(pkt_len gt 0)' flowid 1:13
 # tc filter add dev eth1 protocol ip basic match 'meta(pkt_len gt 0)'  flowid 1:13
@@ -129,6 +141,8 @@ tc filter add dev eth1 basic match 'meta(fwmark gt 24)' flowid 1:15
 tc filter add dev eth1 parent 1:13 handle 100 fw flowid 1:14
 tc filter add dev eth1 parent 1:13 handle 101 fw flowid 1:15
 tc filter add dev eth1 parent 1:13 priority 10 matchall classid 1:15
+
+
 
 # 通常来说队列是应用于出去的就流量的，也就是内核发网络包到网卡之前的，但 ingres 这个qdisc可以
 # 对接收上了的包应用tc队列，可以把收上来的转到一个ifb然后在那个ifb 设备上面限制接收方向的流量吧，
@@ -145,8 +159,8 @@ tc filter add dev bond0 parent ffff: protocol ip u32 match u32 0 0 flowid 1:1 ac
 tc filter add dev bond0 parent 1: protocol ip u32 match u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0
 
 
-
-
+htb的burst和burst
+=================
 tc 本身会自动计算burst和cburst，设置为
 /* compute minimal allowed burst from rate; mtu is added here to make
    sute that buffer is larger than mtu and to have some safeguard space */
@@ -165,5 +179,17 @@ if (!cbuffer)
 完带宽。但好像现在内核API变化了，这个跟系统时钟周期没关系了，
 
 
-外网上行接口不开ecn，内网可以开ecn
+sqm-scripts叫里面burst和cburst都是用同一个值， 默认允许的突发时间是 t = 1ms （1000微秒），
+用下面这个公式来计算的： 
+busrt（byte） = rate（kbit/s） * 1000（t=1ms） / 8000 
+来计算的，然后不能 小于 MTU + 200的样子
+quatotum 用的也是busrt 一样的数值。 
+说是quatotum 不能大于burst。burst说设置小了比较耗cpu。quatotum是每一轮调度允许发送量？quatotum设置小了，不同class之间的均衡性更好吧。
+
+fq_codel的quatotum 说是默认设置300，不能再小了，设置成300是可能有小包优先的作用？ fq_codel的flows对应流（连接）数量，用于保证多流之间的公平性的
+
+
+ecn
+===
+外网上行接口不开ecn，内网可以开ecn。 就是支持enc标记的tcp连接之类的，会用ecn标记一下包吧，不是直接丢弃，终端系统看到网络包有这个标记就会知道发生拥堵了。
 ```
