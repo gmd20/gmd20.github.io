@@ -121,17 +121,17 @@ tc -s filter show dev eth1
 
 tc qdisc del dev eth1 root
 tc qdisc add dev eth1 root handle 1: htb default 13  r2q 10
-tc class add dev eth1 parent 1: classid 1:1 htb quatotum 125000 rate 1000mbit ceil 1000mbit burst 125000 cburst 125000
-tc class add dev eth1 parent 1:1 classid 1:11 htb quatotum 12500 rate 100mbit ceil 1000mbit burst 12500 cburst 12500 prio 1
+tc class add dev eth1 parent 1: classid 1:1 htb quantum 125000 rate 1000mbit ceil 1000mbit burst 125000 cburst 125000
+tc class add dev eth1 parent 1:1 classid 1:11 htb quantum 12500 rate 100mbit ceil 1000mbit burst 12500 cburst 12500 prio 1
 tc class add dev eth1 parent 1:1 classid 1:12 htb rate 500mbit ceil 1000mbit burst 15000 cburst 125000 prio 2
 tc class add dev eth1 parent 1:1 classid 1:13 htb rate 50mbit ceil 50mbit burst 3000 cburst 3000 prio 3
 tc class add dev eth1 parent 1:13 classid 1:14 htb rate 20mbit ceil 20mbit burst 3000 cburst 3000 prio 1
 tc class add dev eth1 parent 1:13 classid 1:15 htb rate 30mbit ceil 30mbit burst 3000 cburst 3000 prio 1
 
-tc qdisc add dev eth1 parent 1:11 handle 110: fq_codel quatotum 300 limit 1024 flows 2048 ecn
-tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel quatotum 300 limit 1024 flows 1024 ecn
-tc qdisc add dev eth1 parent 1:14 handle 140: fq_codel quatotum 300 limit 1024 flows 1024 ecn
-tc qdisc add dev eth1 parent 1:15 handle 150: fq_codel quatotum 300 limit 1024 flows 1024 noecn
+tc qdisc add dev eth1 parent 1:11 handle 110: fq_codel quantum 300 limit 1024 flows 2048 ecn
+tc qdisc add dev eth1 parent 1:12 handle 120: fq_codel quantum 300 limit 1024 flows 1024 ecn
+tc qdisc add dev eth1 parent 1:14 handle 140: fq_codel quantum 300 limit 1024 flows 1024 ecn
+tc qdisc add dev eth1 parent 1:15 handle 150: fq_codel quantum 300 limit 1024 flows 1024 noecn
 
 # tc filter add dev eth1 basic match 'meta(pkt_len gt 0)' flowid 1:13
 # tc filter add dev eth1 protocol ip basic match 'meta(pkt_len gt 0)'  flowid 1:13
@@ -183,10 +183,10 @@ sqm-scripts叫里面burst和cburst都是用同一个值， 默认允许的突发
 用下面这个公式来计算的： 
 busrt（byte） = rate（kbit/s） * 1000（t=1ms） / 8000 
 来计算的，然后不能 小于 MTU + 200的样子
-quatotum 用的也是busrt 一样的数值。 
-说是quatotum 不能大于burst。burst说设置小了比较耗cpu。quatotum是每一轮调度允许发送量？quatotum设置小了，不同class之间的均衡性更好吧。
+quantum 用的也是busrt 一样的数值。 
+说是quantum不能大于burst。burst说设置小了比较耗cpu。quantum是每一轮调度允许发送量？quantum设置小了，不同class之间的均衡性更好吧。
 
-fq_codel的quatotum 说是默认设置300，不能再小了，设置成300是可能有小包优先的作用？ fq_codel的flows对应流（连接）数量，用于保证多流之间的公平性的
+fq_codel的quantum 说是默认设置300，不能再小了，设置成300是可能有小包优先的作用？ fq_codel的flows对应流（连接）数量，用于保证多流之间的公平性的
 
 
 ecn
