@@ -1,0 +1,30 @@
+好像是之前进过水，笔记本的win键出现问题了，不停的狂跳，要么一直处于key down状态，键盘上也没法输出了，还好按下大小写锁定后，用shift + 可以输入密码登录。
+之前拆过笔记本想把键盘拿出来看一下，最后没成功，联想的都是一次性不可逆的塑料钉固定，拆了没法再重新固定了，搞的键盘松松垮垮的。今天发现笔记本的键盘按键键帽
+也是可以直接扣出来的，直接用手往自己这个方向揭起来就可以了，但只能看到键盘的软胶电路，也没法看清楚底下是怎么接触的。
+
+本来是想修改一下 https://github.com/microsoft/Windows-driver-samples/tree/master/input/kbfiltr/ 个键盘过滤驱动来把win键给过滤掉的，但发现c盘空间台太
+小了，windows ddk只能安装在c盘有点弱智的设计。最后发现http://smallvoid.com/article/winnt-scancode-map.html 这里提到修改注册表键盘映射的方法可以禁用win
+等按键，试了一下导入以下注册表项之后重启系统，终于安静了 。
+```text
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]
+"Scancode Map"=hex:00,00,00,00,00,00,00,00,04,00,00,00,00,00,5b,e0,00,00,5c,e0,00,00,f6,e0,00,00,00,00
+```
+这个二进制的解释没有在微软官方找到解释，不过那个网站大概写了一下。
+```text
+00,00,00,00	Header: Version. Set to all zeroes.
+00,00,00,00	Header: Flags. Set to all zeroes.
+03,00,00,00	3 entries in the map (including null entry).
+00,00,5b,e0	Left Windows Key (0xe05b) -> Disable (0x00).
+00,00,5c,e0	Right Windows Key (0xe05c) -> Disable (0x00).
+00,00,00,00	Null entry.
+```
+
+左边的windows按键的scancode的值是 (0xe05b)，就是把这个scancode 映射为0就是禁用这个按键了吧。
+各个按键的值可用参考
+https://docs.microsoft.com/zh-cn/windows/win32/api/ntddkbd/ns-ntddkbd-keyboard_attributes?redirectedfrom=MSDN 页面的USB HID to PS/2 Scan Code Translation Table 这个
+pdf文件，我的笔记本设备管理器里面看也是PS/2的键盘吧。windows键还是比较特殊的两个字节，前面那个e0是escape字节吧。
+下面这个网页里面也一些介绍
+https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
