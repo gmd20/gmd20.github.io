@@ -103,13 +103,13 @@ https://github.com/grpc/grpc/issues/23833
 20202-09-07：
 另外一个感觉更好的解决方法是，最开始php.ini 里面不要加载grpc.so和扩展和配置grpc.enable_fork_support ，在swoole的worker进程启动后再使用的php的dl函数动态加载grpc.so extension，
 这样测试也没有出现死锁的情况。
-``php
+```php
 function onWorkerStart($server, $worker_id)
 {
     if (!extension_loaded('grpc')) {
         if (dl('grpc.so')) {
             error_log("load grpc.so successfully");
-            include_once(dirname(__FILE__)."/GrpcInterface.php");
+            include_once(dirname(__FILE__)."/grpc_header.php");
         } else {
             error_log("failed to load grpc.so");
         }
