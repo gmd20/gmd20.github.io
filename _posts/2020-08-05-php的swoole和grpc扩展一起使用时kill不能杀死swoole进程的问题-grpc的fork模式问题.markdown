@@ -127,3 +127,8 @@ function onWorkerStart($server, $worker_id)
 另外swoole的定时器，不用使用在全局的地方使用 swoole_timer_tick（） 这个函数来设置定时器，这个是使用alarm信号来实现的，应该用  $server->tick 的这个epoll的timer实现的。
 不然也会出现 kill -15  主进程， 主进程没有处理信号退出的情况。
  
+
+2020-10-10补充，看上去 官方在  https://github.com/grpc/grpc/pull/24364/commits/8e9e895ffc530a9db678e932226d9cd8cd6436a5  这个commit 修复了这个问题。就把src/php/ext/grpc/php_grpc.c文件里面的调用grpc_shutdown_blocking 函数全部改为grpc_shutdown函数。
+```text
+Let's remove it because grpc_shutdown now can execute synchronously if it's possible. grpc_shutdown_blocking can be harmful when it's executed under the event thread, which can lead a deadlock.
+```
