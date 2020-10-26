@@ -10,7 +10,7 @@ http://man7.org/linux/man-pages/man8/tc-flow.8.html    filter分类支持使用f
       tc qdisc add dev eth0 parent 1:1 handle 11: fq_codel
       tc filter add dev eth0 parent 11: handle 11 protocol all flow hash keys nfct-src divisor 1024     
       
-https://man7.org/linux/man-pages/man8/tc-u32.8.html   filter根据源ip目的ip，tcp，udp等协议字段已经包里面的任意内容的规则
+https://man7.org/linux/man-pages/man8/tc-u32.8.html   filter根据源ip目的ip，tcp，udp等协议字段以及包里面的任意内容的规则
 https://man7.org/linux/man-pages/man8/tc-fw.8.html     filter根据skb的mark值来设置规则
 https://man7.org/linux/man-pages/man8/tc-flower.8.html filer匹配mac地址和各种流字段
 http://man7.org/linux/man-pages/man8/tc-bpf.8.html     filter也是支持bpf的自定义扩展的
