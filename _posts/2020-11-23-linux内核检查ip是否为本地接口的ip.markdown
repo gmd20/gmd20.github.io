@@ -86,3 +86,83 @@ EXPORT_SYMBOL(__ip_dev_find);
 	rcu_read_unlock();
 
 ```
+
+内核好像提供了另外了一个类似函数inet_confirm_addr，参考arp_ignore函数的用法:
+```c
+static __be32 confirm_addr_indev(struct in_device *in_dev, __be32 dst,
+			      __be32 local, int scope)
+{
+	unsigned char localnet_scope = RT_SCOPE_HOST;
+	const struct in_ifaddr *ifa;
+	__be32 addr = 0;
+	int same = 0;
+
+	if (unlikely(IN_DEV_ROUTE_LOCALNET(in_dev)))
+		localnet_scope = RT_SCOPE_LINK;
+
+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
+		unsigned char min_scope = min(ifa->ifa_scope, localnet_scope);
+
+		if (!addr &&
+		    (local == ifa->ifa_local || !local) &&
+		    min_scope <= scope) {
+			addr = ifa->ifa_local;
+			if (same)
+				break;
+		}
+		if (!same) {
+			same = (!local || inet_ifa_match(local, ifa)) &&
+				(!dst || inet_ifa_match(dst, ifa));
+			if (same && addr) {
+				if (local || !dst)
+					break;
+				/* Is the selected addr into dst subnet? */
+				if (inet_ifa_match(addr, ifa))
+					break;
+				/* No, then can we use new local src? */
+				if (min_scope <= scope) {
+					addr = ifa->ifa_local;
+					break;
+				}
+				/* search for large dst subnet for addr */
+				same = 0;
+			}
+		}
+	}
+
+	return same ? addr : 0;
+}
+
+/*
+ * Confirm that local IP address exists using wildcards:
+ * - net: netns to check, cannot be NULL
+ * - in_dev: only on this interface, NULL=any interface
+ * - dst: only in the same subnet as dst, 0=any dst
+ * - local: address, 0=autoselect the local address
+ * - scope: maximum allowed scope value for the local address
+ */
+__be32 inet_confirm_addr(struct net *net, struct in_device *in_dev,
+			 __be32 dst, __be32 local, int scope)
+{
+	__be32 addr = 0;
+	struct net_device *dev;
+
+	if (in_dev)
+		return confirm_addr_indev(in_dev, dst, local, scope);
+
+	rcu_read_lock();
+	for_each_netdev_rcu(net, dev) {
+		in_dev = __in_dev_get_rcu(dev);
+		if (in_dev) {
+			addr = confirm_addr_indev(in_dev, dst, local, scope);
+			if (addr)
+				break;
+		}
+	}
+	rcu_read_unlock();
+
+	return addr;
+}
+EXPORT_SYMBOL(inet_confirm_addr);
+```
+
