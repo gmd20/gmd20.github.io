@@ -25,10 +25,12 @@ fuse文件系统默认没有启用page cache的，需要配置mount选项
 
 看起来一般是不要打开的好，auto_cache 应该比kernel_cache 更安全一些。
 另外这个选项看起来只有直接使用libfuse动态库的时候才才支持，fusermount3 fusermount命令是不支持的
+和fuse系统调用的 FOPEN_KEEP_CACHE 设置有关吧
 
 
 参考：
 -----
 man mount.fuse   
 https://www.man7.org/linux/man-pages/man8/fuse.8.html    
+https://man7.org/linux/man-pages/man4/fuse.4.html   
 
