@@ -1,5 +1,10 @@
 fuse文件系统默认没有启用page cache的，需要配置mount选项
 ```text
+   High-level mount options:
+       These following options are not actually passed to the kernel but interpreted  by  libfuse.
+       They can only be specified for filesystems that use the high-level libfuse API:
+
+
        kernel_cache
               This option disables flushing the cache of the file contents
               on every open(2).  This should only be enabled on filesystems,
@@ -19,7 +24,7 @@ fuse文件系统默认没有启用page cache的，需要配置mount选项
 ```
 
 看起来一般是不要打开的好，auto_cache 应该比kernel_cache 更安全一些。
-另外这个选项看起来只有/usr/bin/fusermount3命令才支持，fusermount是不支持的，centos需要yum install fuse3安装
+另外这个选项看起来只有直接使用libfuse动态库的时候才才支持，fusermount3 fusermount命令是不支持的
 
 
 参考：
