@@ -18,4 +18,10 @@ fuse文件系统默认没有启用page cache的，需要配置mount选项
               the file has changed since it was last opened.
 ```
 
-看起来一般是不要打开的好，auto_cache 应该比kernel_cache 更安全一些
+看起来一般是不要打开的好，auto_cache 应该比kernel_cache 更安全一些。
+
+参考：
+-----
+man mount.fuse   
+https://www.man7.org/linux/man-pages/man8/fuse.8.html    
+
