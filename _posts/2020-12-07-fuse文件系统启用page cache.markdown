@@ -19,6 +19,8 @@ fuse文件系统默认没有启用page cache的，需要配置mount选项
 ```
 
 看起来一般是不要打开的好，auto_cache 应该比kernel_cache 更安全一些。
+另外这个选项看起来只有/usr/bin/fusermount3命令才支持，fusermount是不支持的，centos需要yum install fuse3安装
+
 
 参考：
 -----
