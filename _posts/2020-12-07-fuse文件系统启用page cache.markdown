@@ -33,4 +33,6 @@ fuse文件系统默认没有启用page cache的，需要配置mount选项
 man mount.fuse   
 https://www.man7.org/linux/man-pages/man8/fuse.8.html    
 https://man7.org/linux/man-pages/man4/fuse.4.html   
+https://elixir.bootlin.com/linux/latest/source/fs/fuse/file.c   
+https://github.com/libfuse/libfuse/blob/master/lib/fuse.c   
 
