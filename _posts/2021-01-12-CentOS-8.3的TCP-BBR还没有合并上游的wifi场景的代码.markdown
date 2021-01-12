@@ -1,0 +1,35 @@
+高速wifi场景下ack包积聚发送问题，导致传输速度不稳定吧。   
+
+
+https://groups.google.com/forum/#!topic/bbr-dev/8pgyOyUavvY     
+
+
+
+```text
+1: Higher throughput for WiFi and other paths with aggregation
+
+Aggregation effects are extremely common with WiFi, cellular, and cable modem link technologies, ACK decimation in middleboxes, and LRO and GRO in receiving hosts. The aggregation can happen in either direction, data or ACKs, but in either case, the aggregation effect is visible to the sender in the ACK stream.
+
+Previously, BBR’s sending was often limited by cwnd under severe ACK aggregation/decimation because BBR sized the cwnd at 2*BDP. If packets were ACKed in bursts after long delays then BBR stopped sending after sending 2*BDP, leaving the bottleneck idle for potentially long periods. Note that loss-based congestion control does not have this issue because when facing aggregation it continues increasing cwnd after bursts of ACKs, growing cwnd until the buffer is full.
+
+To achieve good throughput in the presence of aggregation effects, this new algorithm allows the BBR sender to put extra data in flight to keep the bottleneck utilized during silences in the ACK stream that it has evidence to suggest were caused by aggregation.
+
+2: Lower queuing delays by frequently draining excess in-flight data
+
+In BBR v1.0 the ‘drain’ phase of the pacing gain cycle holds the pacing gain to 0.75 for essentially 1*min_rtt (or less if inflight falls below the BDP).
+
+This patch modifies the behaviour of this ‘drain’ phase to attempt to ‘drain to target’, adaptively holding this ‘drain’ phase until inflight reaches the target level that matches the estimated BDP (bandwidth-delay product).
+
+This can significantly reduce the amount of data queued at the bottleneck, and hence reduce queuing delay and packet loss, in cases where there are multiple flows sharing a bottleneck.
+```
+
+
+https://blog.apnic.net/2018/04/30/bbr-patches-for-higher-wifi-throughput-and-lower-queuing-delays/    
+
+Backported “Linux TCP BBR patches for higher wifi throughput and lower queuing delays”    
+https://forum.openwrt.org/t/backported-linux-tcp-bbr-patches-for-higher-wifi-throughput-and-lower-queuing-delays/48907    
+
+让人们久等了的TCP BBR v2.0快要出炉了！   
+https://blog.csdn.net/dog250/article/details/80629551      
+
+
