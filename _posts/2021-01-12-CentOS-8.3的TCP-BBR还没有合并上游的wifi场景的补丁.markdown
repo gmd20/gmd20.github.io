@@ -34,7 +34,7 @@ https://blog.csdn.net/dog250/article/details/80629551
 
 
 
-看centos8.3的代码net/ipv4/tcp_bbr.c 应该还没有backport上游的补丁
+看centos8.3的代码net/ipv4/tcp_bbr.c 应该还没有backport上游的补丁，下面这个代码在源码里面还没看到
 ```c
 /* Find the cwnd increment based on estimate of ack aggregation */
 static u32 bbr_ack_aggregation_cwnd(struct sock *sk)
