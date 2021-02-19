@@ -1,0 +1,5 @@
+https://github.com/google/gopacket
+
+例子在example目录下
+https://github.com/google/gopacket/blob/master/examples/afpacket/afpacket.go
+
