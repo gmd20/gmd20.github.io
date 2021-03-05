@@ -8,6 +8,18 @@ echo c > /proc/sysrq-trigger
 实际测试发现，netconsole在有些情况下保存不了完整的oops信息的，比如在网卡的软中断上奔溃了，可能这个netconsole依赖的网卡中断不正常的原因？
 只会看到一行BUG，后面的关键信息都没有了。 这个没有串口线可靠。
 
+如过想在linux上面用rsyslog接收，可以在/etc/rsyslog.d/目录创建配置文件
+ ```text
+ cat /etc/rsyslog.d/testnetconsole.conf
+ $ModLoad imudp
+$UDPServerRun 6666
+$template DynFile,"/root/netconsole/%fromhost-ip%.log"
+if $fromhost-ip startswith '172.16.' then ?DynFile
+& ~
+ ```
+ 然后/etc/init.d/rsyslog restart 重启，rsyslog就会监听6666端口，并把日志写到 "/root/netconsole“ 目录下了。
+ 这个netconsole不但是内核的日志，应用层的的syslog好像也发过来了，如果上面不指定 oops_only=1的话
+
 # kdump
 https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 
