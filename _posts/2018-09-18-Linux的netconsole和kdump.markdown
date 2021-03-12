@@ -3,12 +3,15 @@
 ```text
 modprobe netconsole netconsole=6666@192.168.1.2/eth1,6666@192.168.1.1/c8:5b:76:e4:7a:dd oops_only=1
 nc -l -u 6666
-echo c > /proc/sysrq-trigger
+echo c > /proc/sysrq-trigger 触发内核崩溃
+echo 8 > /proc/sys/kernel/printk  调整内核日志级别是否输出到console
 ```
+6666@192.168.1.2/eth1 是本地ip和接口，,6666@192.168.1.1/c8:5b:76:e4:7a:dd 是远程机器的接口和mac地址
+oops_only是否只转发oops信息吧，
 实际测试发现，netconsole在有些情况下保存不了完整的oops信息的，比如在网卡的软中断上奔溃了，可能这个netconsole依赖的网卡中断不正常的原因？
 只会看到一行BUG，后面的关键信息都没有了。 这个没有串口线可靠。
 
-如过想在linux上面用rsyslog接收，可以在/etc/rsyslog.d/目录创建配置文件
+如果想在linux上面用rsyslog接收，可以在/etc/rsyslog.d/目录创建配置文件
  ```text
  cat /etc/rsyslog.d/testnetconsole.conf
  $ModLoad imudp
@@ -18,7 +21,7 @@ if $fromhost-ip startswith '172.16.' then ?DynFile
 & ~
  ```
  然后/etc/init.d/rsyslog restart 重启，rsyslog就会监听6666端口，并把日志写到 "/root/netconsole“ 目录下了。
- 这个netconsole不但是内核的日志，应用层的的syslog好像也发过来了，如果上面不指定 oops_only=1的话
+
 
 # kdump
 https://www.kernel.org/doc/Documentation/kdump/kdump.txt
