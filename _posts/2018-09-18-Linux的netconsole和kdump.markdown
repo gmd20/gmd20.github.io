@@ -1,7 +1,7 @@
 # netconsole
 
 ```text
-modprobe netconsole netconsole=6666@192.168.1.1/eth1,6666@192.168.1.1/c8:5b:76:e4:7a:dd oops_only=1
+modprobe netconsole netconsole=6666@192.168.1.2/eth1,6666@192.168.1.1/c8:5b:76:e4:7a:dd oops_only=1
 nc -l -u 6666
 echo c > /proc/sysrq-trigger
 ```
