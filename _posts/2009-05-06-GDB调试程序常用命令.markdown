@@ -132,7 +132,16 @@ Stack level 0, frame at 0xbffff480:
 
 14. 查看加载的模块地址
 ----------------------
-(gdb) info proc mappings   
+
+```text
+(gdb) info proc mappings
+```
+要先run运行起来才能看到，然后想下面这样的崩溃日志里面  ip:7f806117b8d3 是运行时地址，[7f8060da5000+52d000]是 加载的地址，7f806117b8d3 减去7f8060da5000得到文件偏移，
+然后根据mappings里面的 “ Start Addr ”文件其实地址+ 文件偏移才能  info line *0xXXXXXX  来查找符号吧
+```text
+[   63.359528] traps: grpc_global_tim[848] trap invalid opcode ip:7f806117b8d3 sp:7f8057d70c30 error:0 in libgrpc.so.15.0.0[7f8060da5000+52d000]
+```
+
 
 15. 打印内存
 ------------
