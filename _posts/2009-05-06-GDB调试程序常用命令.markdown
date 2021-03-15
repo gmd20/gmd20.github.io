@@ -142,6 +142,10 @@ Stack level 0, frame at 0xbffff480:
 [   63.359528] traps: grpc_global_tim[848] trap invalid opcode ip:7f806117b8d3 sp:7f8057d70c30 error:0 in libgrpc.so.15.0.0[7f8060da5000+52d000]
 ```
 
+好像直接用文件偏移查找也可以，不用run运行再算实时地址
+```text
+(gdb) info line *0x文件偏移
+```
 
 15. 打印内存
 ------------
