@@ -144,7 +144,8 @@ Stack level 0, frame at 0xbffff480:
 
 好像直接用文件偏移查找也可以，不用run运行再算实时地址
 ```text
-(gdb) info line *0x文件偏移
+(gdb) info line *0x3d6750  #文件偏移
+(gdb) disassemble 0x3d6750 #文件偏移地址
 ```
 
 15. 打印内存
