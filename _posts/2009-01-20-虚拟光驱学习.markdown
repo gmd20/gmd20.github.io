@@ -1,0 +1,775 @@
+
+    这段时间，看了很多代码和图书，包括一个Linux平台的虚拟cd驱动，一个wiindows平台的虚拟光驱驱动，《Linux设备驱动》等书关于 block device驱动的描述，
+    网上pdf文档“Guide to the implementation of SCSI in Linux 2.6.X kernel”，等等。还有一个实际项目中Linux虚拟光驱的实现代码。
+     其实做一个虚拟光驱也不是很复杂。你按照系统规范实现一个block device 驱动或者scsi底层驱动。然后系统自动会在相应的调用函数里面叫你提供设备上的数据给他，
+     比如你磁盘分成512k大小（iso镜像好像是2048k）的 一块一块数据单元，系统提供一个起始块的号码，和要复制多少块数据给你，然后你把据复制到系统提供的那块内存
+     里面就行了。虚拟光驱的话，就直接把iso文 件里面根据上面两个参数计算出来的偏移和长度读出来就可以了。如果你用block device驱动的话，这个是request处理的
+     对应函数里面做的。如果是scsi驱动的话，就在read 6 和read 10 指令的处理函数里面做就可以了。具体可以去查看scsi标准的文档。
+     下面是我根据《linux 设备驱动》书上的sbull例子，修改后得到的简单的虚拟光驱block device驱动。测试一下都没什么问题了。不过Linux系统在内核里面读文件不是
+     那么容易，我这里因为测试用的iso文件比较小才有300多k，所以 我在一开始就直接把整个文件放到内存里面来了。如果iso文件很大的话，是不能一下全部读到内存里面来的。
+     我也简单的把iso文件名固定在代码里面了。
+--------------------sbull.c---------------------------------------
+```c
+/*
+* Sample disk driver, from the beginning.
+*/
+
+
+/*这个文件不存在了
+#include <linux/config.h>
+*/
+#ifndef _LINUX_CONFIG_H
+#define _LINUX_CONFIG_H
+/* This file is no longer in use and kept only for backward compatibility.
+* autoconf.h is now included via -imacros on the commandline
+*/
+#include <linux/autoconf.h>
+
+#endif
+
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+#include <linux/init.h>
+
+#include <linux/sched.h>
+#include <linux/kernel.h> /* printk() */
+#include <linux/slab.h>   /* kmalloc() */
+#include <linux/fs.h>   /* everything... */
+#include <linux/errno.h> /* error codes */
+#include <linux/timer.h>
+#include <linux/types.h> /* size_t */
+#include <linux/fcntl.h> /* O_ACCMODE */
+#include <linux/hdreg.h> /* HDIO_GETGEO */
+#include <linux/kdev_t.h>
+#include <linux/vmalloc.h>
+#include <linux/genhd.h>
+#include <linux/blkdev.h>
+#include <linux/buffer_head.h> /* invalidate_bdev */
+#include <linux/bio.h>
+
+//flags e.g. O_RDWR , O_EXCL
+#include <linux/stat.h>
+
+//get_ds() set_fs() get_fs()
+#include <asm/processor.h>
+#include <asm/uaccess.h>
+
+mm_segment_t old_fs;
+
+MODULE_LICENSE("Dual BSD/GPL");
+
+static int sbull_major = 0;
+module_param(sbull_major, int, 0);
+static int hardsect_size = 512;
+module_param(hardsect_size, int, 0);
+static int nsectors = 1024; /* How big the drive is */
+module_param(nsectors, int, 0);
+static int ndevices = 1 ; /*4; 虚拟一个磁盘就行了*/
+module_param(ndevices, int, 0);
+
+/*
+* The different "request modes" we can use.
+*/
+enum {
+RM_SIMPLE = 0, /* The extra-simple request function */
+RM_FULL    = 1, /* The full-blown version */
+RM_NOQUEUE = 2, /* Use make_request */
+};
+static int request_mode = RM_SIMPLE;
+module_param(request_mode, int, 0);
+
+/*
+* Minor number and partition management.
+*/
+#define SBULL_MINORS 16
+#define MINOR_SHIFT 4
+#define DEVNUM(kdevnum) (MINOR(kdev_t_to_nr(kdevnum)) >> MINOR_SHIFT
+
+/*
+* We can tweak our hardware sector size, but the kernel talks to us
+* in terms of small sectors, always.
+*/
+#define KERNEL_SECTOR_SIZE 512
+
+/*
+* After this much idle time, the driver will simulate a media change.
+*/
+#define INVALIDATE_DELAY 30*HZ
+
+/*
+* The internal representation of our device.
+*/
+struct sbull_dev {
+        int size;                       /* Device size in sectors */
+        u8 *data;                       /* The data array */
+        short users;                    /* How many users */
+        short media_change;             /* Flag a media change? */
+        spinlock_t lock;                /* For mutual exclusion */
+        struct request_queue *queue;    /* The device request queue */
+        struct gendisk *gd;             /* The gendisk structure */
+        struct timer_list timer;        /* For simulated media changes */
+        struct file   *backing_file;
+};
+
+static struct sbull_dev *Devices = NULL;
+
+
+/*
+* Handle an I/O request.
+*/
+static void sbull_transfer(struct sbull_dev *dev, unsigned long sector,
+   unsigned long nsect, char *buffer, int write)
+{
+unsigned long offset = sector*KERNEL_SECTOR_SIZE;
+unsigned long nbytes = nsect*KERNEL_SECTOR_SIZE;
+       
+        //read_descriptor_t desc;
+       
+        unsigned long readSize = 0;
+        long long position = offset ;
+if ((offset + nbytes) > dev->size) {
+   printk (KERN_NOTICE "Beyond-end write (%ld %ld)\n", offset, nbytes);
+   return;
+}
+if (write){
+   //memcpy(dev->data + offset, buffer, nbytes);
+   //不支持写的
+   printk (KERN_NOTICE "write iso error (offset %ld length %ld)\n", offset, nbytes);
+}
+else{
+   memcpy(buffer, dev->data + offset, nbytes);
+   //读取 iso文件中 的内容
+                printk (KERN_NOTICE "read require ( %p offset %ld require %ld)\n",buffer,offset ,nbytes);
+                //memset(buffer,90,nbytes);
+               
+                // desc.written=0;
+                // desc.count=10;
+                // desc.arg.buf=buffer;
+                // desc.error=0;
+                // do_generic_file_read(dev->backing_file,&position,&desc,read_actor);
+                
+         //readSize =dev->backing_file->f_op->read(dev->backing_file, buffer, nbytes ,&position);
+       
+   //if (readSize != nbytes){
+   // printk (KERN_NOTICE "read error (real %ld offset %ld require %ld)\n", readSize,offset ,nbytes);
+   //}
+}
+  
+}
+
+/*
+* The simple form of the request function.
+*/
+static void sbull_request(request_queue_t *q)
+{
+struct request *req;
+
+while ((req = elv_next_request(q)) != NULL) {
+   struct sbull_dev *dev = req->rq_disk->private_data;
+   if (! blk_fs_request(req)) {
+    printk (KERN_NOTICE "Skip non-fs request\n");
+    end_request(req, 0);
+    continue;
+   }
+    //    printk (KERN_NOTICE "Req dev %d dir %ld sec %ld, nr %d f %lx\n",
+    //        dev - Devices, rq_data_dir(req),
+    //        req->sector, req->current_nr_sectors,
+    //        req->flags);
+   sbull_transfer(dev, req->sector, req->current_nr_sectors,
+     req->buffer, rq_data_dir(req));
+   end_request(req, 1);
+}
+}
+
+
+/*
+* Transfer a single BIO.
+*/
+static int sbull_xfer_bio(struct sbull_dev *dev, struct bio *bio)
+{
+int i;
+struct bio_vec *bvec;
+sector_t sector = bio->bi_sector;
+
+/* Do each segment independently. */
+bio_for_each_segment(bvec, bio, i) {
+   char *buffer = __bio_kmap_atomic(bio, i, KM_USER0);
+   sbull_transfer(dev, sector, bio_cur_sectors(bio),
+     buffer, bio_data_dir(bio) == WRITE);
+   sector += bio_cur_sectors(bio);
+   __bio_kunmap_atomic(bio, KM_USER0);
+}
+return 0; /* Always "succeed" */
+}
+
+/*
+* Transfer a full request.
+*/
+static int sbull_xfer_request(struct sbull_dev *dev, struct request *req)
+{
+struct bio *bio;
+int nsect = 0;
+   
+__rq_for_each_bio(bio, req) {
+   sbull_xfer_bio(dev, bio);
+   nsect += bio->bi_size/KERNEL_SECTOR_SIZE;
+}
+return nsect;
+}
+
+/*
+* Smarter request function that "handles clustering".
+*/
+static void sbull_full_request(request_queue_t *q)
+{
+struct request *req;
+int sectors_xferred;
+struct sbull_dev *dev = q->queuedata;
+
+while ((req = elv_next_request(q)) != NULL) {
+   if (! blk_fs_request(req)) {
+    printk (KERN_NOTICE "Skip non-fs request\n");
+    end_request(req, 0);
+    continue;
+   }
+   sectors_xferred = sbull_xfer_request(dev, req);
+   if (! end_that_request_first(req, 1, sectors_xferred)) {
+    blkdev_dequeue_request(req);
+    end_that_request_last(req,0);
+   }
+}
+}
+
+/*
+* The direct make request version.
+*/
+static int sbull_make_request(request_queue_t *q, struct bio *bio)
+{
+struct sbull_dev *dev = q->queuedata;
+int status;
+
+status = sbull_xfer_bio(dev, bio);
+bio_endio(bio, status);
+return 0;
+}
+
+
+/*
+* Open and close.
+*/
+
+static int sbull_open(struct inode *inode, struct file *filp)
+{
+struct sbull_dev *dev = inode->i_bdev->bd_disk->private_data;
+
+del_timer_sync(&dev->timer);
+filp->private_data = dev;
+spin_lock(&dev->lock);
+if (! dev->users)
+   check_disk_change(inode->i_bdev);
+dev->users++;
+spin_unlock(&dev->lock);
+return 0;
+}
+
+static int sbull_release(struct inode *inode, struct file *filp)
+{
+struct sbull_dev *dev = inode->i_bdev->bd_disk->private_data;
+
+spin_lock(&dev->lock);
+dev->users--;
+
+if (!dev->users) {
+   dev->timer.expires = jiffies + INVALIDATE_DELAY;
+   add_timer(&dev->timer);
+}
+spin_unlock(&dev->lock);
+
+return 0;
+}
+
+/*
+* Look for a (simulated) media change.
+*/
+int sbull_media_changed(struct gendisk *gd)
+{
+struct sbull_dev *dev = gd->private_data;
+
+return dev->media_change;
+}
+
+/*
+* Revalidate. WE DO NOT TAKE THE LOCK HERE, for fear of deadlocking
+* with open. That needs to be reevaluated.
+*/
+int sbull_revalidate(struct gendisk *gd)
+{
+struct sbull_dev *dev = gd->private_data;
+
+if (dev->media_change) {
+   dev->media_change = 0;
+   //memset (dev->data, 0, dev->size);
+}
+return 0;
+}
+
+/*
+* The "invalidate" function runs out of the device timer; it sets
+* a flag to simulate the removal of the media.
+*/
+void sbull_invalidate(unsigned long ldev)
+{
+struct sbull_dev *dev = (struct sbull_dev *) ldev;
+
+spin_lock(&dev->lock);
+if (dev->users) // || !dev->data) 这个 我们用不到了
+   printk (KERN_WARNING "sbull: timer sanity check failed\n");
+else
+   dev->media_change = 1;
+spin_unlock(&dev->lock);
+}
+
+/*
+* The ioctl() implementation
+*/
+
+int sbull_ioctl (struct inode *inode, struct file *filp,
+                 unsigned int cmd, unsigned long arg)
+{
+long size;
+struct hd_geometry geo;
+struct sbull_dev *dev = filp->private_data;
+        // HDIO_GETGEO 是 fdisk用到的，分区那些时候需要把。我们虚拟磁盘不需要这个了吧。
+        goto NO_CMD;
+switch(cmd) {
+     case HDIO_GETGEO:
+        /*
+   * Get geometry: since we are a virtual device, we have to make
+   * up something plausible. So we claim 16 sectors, four heads,
+   * and calculate the corresponding number of cylinders. We set the
+   * start of data at sector four.
+   */
+   size = dev->size*(hardsect_size/KERNEL_SECTOR_SIZE);
+   geo.cylinders = (size & ~0x3f) >> 6;
+   geo.heads = 4;
+   geo.sectors = 16;
+   geo.start = 4;
+   if (copy_to_user((void __user *) arg, &geo, sizeof(geo)))
+    return -EFAULT;
+   return 0;
+}
+        NO_CMD:
+return -ENOTTY; /* unknown command */
+}
+
+/*
+* The device operations structure.
+*/
+static struct block_device_operations sbull_ops = {
+.owner           = THIS_MODULE,
+.open           = sbull_open,
+.release = sbull_release,
+.media_changed   = sbull_media_changed,
+.revalidate_disk = sbull_revalidate,
+.ioctl          = sbull_ioctl
+};
+
+
+/*
+* Set up our internal device.
+*/
+static void setup_device(struct sbull_dev *dev, int which)
+{      
+        unsigned long nbytes =128;
+        unsigned long readSize =0;
+        char buffer[256] ;  
+        long long position =0;
+       
+
+memset (dev, 0, sizeof (struct sbull_dev));
+        //我们固定读取磁盘文件widebright.iso了，不用申请 data的内存磁盘用途了
+        dev->size = 391168 ; //这个文件的大小我们已经知道这么大，在这里简单的固定下来，实际可以通过在运行时获取文件大小的咯
+        dev->data = vmalloc(dev->size);
+if (dev->data == NULL) {
+printk (KERN_NOTICE "vmalloc failure.\n");
+   return;
+}
+      
+       old_fs = get_fs();
+       set_fs(get_ds());
+       dev->backing_file = filp_open("/home/widebright/桌面/widebright.iso",O_RDONLY,0);
+       if (dev->backing_file ==NULL) {
+           printk (KERN_NOTICE "open file failed.\n");
+           return ;
+       }
+       if (dev->backing_file->f_op->read ==NULL) {
+          printk (KERN_NOTICE "no file read f_op.\n");
+          return ;
+       }
+       nbytes = 391168;
+       readSize = dev->backing_file->f_op->read(dev->backing_file, dev->data, nbytes ,&position);
+       //readSize = dev->backing_file->f_op->read(dev->backing_file, buffer, nbytes ,&position);
+       set_fs(old_fs);       //还原最初的fs
+       printk (KERN_NOTICE "=========read file size===%ld.\n",readSize);
+    
+         /*
+* Get some memory.
+*/
+//dev->size = nsectors*hardsect_size;
+// dev->data = vmalloc(dev->size);
+//if (dev->data == NULL) {
+// printk (KERN_NOTICE "vmalloc failure.\n");
+   // return;
+// }
+spin_lock_init(&dev->lock);
+
+/*
+* The timer which "invalidates" the device.
+*/
+init_timer(&dev->timer);
+dev->timer.data = (unsigned long) dev;
+dev->timer.function = sbull_invalidate;
+
+/*
+* The I/O queue, depending on whether we are using our own
+* make_request function or not.
+*/
+switch (request_mode) {
+     case RM_NOQUEUE:
+   dev->queue = blk_alloc_queue(GFP_KERNEL);
+   if (dev->queue == NULL)
+    goto out_vfree;
+   blk_queue_make_request(dev->queue, sbull_make_request);
+   break;
+
+     case RM_FULL:
+   dev->queue = blk_init_queue(sbull_full_request, &dev->lock);
+   if (dev->queue == NULL)
+    goto out_vfree;
+   break;
+
+     default:
+   printk(KERN_NOTICE "Bad request mode %d, using simple\n", request_mode);
+        /* fall into.. */
+
+     case RM_SIMPLE:
+   dev->queue = blk_init_queue(sbull_request, &dev->lock);
+   if (dev->queue == NULL)
+    goto out_vfree;
+   break;
+}
+blk_queue_hardsect_size(dev->queue, hardsect_size);
+dev->queue->queuedata = dev;
+/*
+* And the gendisk structure.
+*/
+dev->gd = alloc_disk(SBULL_MINORS);
+if (! dev->gd) {
+   printk (KERN_NOTICE "alloc_disk failure\n");
+   goto out_vfree;
+}
+dev->gd->major = sbull_major;
+dev->gd->first_minor = which*SBULL_MINORS;
+dev->gd->fops = &sbull_ops;
+dev->gd->queue = dev->queue;
+dev->gd->private_data = dev;
+snprintf (dev->gd->disk_name, 32, "sbull%c", which + 'a');
+//set_capacity(dev->gd, nsectors*(hardsect_size/KERNEL_SECTOR_SIZE));
+set_capacity(dev->gd, 764); //391168 /512 文件是磁盘上的block数量 ，文件大小除以block大小
+add_disk(dev->gd);
+return;
+
+out_vfree:
+//if (dev->data)
+// vfree(dev->data);
+      return;
+}
+
+static int __init sbull_init(void)
+{
+int i;
+/*
+* Get registered.
+*/
+sbull_major = register_blkdev(sbull_major, "sbull");
+if (sbull_major <= 0) {
+   printk(KERN_WARNING "sbull: unable to get major number\n");
+   return -EBUSY;
+}
+/*
+* Allocate the device array, and initialize each one.
+*/
+Devices = kmalloc(ndevices*sizeof (struct sbull_dev), GFP_KERNEL);
+if (Devices == NULL)
+   goto out_unregister;
+for (i = 0; i < ndevices; i++)
+   setup_device(Devices + i, i);
+   
+return 0;
+
+out_unregister:
+unregister_blkdev(sbull_major, "sbd");
+return -ENOMEM;
+}
+
+static void sbull_exit(void)
+{
+int i;
+
+for (i = 0; i < ndevices; i++) {
+   struct sbull_dev *dev = Devices + i;
+
+   del_timer_sync(&dev->timer);
+   if (dev->gd) {
+    del_gendisk(dev->gd);
+    put_disk(dev->gd);
+   }
+   if (dev->queue) {
+    if (request_mode == RM_NOQUEUE)
+     blk_put_queue(dev->queue);
+    else
+     blk_cleanup_queue(dev->queue);
+   }
+   //if (dev->data)
+   // vfree(dev->data);
+         //关闭文件
+   if (dev->backing_file){
+        filp_close(dev->backing_file,NULL);
+                    
+   }
+}
+
+
+unregister_blkdev(sbull_major, "sbull");
+kfree(Devices);
+}
+
+module_init(sbull_init);
+module_exit(sbull_exit);
+```
+-------------------------------sbull.h------------------------------------------------
+```c
+/*
+* sbull.h -- definitions for the char module
+*
+* Copyright (C) 2001 Alessandro Rubini and Jonathan Corbet
+* Copyright (C) 2001 O'Reilly & Associates
+*
+* The source code in this file can be freely used, adapted,
+* and redistributed in source or binary form, so long as an
+* acknowledgment appears in derived source files. The citation
+* should list that the code comes from the book "Linux Device
+* Drivers" by Alessandro Rubini and Jonathan Corbet, published
+* by O'Reilly & Associates.   No warranty is attached;
+* we cannot take responsibility for errors or fitness for use.
+*
+*/
+
+
+#include <linux/ioctl.h>
+
+/* Multiqueue only works on 2.4 */
+#ifdef SBULL_MULTIQUEUE
+#    warning "Multiqueue only works on 2.4 kernels"
+#endif
+
+/*
+* Macros to help debugging
+*/
+
+#undef PDEBUG             /* undef it, just in case */
+#ifdef SBULL_DEBUG
+# ifdef __KERNEL__
+     /* This one if debugging is on, and kernel space */
+#    define PDEBUG(fmt, args...) printk( KERN_DEBUG "sbull: " fmt, ## args)
+# else
+     /* This one for user space */
+#    define PDEBUG(fmt, args...) fprintf(stderr, fmt, ## args)
+# endif
+#else
+# define PDEBUG(fmt, args...) /* not debugging: nothing */
+#endif
+
+#undef PDEBUGG
+#define PDEBUGG(fmt, args...) /* nothing: it's a placeholder */
+
+
+#define SBULL_MAJOR 0       /* dynamic major by default */
+#define SBULL_DEVS 2        /* two disks */
+#define SBULL_RAHEAD 2      /* two sectors */
+#define SBULL_SIZE 2048     /* two megs each */
+#define SBULL_BLKSIZE 1024 /* 1k blocks */
+#define SBULL_HARDSECT 512 /* 2.2 and 2.4 can used different values */
+
+#define SBULLR_MAJOR 0      /* Dynamic major for raw device */
+/*
+* The sbull device is removable: if it is left closed for more than
+* half a minute, it is removed. Thus use a usage count and a
+* kernel timer
+*/
+
+typedef struct Sbull_Dev {
+   int size;
+   int usage;
+   struct timer_list timer;
+   spinlock_t lock;
+   u8 *data;
+#ifdef SBULL_MULTIQUEUE
+   request_queue_t *queue;
+   int busy;
+#endif
+}              Sbull_Dev;
+```
+-------------------------make file---------------------------------------
+```makefile
+# Comment/uncomment the following line to disable/enable debugging
+#DEBUG = y
+
+
+# Add your debugging flag (or not) to CFLAGS
+ifeq ($(DEBUG),y)
+DEBFLAGS = -O -g -DSBULL_DEBUG # "-O" is needed to expand inlines
+else
+DEBFLAGS = -O2
+endif
+
+EXTRA_CFLAGS += $(DEBFLAGS)
+EXTRA_CFLAGS += -I..
+
+ifneq ($(KERNELRELEASE),)
+# call from kernel build system
+
+obj-m := sbull.o
+
+else
+
+KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+PWD       := $(shell pwd)
+
+default:
+$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+
+endif
+
+clean:
+rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
+
+depend .depend dep:
+$(CC) $(EXTRA_CFLAGS) -M *.c > .depend
+
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+```
+----------------------------------------------------------------
+
+驱动启动以后将，虚拟一个/dev/sbulla 的驱动盘，把它mount 一个目录就可以看到原iso文件里面的内容
+
+
+======测试======================================
+```text
+root@widebright-desktop:/home/widebright/桌面/sbull_test# ls
+Makefile        sbull.c sbull.ko       sbull.mod.c sbull.o
+Module.symvers sbull.h sbull_load.sh sbull.mod.o sbull_unload.sh
+root@widebright-desktop:/home/widebright/桌面/sbull_test#
+root@widebright-desktop:/home/widebright/桌面/sbull_test#
+root@widebright-desktop:/home/widebright/桌面/sbull_test# ./sbull_load.sh
+./sbull_load.sh: 39: let: not found
+./sbull_load.sh: 39: cannot open 16: No such file
+./sbull_load.sh: 41: let: not found
+./sbull_load.sh: 41: cannot open 16: No such file
+./sbull_load.sh: 43: let: not found
+./sbull_load.sh: 43: cannot open 16: No such file
+./sbull_load.sh: 45: let: not found
+./sbull_load.sh: 45: cannot open 16: No such file
+root@widebright-desktop:/home/widebright/桌面/sbull_test# ls /dev/sbulla
+/dev/sbulla
+root@widebright-desktop:/home/widebright/桌面/sbull_test# mount /dev/sbulla ../test_iso/
+```
+我试了一下虚拟光驱是正常的工作的了，如图所示
+
+
+===============================================
+其实Linux系统是提供iso文件的支持了的了，我们其实直接可以通过一个简单的mount命令把一个iso文件mount到一个文件夹，想下面所做的那样。
+把一个文件夹创建成一个iso文件：
+mkisofs -o outputfile.iso -r -J -l /目录的名字
+
+
+mount 一个 iso 光盘镜像文件:
+
+sudo mount -o loop -t iso9660 /iso文件路径 /要mount的目录
+
+--------------------------------------------------------------------------------
+
+
+关于Linux kernel中读文件的若干解释：
+     你可以看到我上面代码里面是直接在启动入口处就把整个文件加载进内存的。这是因为我测试的时候发现如果把读文件写到request处理函数那里的话，我在 虚拟机的ubuntu里面测试的时候，系统经常是挂掉的。好像在Linux系统的实现里面他们是非常不允许在内核里面直接读文件的。我也也找了一下资料， 不过都没有详细介绍的，看到的也都是写邪门歪道，像我上面用的读文件那样。我看的那个虚拟cd是这么做的，不过我在2.6.24 版本内核里面用同样的方法就不行了。如果你真想做一个真正的虚拟光驱里面的话，也许你可以考虑以下方法：
+
+1. 网上有人说读文件的代码放到一个内核线程里面执行就可以了，就像上面代码在驱动入口可以调用文件操作一样。
+    start_kthread ，    stop_kthread ，   init_kthread，    exit_kthread 等函数。
+   然后在request处理的时候通知线程读文件就可以了。不过应该要做写同步的操作。
+我也不知道这种办法行不行，不过可以试一下。
+
+2. 还有一种办法确实可以的，不过看起来很复杂。因为内核里面读写文件不容易了，所以这个办法，就是把需要读文件的操作放到用户级程序里面来做。在用户程序启动一个后台进程等待内核程序的通知，内核程序里面收到系统的请求了，就通知用户程序读文件。
+他的大概流程估计是这样子的：
+----------------------------
+用户程序
+```text
+address = malloc (一块文件缓存);
+
+
+struct OP {
+    int len 长度；
+    int offset 要读的文件偏移
+    char *buffer; 文件的混存地址，用户空间的。
+};
+struct command {
+      OP * op； 操作命令
+      等等；
+};
+OP op ;
+command    cmd;
+op.buffer = address;
+cmd.op= & op;   //把操作命令的地址给驱动发过去。
+
+
+mlock(cmd)
+write (device_proc 文件系统, cmd,sizeof (cmd) )；
+open (file )
+do
+{    
+     
+       process （op）{
+       这是op已经被驱动用 copy_to_user修改了。
+      }
+     
+        read (file , buffer op.offset ， op.len ...) 或者采用mmap（） 文件内存映射来读文件
+      
+
+} while (write (device_proc 文件系统, cmd,sizeof (cmd) ))    都文件操作中断在那里等到驱动处理完，返回下一条要处理的命令
+
+-----------------------------
+
+驱动的proc文件写函数（cmd ）
+{
+        得到用户态程序传过来的地址， cmd. op
+        copy_from_user（cmd. op   把用户空间地址的操作命令读出来
+        copy_from_user（op.buffer ） 把 用户地址所包含的文件内容读写出来。
+
+        wait_event_interruptible (wait_queue) 等他其他命令的到来
+               
+        copy_to_user （   ， cmd. op ） 把要处理的文件的的偏移 等操作命令写到 用户空间地址去。
+
+}
+
+
+驱动的request 响应 函数
+{
+    如果 有新的请求来了 调用 wake _up （ wait_queue） 唤醒“驱动的proc文件写函数”线程。
+}
+
+```
+
+
+这个的关键就是 copy_from_user 和 copy_to_user两个函数，可以对用户空间的指针 进行操作，用户程序和驱动就是通过一个用户地址来交换数据。
