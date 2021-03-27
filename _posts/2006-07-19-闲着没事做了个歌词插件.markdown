@@ -1,0 +1,32 @@
+      
+
+        在5Q下载了些 《走遍美国》的MP3，虽然有很多英文的LRC格式的歌词文件，但显示不出来。想到有很多歌词插件 ，于是也想自己动手做一个，还可以练练手。
+
+        刚好看到Kmplayer论坛上有人提到歌词文件这个问题，在Kmplayer主页找了找，只看到Kmplayer支持Winamp标准的插件的，象 MiniLRC这类支持Winamp标准的
+        歌词插件论坛上也有人说可以在Kmplayer 中使用。但是没有找到什么编程相关的资料。在kmplayer的安装目录下SDK里面倒是有一个例子，不过是DSP信号处理的。
+        我怎么看也不象是使用这个 插件格式的。既然是Winamp插件，就到Winamp主页上去找好了，果然找到了SDK文档。下载回来，看了一下例子和他的头文件，原来做插件
+        这么简单 的 ，呵呵！！只要发送几条消息给主窗口就可以获得现在播放的文件名，在发一条消息又可以获得播放位置。 做歌词插件，有这两项应该就可以了。winamp
+        的插件标准其实是很简单的，就是一个dll文件，然后留几个接口出来，其他操作都是通过消息来进行，看一 下SDK里的头文件就很明白了。在花了点时间写了个 处理 
+        LRC文件 的函数，就OK了。不过有的LRC文件有点特殊，比如空行啦，多时间标签啊等等。不过使用fscanf都可以搞定了。 最后参考 千千静音的 歌词秀 效果 用
+        SetLayeredWindowAttributes API函数做个透明窗体，实现水平和垂直滚动歌词效果。把生成的，dll文件复制到 Kmplayer的安装目录的PlugIns文件夹中去，由于
+        是通用类插件，所以要把名字改为gen_ 开头就可以在Kmplayer启动时被加载了。 还好，显示效果还过得去，也没什么问题，自己用已经绰绰有余了！！！！！！！！！！！！
+
+         看到网上那些歌词插件都支持好多播放器的。又试了一下做Windows Media Player的，到MSDN里查了下资料，说的好详细啊！！微软就是这点好，文档支持很全面。
+         下载了个Windows Media Player 10 SDK回来，安装之后在Visual C＋＋的项目生成向导里就可以找到了 创建 插件项目了，用向导生成一个项目，编译一下，
+         在启动Windows Media Player，他妈的竟然什么东西都帮你做好了，已经可以正常显示。翻翻 文档，Windows Media Player插件是使用Com接口来的，虽然功能很强大
+         ，使用IWMPCore 和 conrol 和 Media 对象模型就可以取得做歌词插件要得当前播放文件和时间了，不过使用起来要费一些功夫，代码到不要写很多，但象获得文件名是 
+         BSTR 类型的，要显示还要转换成原来使用的Char 类型 很麻烦。把Kmplayer中的代码复制过去改了改，也算完工了，以可以显示歌词了，其他的就不管了，反正是玩玩而已。 
+         还有一个问题就是 向导生成的窗体是WTL 窗体，试着做透明窗体，置顶窗体啦，竟然没效果，用showwindow显示，妈的同时显示了两个出来，不知道怎么回事，透明窗体也不能用。
+         不知道WTL 是怎么用的，又找不到WTL的文档，就不做了，方正这个插件最后以不会真的用，就算了。Kmplayer一个足够了！！
+
+        本来还想做一个RealPlayer的插件，找来找去找不到相关资料，在他的主页上好像也没有什么！就不找了，方正实现方法也差不了多少。
+        
+        
+        
+ 这个是以前还在学校的时候，练习着玩的，自己用的，有很多缺点，也没有打算修改了，不建议别人使用。kmplayer本身已经支持格式显示了，而已 也有比较成熟的歌词显示插件支持的。
+ 你们也可以在这个基础上把它进一步完善了。下载的时候给我留个言吧，引用时请保留出处，呵呵    
+![image](https://github.com/gmd20/gmd20.github.io/blob/master/images/blog/d8286127b1c9f803918f9d31.jpg)
+![image](https://github.com/gmd20/gmd20.github.io/blob/master/images/blog/df8ac9130e4d0623dd540130.jpg)
+
+点这里下载这个插件 包括源代码  
+https://sites.google.com/site/widebright/kmplayer-ge-ci-cha-jian-yuan-dai-ma/kmplayer%EF%BC%8Dlrc%E6%A0%BC%E5%BC%8F%E6%AD%8C%E8%AF%8D%E6%8F%92%E4%BB%B6%28%E9%80%8F%E6%98%8E%E5%AD%97%E4%BD%93%E7%AA%97%E4%BD%93%29.zip?attredirects=0
