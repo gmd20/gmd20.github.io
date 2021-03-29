@@ -14,6 +14,7 @@ gdb directory /代码目录
 
 4。查看函数名字用 info
 ----------------------
+```text
 gdb info functions
 类似的有
 gdb info files
@@ -21,7 +22,7 @@ gdb info files
 gdb info line 函数名字
 (gdb) info line  *0xb6779198
 (gdb) list *0xb6779198
-
+```
 
 
 5。下断点
@@ -42,12 +43,14 @@ bt
 
 8.查看变量的值 用 print 加表达式
 ------------------------------
+```text
 (gdb) print (struct intfconfig_s *) 0x7fff2d15f878 
 $21 = (struct intfconfig_s *) 0x7fff2d15f878
+```
 
 9。查看类型 用ptype
 --------------------
-```
+```text
 (gdb) ptype struct intfconfig_s    
 type = struct intfconfig_s {
     newtComponent ipv4Entry;
@@ -63,6 +66,9 @@ type = struct intfconfig_s {
     const char *gw;
     const char *ns;
 }
+
+打印结构和成员的地址偏移
+(gdb) ptype /o  struct intfconfig_s
 ```
 
 10。 查看结构的子成员
@@ -101,6 +107,7 @@ set
 
 13.   查看 详细的堆栈内容。 
 --------------------------
+```text
 info frame
 会打印出这些信息：栈的层编号，当前的函数名，函数参数值，函数所在文件及行号，函数执行到的语句。
 info args
@@ -110,6 +117,7 @@ info locals
 
 (gdb) x/12a  0xbffff478
 解析栈上可能的地址。
+```
 
 没有符号时，查看栈上的变量
 ```
