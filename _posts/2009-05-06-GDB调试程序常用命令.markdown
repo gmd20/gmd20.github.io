@@ -150,15 +150,24 @@ Stack level 0, frame at 0xbffff480:
 [   63.359528] traps: grpc_global_tim[848] trap invalid opcode ip:7f806117b8d3 sp:7f8057d70c30 error:0 in libgrpc.so.15.0.0[7f8060da5000+52d000]
 ```
 
-好像直接用文件偏移查找也可以，不用run运行再算实时地址
+好像直接用文件偏移info line查找也可以，不用run运行再算实时地址
 ```text
 (gdb) info line *0x3d6750  #文件偏移
 (gdb) disassemble 0x3d6750 #文件偏移地址
 ```
 
-15. 打印内存
+15. linux内核崩溃的oops位置
+--------------------------
+直接用oops打印的函数名加偏移用info line获取对应的源码行号
+```text
+(gdb) info line *function_name+0xa
+disassemble /r  function_name 对比打印的code
+```
+
+
+16. 打印内存
 ------------
 x/64x   0xb60d3158 
 
-16。 更多内容 输入 help 看帮助，呵呵。基本上上面这些就已经够用了。
+17。 更多内容 输入 help 看帮助，呵呵。基本上上面这些就已经够用了。
 -------------------
