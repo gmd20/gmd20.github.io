@@ -138,9 +138,9 @@ Stack level 0, frame at 0xbffff480:
 ```
 
 
-14. 查看加载的模块地址
-----------------------
-
+14.  应用程序的崩溃的core文件或者崩溃syslog日志分析
+----------------------------------
+查看加载的模块地址
 ```text
 (gdb) info proc mappings
 ```
@@ -155,6 +155,7 @@ Stack level 0, frame at 0xbffff480:
 (gdb) info line *0x3d6750  #文件偏移
 (gdb) disassemble 0x3d6750 #文件偏移地址
 ```
+另外有一个addr2line的命令行，应该跟gdb是一样的。
 
 15. linux内核崩溃的oops位置
 --------------------------
