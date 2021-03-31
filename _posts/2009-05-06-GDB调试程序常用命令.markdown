@@ -162,7 +162,7 @@ Stack level 0, frame at 0xbffff480:
 直接用oops打印的函数名加偏移用info line获取对应的源码行号
 ```text
 (gdb) info line *function_name+0xa
-disassemble /r  function_name 对比打印的code
+disassemble /r  function_name 对比oops打印的code， code的十六进制机器码里面用尖括号标出来的就是崩溃的那一条机器指令，对应堆栈第一行的函数崩溃地址吧
 ```
 
 
