@@ -16,7 +16,7 @@ _my_host() {
     COMPREPLY=( $( compgen -W "$HOST" -- "$cur" ) )
 }
 complete -F _my_host my_ssh
-alias egenera_ssh=/home/widebright/桌面/my_ssh.pl
+alias my_ssh=/home/widebright/桌面/my_ssh.pl
 -----------------------------------------------
 这样设置之后，在终端再输入自己的自定义命令my_ssh 然后按TAB键，就会自动出来自己预先定义的host主机名字了
 ---------------
