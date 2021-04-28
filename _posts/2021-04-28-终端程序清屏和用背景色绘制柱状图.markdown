@@ -1,0 +1,12 @@
+主要使用“ANSI escape codes”
+```c
+
+  printf("\e[2J"); // ANSI escape codes (Erase in Display)
+	printf("\e[H");  // ANSI escape codes (Cursor Position 0 0)
+
+	printf("\e[42m"); // yellow color 
+	for (j = 0; j < len; j++) {
+		printf(" ");
+	}
+	printf("\e[0m\n");
+```
