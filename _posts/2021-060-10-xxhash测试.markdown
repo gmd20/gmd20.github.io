@@ -1,0 +1,21 @@
+```c
+#include <stdio.h>
+#include <string.h>
+
+#define XXH_INLINE_ALL 1
+#define XXH_VECTOR XXH_SSE2
+#include "xxhash.h"
+
+void main()
+{
+	char s[128];
+	
+	while(1) {
+		printf("input:");
+		scanf("%s", s);
+		XXH64_hash_t a = XXH3_64bits(s, strlen(s));
+		printf("hash=%lu\n", a);
+	}
+}
+
+```
