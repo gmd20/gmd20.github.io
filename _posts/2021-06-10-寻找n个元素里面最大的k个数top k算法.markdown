@@ -1,0 +1,12 @@
+1. 采用堆 复杂度 O(n+klog n)
+2.  qsort + selection sort，快速排序 每轮丢掉另外一半只处理直接想要的k的范围内的那一边，但partition足够小时使用选择排序。 复杂度 O(n + k log k) 
+3.  Knuth's Art of Programming, Volume 3, Page 212 的“tournament method” ，这个有点类似 方法2的qsort
+4.  c++ 里面的std::partial_sort，看起来用这个就好了
+
+
+https://en.wikipedia.org/wiki/Partial_sorting
+
+https://en.cppreference.com/w/cpp/algorithm/partial_sort
+
+Since k is small, you can use the tournament method to find the kth largest. This method is described in Knuth's Art of Programming, Volume 3, Page 212
+https://stackoverflow.com/questions/4956593/optimal-algorithm-for-returning-top-k-values-from-an-array-of-length-n
