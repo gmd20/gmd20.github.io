@@ -11,9 +11,10 @@ bridge-netfilter模块可以在网桥上执行iptables的包过滤
 modinfo bridge   
 modinfo br_netfilter   
 https://elixir.bootlin.com/linux/latest/source/net/bridge/br_if.c   
-
+https://elixir.bootlin.com/linux/latest/source/net/bridge/br_fdb.c   # 交换机mac 表的实现   
+https://elixir.bootlin.com/linux/latest/source/include/linux/rhashtable.h     
+https://elixir.bootlin.com/linux/latest/source/net/bridge/br_stp.c   # stp的实现   
   
-
 # 应用层管理、配置工具：
 ```text 
 yum install bridge-utils  # brctl
