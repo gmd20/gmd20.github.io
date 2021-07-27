@@ -15,6 +15,7 @@ https://elixir.bootlin.com/linux/latest/source/net/bridge/br_fdb.c   # 交换机
 https://elixir.bootlin.com/linux/latest/source/include/linux/rhashtable.h     
 https://elixir.bootlin.com/linux/latest/source/net/bridge/br_stp.c   # stp的实现   
 https://elixir.bootlin.com/linux/latest/source/net/bridge/br_vlan.c  # vlan的实现，有sysfs有选项控制是否打开vlan的支持
+  https://elixir.bootlin.com/linux/latest/source/net/bridge/netfilter/nf_conntrack_bridge.c  # 新内核里面有另外一个bridge的 conntack实现？
   
 # 应用层管理、配置工具：
 ```text 
