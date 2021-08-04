@@ -6,7 +6,7 @@ bridge-netfilter模块可以在网桥上执行iptables的包过滤
 
 # 一些控制开关：
 /proc/sys/net/bridge/bridge-nf-call-iptables   
-/sys/devices/virtual/net/<bridge-name>/bridge/nf_call_iptables
+/sys/devices/virtual/net/br0/bridge/nf_call_iptables
 
 modinfo bridge   
 modinfo br_netfilter   
