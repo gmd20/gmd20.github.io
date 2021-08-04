@@ -55,6 +55,12 @@ brctl setportprio <bridge> <port> <priority> '''
 
        bridge fdb [ [ show ] [ br BRDEV ] [ brport DEV ] [ vlan VID ] [ state STATE ] [ dynamic ]
 
+/ # bridge vlan help
+Usage: bridge vlan { add | del } vid VLAN_ID dev DEV [ tunnel_info id TUNNEL_ID ]
+                                                     [ pvid ] [ untagged ]
+                                                     [ self ] [ master ]
+
+
 hairpin是说是否允许原路返回的
 echo 1 > /sys/class/net/br0/brif/eth1/hairpin_mode
 
