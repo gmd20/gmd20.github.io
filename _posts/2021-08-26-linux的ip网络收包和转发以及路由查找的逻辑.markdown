@@ -1,0 +1,95 @@
+```text
+
+# 网络包的批量处理流程
+gro_normal_one  // 只有gro的代码才会执行到route hint
+  netif_receive_skb_list
+    __netif_receive_skb_list_ptype
+      ip_list_rcv
+      ip_sublist_rcv
+        ip_list_rcv_finish
+        ip_extract_route_hint  // 上一个skb的路由缓存，避免路由查找的优化
+          ip_rcv_finish_core
+            ip_can_use_hint
+            ip_route_use_hint   // 如果前面一个skb目的地址跟现在一样，那就可以直接利用前面skb的路由信息了，不要再查次路由
+          ip_sublist_rcv_finish
+
+
+
+/* Implements all the saddr-related checks as ip_route_input_slow(),
+ * assuming daddr is valid and the destination is not a local broadcast one.
+ * Uses the provided hint instead of performing a route lookup.
+ */
+int ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+		      u8 tos, struct net_device *dev,
+		      const struct sk_buff *hint)
+
+
+
+
+# 网络包的处理流程
+netif_receive_skb_core
+  __netif_receive_skb_one_core
+    ip_rcv
+      ip_rcv_core
+        ip_rcv_finish
+            ip_rcv_finish_core
+               net->ipv4.sysctl_ip_early_demux
+               tcp_v4_early_demux  // 本地socket early_demux 转发优化
+          ip_route_input_noref // 查找路由
+            ip_route_input_slow
+          dst_input
+
+
+
+// 处理一个ip包的逻辑
+int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt,
+	   struct net_device *orig_dev
+	return NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
+		       net, NULL, skb, dev, NULL,
+		       ip_rcv_finish);
+
+
+
+ip_route_input_slow
+  if (res->type == RTN_LOCAL) {
+    goto local_input;
+  }
+  ip_mkroute_input
+    __mkroute_input /* create a routing cache entry */
+      rth->dst.input = ip_forward;    // 设置转发路路由表input
+  local_input:  // 本地路由项
+    rt_dst_alloc
+      rt->dst.input = ip_local_deliver;    // 设置路由表input
+
+
+
+
+# 进入本地的流量
+/*
+ * 	Deliver IP Packets to the higher protocol layers.
+ */
+int ip_local_deliver(struct sk_buff *skb)
+	return NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_IN,
+		       net, NULL, skb, skb->dev, NULL,
+		       ip_local_deliver_finish);
+
+
+
+# 转发的流量
+int ip_forward(struct sk_buff *skb) 
+  return NF_HOOK(NFPROTO_IPV4, NF_INET_FORWARD,
+                 net, NULL, skb, skb->dev, rt->dst.dev,
+                 ip_forward_finish);
+
+static int ip_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+               dst_output(net, sk, skb);
+
+
+
+int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+  	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
+			    net, sk, skb, indev, dev,
+			    ip_finish_output,
+			    !(IPCB(skb)->flags & IPSKB_REROUTED));
+
+```
