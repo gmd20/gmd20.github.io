@@ -36,6 +36,7 @@ netstat -s里面这连个是对应 accept队列溢出和syn队列溢出 ?
 4873325 times the listen queue of a socket overflowed
 5874286 SYNs to LISTEN sockets dropped
 ```
+出现问题的机器，这个“times the listen queue of a socket overflowed” 数值确实有异常。
 
 ss -lntp 可以看到  Recv-Q Send-Q 的限制， Recv-Q是当前backlog队列长度。
 
