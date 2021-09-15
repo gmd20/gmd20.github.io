@@ -1,3 +1,5 @@
+现象
+====
 线上发现一个奇怪的现象，从wireshark看到，http 服务器只ack响应client端的syn包，client反复重传数据包，但server端只ack 1 回复client的syn包，
 后续http server 会继续重传 syn seq 1 ack 1。这样看起来就是 服务器不响应client端的数据包。
 
@@ -27,6 +29,9 @@ Accept queue: 队列长度由 /proc/sys/net/core/somaxconn 和使用listen函数
 TCPBacklogDrop: 2334
 ```
 
+
+backlog队列查查看
+=================
 “另外客户端connect()返回不代表TCP连接建立成功，有可能此时accept queue 已满，系统会直接丢弃后续ACK请求；客户端误以为连接已建立，开始调用等待至超时；服务器则等待ACK超时，会重传SYN+ACK 给客户端，重传次数受限 net.ipv4.tcp_synack_retries”
 这个应该就是我在抓包看到的现象。   
 netstat -s 的数据应该来自 “/proc/net/netstat”，  “ListenDrops” “TCPBacklogDrop” 这几个就是对应的syn、accept队列溢出事件吧
@@ -42,3 +47,12 @@ ss -lntp 可以看到  Recv-Q Send-Q 的限制， Recv-Q是当前backlog队列�
 
 好像还有一个  /proc/sys/net/ipv4/tcp_abort_on_overflow  参数是相关的，参见文章：
 “Linux-TCP Queue的一些问题” https://www.cnblogs.com/JohnABC/p/6229136.html
+
+# backlog多大合适
+==================
+“Nginx高并发调优中常被忽略的参数”
+https://cloud.tencent.com/developer/article/1644835
+“高并发调优backlog多大合适？”
+https://cloud.tencent.com/developer/article/1644836?from=article.detail.1644835
+
+从这里看队列， 最好调整系统/proc/sys/net/core/somaxconn 同时调整 http服务器的配置listen-backlog为512、1024比较合适。
