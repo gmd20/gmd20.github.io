@@ -31,9 +31,11 @@ TCPBacklogDrop: 2334
 这个应该就是我在抓包看到的现象。   
 netstat -s 的数据应该来自 “/proc/net/netstat”，  “ListenDrops” “TCPBacklogDrop” 这几个就是对应的syn、accept队列溢出事件吧
 
-netstat -s里面这连个是对应 accept队列溢出和syn队列溢出
+netstat -s里面这连个是对应 accept队列溢出和syn队列溢出 ?
+```text
 4873325 times the listen queue of a socket overflowed
 5874286 SYNs to LISTEN sockets dropped
+```
 
 ss -lntp 可以看到  Recv-Q Send-Q 的限制， Recv-Q是当前backlog队列长度。
 
