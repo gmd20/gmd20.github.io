@@ -11,6 +11,7 @@ echo 1470 > /sys/class/net/eth0/mtu
 ```
 
 # 设置linux 的 "Path MTU Discovery"， 可以设置系统/socket自动探测MTU
+tcp、ip里面有标准怎么探测这个路径上的MTU的，系统应该会自动根据icmp错误报告记录下路径上的MTU。
 ```text
 echo 1 > /proc/sys/net/ipv4/ip_no_pmtu_disc
 ```
