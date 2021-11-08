@@ -13,4 +13,8 @@ https://www.kernel.org/doc/html/v4.14/admin-guide/kernel-parameters.html#the-ker
 https://github.com/torvalds/linux/blob/master/drivers/acpi/osi.c
 
 
+window系统OSI    
+https://docs.microsoft.com/en-us/windows-hardware/drivers/acpi/winacpi-osi
 
+好像acpidump可以查看acpi table 排查问题？   
+http://manpages.ubuntu.com/manpages/jammy/man1/acpidump.1.html
