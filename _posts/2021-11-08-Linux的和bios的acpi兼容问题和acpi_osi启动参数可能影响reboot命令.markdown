@@ -9,4 +9,8 @@ https://www.kernel.org/doc/html/latest/firmware-guide/acpi/osi.html
 https://www.kernel.org/doc/html/v4.14/admin-guide/kernel-parameters.html#the-kernel-s-command-line-parameters
 
 
+内核源码应该是这个    
+https://github.com/torvalds/linux/blob/master/drivers/acpi/osi.c
+
+
 
