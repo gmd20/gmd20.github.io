@@ -5,7 +5,7 @@
 这篇官方解释比较详细：   
 https://www.kernel.org/doc/html/latest/firmware-guide/acpi/osi.html   
 
-完整的acpi参数参考， acpi_osi  acpi_os这两个比较相关吧，可以参考网上别人是怎么配置的。   
+完整的acpi参数参考， acpi_osi  acpi_os_name这两个比较相关吧，可以参考网上别人是怎么配置的。   
 https://www.kernel.org/doc/html/v4.14/admin-guide/kernel-parameters.html#the-kernel-s-command-line-parameters
 
 
