@@ -1,0 +1,33 @@
+https://github.com/falcosecurity/falco
+
+
+
+https://falco.org/docs/
+
+可以根据配置的规则把文件变化、进程和socket事件通过grpc发送告警。
+```text
+What does Falco do?
+Falco uses system calls to secure and monitor a system, by:
+
+Parsing the Linux system calls from the kernel at runtime
+Asserting the stream against a powerful rules engine
+Alerting when a rule is violated
+For more information, see Falco Rules.
+
+What does Falco check for?
+Falco ships with a default set of rules that check the kernel for unusual behavior such as:
+
+Privilege escalation using privileged containers
+Namespace changes using tools like setns
+Read/Writes to well-known directories such as /etc, /usr/bin, /usr/sbin, etc
+Creating symlinks
+Ownership and Mode changes
+Unexpected network connections or socket mutations
+Spawned processes using execve
+Executing shell binaries such as sh, bash, csh, zsh, etc
+Executing SSH binaries such as ssh, scp, sftp, etc
+Mutating Linux coreutils executables
+Mutating login binaries
+Mutating shadowutil or passwd executables such as shadowconfig, pwck, chpasswd, getpasswd, change, useradd, etc, and others.
+ 
+ ```
