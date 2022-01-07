@@ -39,6 +39,7 @@ https://www.redhat.com/en/blog/capturing-network-traffic-express-data-path-xdp-e
 之前记录的相关资料，bpf的防火墙应用:
 BPF comes to firewalls   
 https://lwn.net/Articles/747551/     
+内核支持自动把iptables规则转换为bpf过滤代码，源码是在这 https://elixir.bootlin.com/linux/latest/source/net/bpfilter
 
 eBPF / XDP firewall and packet filtering   
 http://vger.kernel.org/lpc_net2018_talks/ebpf-firewall-LPC.pdf   
