@@ -31,9 +31,9 @@ https://github.com/gamemann/XDP-Firewall
 https://github.com/cppcoffee/ipblock   
 https://github.com/massoudasadi/packiffer/blob/master/xdp_block_address.c   
 
-redhat提供一个xdp-tools 工具包，有提供一个xdp-filter命令用户做xdp防火墙过滤。
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-xdp-filter-for-high-performance-traffic-filtering-to-prevent-ddos-attacks_configuring-and-managing-networking
-
+redhat提供一个xdp-tools 工具包，有提供一个xdp-filter命令用户做xdp防火墙过滤。   
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-xdp-filter-for-high-performance-traffic-filtering-to-prevent-ddos-attacks_configuring-and-managing-networking   
+https://www.redhat.com/en/blog/capturing-network-traffic-express-data-path-xdp-environment
 
 
 之前记录的相关资料，bpf的防火墙应用:
