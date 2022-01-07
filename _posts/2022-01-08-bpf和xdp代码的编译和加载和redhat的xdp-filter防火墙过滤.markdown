@@ -31,6 +31,10 @@ https://github.com/gamemann/XDP-Firewall
 https://github.com/cppcoffee/ipblock   
 https://github.com/massoudasadi/packiffer/blob/master/xdp_block_address.c   
 
+Linux下一代防火墙bpfilter是什么？让我演示给你看   
+https://blog.csdn.net/dog250/article/details/103283981
+csdn博主演示用xdp和实现类似bpfilter的ip黑名单功能 
+
 redhat提供一个xdp-tools 工具包，有提供一个xdp-filter命令用户做xdp防火墙过滤。   
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-xdp-filter-for-high-performance-traffic-filtering-to-prevent-ddos-attacks_configuring-and-managing-networking   
 https://www.redhat.com/en/blog/capturing-network-traffic-express-data-path-xdp-environment
@@ -41,10 +45,12 @@ BPF comes to firewalls
 https://lwn.net/Articles/747551/     
 内核支持自动把iptables规则转换为bpf过滤代码，源码是在这 https://elixir.bootlin.com/linux/latest/source/net/bpfilter
 
+
 eBPF / XDP firewall and packet filtering   
 http://vger.kernel.org/lpc_net2018_talks/ebpf-firewall-LPC.pdf   
 
 L4Drop: XDP DDoS Mitigations   
 https://blog.cloudflare.com/l4drop-xdp-ebpf-based-ddos-mitigations/   
+介绍自动发现ddos和bpf规则的生成
 
 https://github.com/gmd20/gmd20.github.io/blob/master/_posts/2019-05-01-XDP%E5%92%8CAF_XDP%E5%92%8Cbpfilter.markdown
