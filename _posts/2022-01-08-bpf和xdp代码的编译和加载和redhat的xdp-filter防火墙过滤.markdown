@@ -39,6 +39,9 @@ redhat提供一个xdp-tools 工具包，有提供一个xdp-filter命令用户做
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-xdp-filter-for-high-performance-traffic-filtering-to-prevent-ddos-attacks_configuring-and-managing-networking   
 https://www.redhat.com/en/blog/capturing-network-traffic-express-data-path-xdp-environment
 
+redhat的xdp编程教程
+https://developers.redhat.com/blog/2018/12/06/achieving-high-performance-low-latency-networking-with-xdp-part-1#some_rough_edges
+https://developers.redhat.com/blog/2018/12/17/using-xdp-maps-rhel8#some_map_caveats
 
 之前记录的相关资料，bpf的防火墙应用:
 BPF comes to firewalls   
