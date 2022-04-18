@@ -1,0 +1,109 @@
+# 运行时修改系统默认tcp拥塞控制算法
+```text	
+/proc/sys/net/ipv4/tcp_available_congestion_control
+echo bbr >  /proc/sys/net/ipv4/tcp_congestion_control
+```
+
+# 内核里面创建tcp socket时初始化默认的拥塞控制算法
+```text
+tcp_init_sock
+  tcp_assign_congestion_control(sk);
+```
+
+# 内核修改某个socket的拥塞控制算法的接口
+```text
+do_tcp_setsockopt(TCP_CONGESTION)
+    tcp_set_congestion_control()
+```
+
+# c语言设置tcp socket的拥塞控制算法
+https://stackoverflow.com/questions/59265004/how-to-change-tcp-congestion-control-algorithm-using-setsockopt-call-from-c
+```c
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+int main(int argc, char **argv)
+{
+    char buf[256];
+    socklen_t len;
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (sock == -1)
+    {
+        perror("socket");
+        return -1;
+    }
+
+    len = sizeof(buf);
+
+    if (getsockopt(sock, IPPROTO_TCP, TCP_CONGESTION, buf, &len) != 0)
+    {
+        perror("getsockopt");
+        return -1;
+    }
+
+    printf("Current: %s\n", buf);
+
+    strcpy(buf, "reno");
+
+    len = strlen(buf);
+
+    if (setsockopt(sock, IPPROTO_TCP, TCP_CONGESTION, buf, len) != 0)
+    {
+        perror("setsockopt");
+        return -1;
+    }
+
+    len = sizeof(buf);
+
+    if (getsockopt(sock, IPPROTO_TCP, TCP_CONGESTION, buf, &len) != 0)
+    {
+        perror("getsockopt");
+        return -1;
+    }
+
+    printf("New: %s\n", buf);
+
+    close(sock);
+    return 0;
+}
+```
+
+
+
+# 专门的补丁允许bpf里面修改tcp socket的 拥塞控制算法
+bpf: Allow bpf tcp iter to do bpf_setsockopt
+https://lwn.net/Articles/861140/
+
+
+BPF_CALL_5(bpf_sk_setsockopt, struct sock *, sk, int, level,
+	   int, optname, char *, optval, int, optlen)
+{
+	if (level == SOL_TCP && optname == TCP_CONGESTION) {
+		if (optlen >= sizeof("cdg") - 1 &&
+		    !strncmp("cdg", optval, optlen))
+			return -ENOTSUPP;
+	}
+
+	return _bpf_setsockopt(sk, level, optname, optval, optlen);
+}
+
+
+# tcp里面预先定义很多事件或者状态的变化bpf函数回调钩子
+tcp_call_bpf(sk, BPF_SOCK_OPS_TCP_CONNECT_CB, 0, NULL);   
+https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/bpf.h 
+
+这里是一个遍历查找某个tcp连接 修改它的“拥塞控制算法”的bpf程序的例子？
+https://github.com/torvalds/linux/blob/master/tools/testing/selftests/bpf/prog_tests/bpf_iter_setsockopt.c
+
+# Customize TCP initial RTO (retransmission timeout) with BPF
+http://arthurchiao.art/blog/customize-tcp-initial-rto-with-bpf/
+
+# Making the Linux TCP stack more extensible with eBPF
+https://inl.info.ucl.ac.be/system/files/Netdev+0x13+-+Making+the+Linux+TCP+stack+more+extensible+with+eBPF+(1).pdf
+
+
