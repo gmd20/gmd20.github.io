@@ -11,15 +11,15 @@ func loadTLSConfig(c *ServiceConfig) *tls.Config {
 		cfg.Certificates = []tls.Certificate{cert}
 	}
 
-	if len(c.RootCasFile) > 0 {
+	if len(c.RootCAsFile) > 0 {
 		certPool := x509.NewCertPool()
-		rootBuf, err := os.ReadFile(c.RootCasFile) // " root_ca.pem"
+		rootBuf, err := os.ReadFile(c.RootCAsFile) // " root_ca.pem"
 		if err != nil {
-			log.Printf("failed load rootCasFile %v, error: %+v", err)
+			log.Printf("failed load rootCAsFile %v, error: %+v", err)
 			return nil
 		}
 		if !certPool.AppendCertsFromPEM(rootBuf) {
-			log.Printf("failed to append rootCasFile, error: %+v", err)
+			log.Printf("failed to append rootCAsFile, error: %+v", err)
 			return nil
 		}
 		cfg.RootCAs = certPool
