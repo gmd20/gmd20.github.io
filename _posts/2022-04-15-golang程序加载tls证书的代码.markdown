@@ -5,7 +5,7 @@ func loadTLSConfig(c *ServiceConfig) *tls.Config {
 	if len(c.CertFile) > 0 && len(c.KeyFile) > 0 {
 		cert, err := tls.LoadX509KeyPair(c.CertFile, c.KeyFile) // "example-cert.pem" "example-key.pem
 		if err != nil {
-			log.Printf("failed to load cert file or key file %v %v, error: %+v\n", c.CertFile, c.KeyFile, err)
+			log.Printf("Failed to load cert file or key file %v %v, error: %+v\n", c.CertFile, c.KeyFile, err)
 			return nil
 		}
 		cfg.Certificates = []tls.Certificate{cert}
@@ -15,11 +15,11 @@ func loadTLSConfig(c *ServiceConfig) *tls.Config {
 		certPool := x509.NewCertPool()
 		rootBuf, err := os.ReadFile(c.RootCAsFile) // " root_ca.pem"
 		if err != nil {
-			log.Printf("failed to read rootCAsFile %v, error: %+v", c.RootCAsFile,  err)
+			log.Printf("failed to read rootCAsFile %v, error: %+v\n", c.RootCAsFile, err)
 			return nil
 		}
 		if !certPool.AppendCertsFromPEM(rootBuf) {
-			log.Printf("failed to append rootCAs, error: %+v", err)
+			log.Printf("failed to append rootCAs, error: %+v\n", err)
 			return nil
 		}
 		cfg.RootCAs = certPool
