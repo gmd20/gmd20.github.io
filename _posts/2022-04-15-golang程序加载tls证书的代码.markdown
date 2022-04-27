@@ -1,4 +1,5 @@
-```go'func loadTLSConfig(c *ServiceConfig) *tls.Config {
+```go
+func loadTLSConfig(c *ServiceConfig) *tls.Config {
 	cfg := &tls.Config{}
 
 	if len(c.CertFile) > 0 && len(c.KeyFile) > 0 {
@@ -21,7 +22,7 @@
 			log.Printf("failed to append rootCasFile, error: %+v", err)
 			return nil
 		}
-		tls.RootCas = certPool
+		cfg.RootCAs = certPool
 	}
 
 	if len(c.ServerName) > 0 {
@@ -31,4 +32,5 @@
 	cfg.InsecureSkipVerify = c.InsecureSkipVerify
 	return cfg
 }
+
 ```
