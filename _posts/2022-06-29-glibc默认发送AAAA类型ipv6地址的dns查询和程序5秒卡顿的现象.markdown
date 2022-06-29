@@ -37,4 +37,4 @@ AAAA 类型的响应慢或者无响应导致的，可能有些dns代理缓存对
 ```
 
 curl -4 https://www.baidu.com  并不能避免 AAAA查询， 比较新的curl可以通过
-a绕过dns的超时，不过并不是想要的结果吧
+curl  --doh-url https://dns.alidns.com/dns-query   https://www.baidu.com 绕过dns的超时，不过并不是想要的结果吧
