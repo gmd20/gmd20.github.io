@@ -34,7 +34,9 @@ AAAA 类型的响应慢或者无响应导致的，可能有些dns代理缓存对
                      the same port are not handled caorrectly it will
                      close the socket and open a new one before sending
                      the second request.                     
-```
+``` 
+比较新的curl可以通过
+curl  --doh-url https://dns.alidns.com/dns-query   https://www.baidu.com 绕过dns的超时，不过并不是想要的结果吧。
 
-curl -4 https://www.baidu.com  并不能避免 AAAA查询， 比较新的curl可以通过
-curl  --doh-url https://dns.alidns.com/dns-query   https://www.baidu.com 绕过dns的超时，不过并不是想要的结果吧
+
+curl -4 https://www.baidu.com  好像按照文档是可以避免 AAAA查询的，用 centos 7自带的版本测试确实没有发送AAAA记录出来
