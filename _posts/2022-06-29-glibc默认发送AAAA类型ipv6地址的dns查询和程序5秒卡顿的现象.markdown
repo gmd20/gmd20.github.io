@@ -5,6 +5,8 @@ AAAA 类型的响应慢或者无响应导致的，可能有些dns代理缓存对
 但AAAA类型查询用不上，但却禁止不了，linux下面禁用ipv6这些都没有用。
 这个好像是glibc的默认行为，并没有设置可以禁止掉，  /etc/resolv.conf 的选项没有相关的设置, https://man7.org/linux/man-pages/man5/resolv.conf.5.html
 提到的一些设置应该没有用的。
+最新的glibc在2022年6月的新版本增加一个no_aaaa选项 https://github.com/bminor/glibc/blob/master/resolv/res-noaaaa.c， 看redhat9在做backport了，但Redhat 8/7之类的估计
+没有移植了吧。
 ```text
               inet6  Sets RES_USE_INET6 in _res.options.  This has the
                      effect of trying an AAAA query before an A query
