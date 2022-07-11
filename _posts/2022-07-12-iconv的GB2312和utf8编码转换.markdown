@@ -1,0 +1,51 @@
+GBK 兼容 GB2312， 都兼容Ascii 。如果一个utf-8字符串的所有字节都小于128那就是ASCII 不需要转换了吧，
+```text
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+ #include <iconv.h>
+
+int encoding_convert(const char *tocode, const char *fromcode,
+                           char *inbuf, size_t *inbytesleft, char *outbuf, size_t *outbytesleft)
+{
+  iconv_t cd = 0;
+  char *in_buf = inbuf;
+  char *out_buf = outbuf;
+  size_t len = *outbytesleft;
+  size_t nonreversible_characters = -1;
+
+  cd = iconv_open(tocode, fromcode);
+  if (cd == (iconv_t)-1) {
+    return -1;
+  }
+
+  nonreversible_characters = iconv(cd, &in_buf, inbytesleft, &outbuf, outbytesleft);
+  if (nonreversible_characters < 0) {
+    return -1;
+  }
+  iconv_close(cd);
+
+  len -= *outbytesleft;
+  out_buf[len] = '\0';
+  return (int)(len);
+}
+
+int main(int argc, char *argv[])
+{
+  char  s[] = "中国人哈哈哈";
+  char *utf8 = s;
+  size_t  s_len = strlen(s);
+  char buf[512];
+  char *gb2312 = buf;
+  size_t len = 512;
+
+  int aa = encoding_convert("GB2312//IGNORE","UTF-8", utf8 , &s_len, gb2312, &len) ;
+  if (aa > 0) {
+      printf("%d  %d %d\n",  aa, (int)s_len, 512 - (int)len);
+  }
+
+   return 0;
+}
+
+```
