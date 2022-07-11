@@ -1,0 +1,10 @@
+```text
+去重 相当于 sort | uniq
+awk '!x[$0]++ 1.txt
+
+求第二列的平均值，每隔360项打印一次
+awk '{ s += $2; if (NR % 360 == 0) { print s/360;  s = 0;}}'   1.txt
+
+下面语句打印第二个文件不出现在第一个文件中的第一列 第一个文件 NR 等于 FNR（file NR），
+awk 'NR==FNR{a[$0]++;next}NR!=FNR{if(!a[$0])print $0}' test1.txt test2.txt
+```
