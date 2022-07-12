@@ -1,0 +1,9 @@
+dlopen 支持_init函数的   
+https://man7.org/linux/man-pages/man3/dlopen.3.html  
+
+不过现在建议使用gcc的constructor attribute,像下面这样定义，xxxx_init 会在初始化阶段dlopen返回之前被调用吧
+```c
+void attribute ((constructor)) xxxx_init(void) {
+
+}
+```
