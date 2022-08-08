@@ -16,3 +16,7 @@ v1.16.7 ~ v1.18 都会出现这个bug。线上的机器遇到的好像就是这�
 ```
 
 v1.19才会修复，有的等了。
+
+
+
+v1.19发布了， v1.18.5也经过backport修复这个bug了吧 https://github.com/golang/go/issues/53847 
