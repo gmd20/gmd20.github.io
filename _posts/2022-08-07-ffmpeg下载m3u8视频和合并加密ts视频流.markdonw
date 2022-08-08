@@ -1,0 +1,21 @@
+```text
+
+export http_proxy="http://127.0.0.1:8000"  # 使用代理
+/d/ffmpeg-5.0.1-full_build/bin/ffmpeg.exe -i 'http://.../playlist.m3u8' -c copy output.mp4   下载视频流
+
+
+但有的网站m3u8单独下载不了，可能有cookie之类的校验，只能在浏览器里面下载m3u8文件。
+m3u8是一个列表，包含多个ts文件， 单独下载ts文件下来，然后使用下面的命令合并成mp4文件就可以了。
+/d/ffmpeg-5.0.1-full_build/bin/ffmpeg.exe -i 'concat:media_0.ts|media_1.ts|media_2.ts|media_3.ts|media_4.ts|media_5.ts|media_6.ts|media_7.ts|media_8.ts|media_9.ts|media_10.ts|media_11.ts|media_12.ts|media_13.ts|media_14.ts|media_15.ts' -c copy output.mp4
+
+单独下载多个m3u8有点麻烦，可以使用https://m3u8handle.com/ 这个网站下载，就会把多个视频打包好了，方便一些。
+
+但还有的网站视视频流是加密的，ts文件下载下来直接播放不了那种。这种m3u8文件里面看到ext AES加密扩展，里面有key的URI ,像下面这种，
+这个要根据网站的相对URI路径把enc.key密钥文件下载下来，然后把m3u8里面文件改成本地路径。
+#EXT-X-KEY:METHOD=AES-128,URI="g:/enc.key",IV=0x7239ef134137ab3710ad7c
+
+最后使用下面这个命令就可以 自动解密ts文件合并得到mp4文件
+/d/ffmpeg-5.0.1-full_build/bin/ffmpeg.exe -allowed_extensions ALL -i 'playlist.m3u8' -c copy output.mp4
+
+
+```
