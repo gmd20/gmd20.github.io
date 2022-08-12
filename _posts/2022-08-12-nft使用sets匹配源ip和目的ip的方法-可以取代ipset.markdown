@@ -1,5 +1,5 @@
 
-nftables的sets比ipset
+nftables的sets比ipset iptables这些灵活一些，但感觉也复杂了一些。
 
 ```text
 nft list ruleset
