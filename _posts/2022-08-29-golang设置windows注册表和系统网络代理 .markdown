@@ -6,6 +6,6 @@ https://pkg.go.dev/golang.org/x/sys/windows/registry
 CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyEnable  
 CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer  
  
- 参考
-参考https://blog.csdn.net/Jack_he_li/article/details/111467607
+参考
+https://blog.csdn.net/Jack_he_li/article/details/111467607
 
