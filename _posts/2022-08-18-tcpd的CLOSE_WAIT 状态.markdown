@@ -15,3 +15,20 @@ ss --tcp state CLOSE-WAIT --kill
 ss --tcp state CLOSE-WAIT '( dport = 22 or dst 1.1.1.1 )' --kill
 ss --tcp --kill sport = 54576 or dport = :ssh
 ```
+
+编程的话，可以通过EPOLLRDHUP 事件判断对端已经关闭socket
+```text
+       EPOLLRDHUP (since Linux 2.6.17)
+              Stream socket peer closed connection, or shut down writing
+              half of connection.  (This flag is especially useful for
+              writing simple code to detect peer shutdown when using
+              edge-triggered monitoring.)
+```
+
+lighttpd的代码判断连接是否是 CLOSE_WAIT状态
+```c
+    struct tcp_info tcpi;
+    socklen_t tlen = sizeof(tcpi);/*SOL_TCP == IPPROTO_TCP*/
+    return (0 == getsockopt(fd,     SOL_TCP, TCP_INFO, &tcpi, &tlen)
+            && tcpi.tcpi_state == TCP_CLOSE_WAIT);
+```
