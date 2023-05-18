@@ -1,0 +1,26 @@
+启动说/home 分区对应的lvm磁盘找不到，进不了正常模式，进入故障模式了，lvmdiskscan提示“Devices file sys_wwid xxxx not found” 错误， 
+
+搜索了一下，应该是 https://portal.nutanix.com/page/documents/kbs/details?targetId=kA07V000000LaGrSAK  “LVM non-root partition disappeared from a new RHEL 9.0 guest VM with SCSI disk running on AHV”
+这篇文章描述的问题。
+
+# 原因
+virutalbox 导出虚拟机，  磁盘快照（我的怀疑是系统休眠自动创建快照）， 磁盘变化啦 
+RHEL 9的LVM 会使用  “/etc/lvm/devices/system.devices“ 配置文件来查找 PVs， 变化之后找不到了意思吧。
+
+# 修复
+就是删除这个文件，然后重新生成磁盘列表配置文件就行了。
+```text
+rm /etc/lvm/devices/system.devices
+
+vgimportdevices -a
+
+vgscan 能找到之前的/home 分区了，重启系统就行了
+```
+
+# 彻底避免这个问题
+改成跟RHEL 8一样，LVM不要使用devicesfile文件，修改 /etc/lvm/lvm.conf  设置 use_devicesfile = 0
+```text
+ echo 'use_devicesfile = 0' >> /etc/lvm/lvm.conf 
+ 
+ rm /etc/lvm/devices/system.devices
+```
