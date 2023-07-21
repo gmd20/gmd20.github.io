@@ -9,9 +9,12 @@ https://github.com/troglobit/pimd/tree/master
 
 https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/mroute.h
 
-pimd的介绍
-https://www.cnblogs.com/newjiang/p/13706485.html
-https://blog.csdn.net/wuheshi/article/details/103049441
+pimd的介绍   
+https://www.cnblogs.com/newjiang/p/13706485.html   
+https://blog.csdn.net/wuheshi/article/details/103049441   
 
-组播转发开关
+组播转发开关   
 echo 1 > /proc/sys/net/ipv4/conf/all/mc_forwarding
+
+查看组播路由   
+ip mroute show
