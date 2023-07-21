@@ -1,0 +1,13 @@
+rocky linux 9上面，内核编译设置默认打开了DEBUG_INFO_BTF_MODULES，这样所有模块里面都带有BTF信息。
+
+运行时内核的BTF这个机制，如果模块缺少BTF信息（ELF的BTF段）那可以加载成功，但如果BTF的版本不匹配就拒绝加载。
+使用源码自己编译内核时，虽然内核源码是一样的但生成的BTF还是不匹配的。 这样自己使用内核源码目录（ 不是系统的/lib/modules/`uname -r`/build ）
+编译一个模块出来， 在rocky linux的官方内核系统里面就没法使用了， modprobe 会返回“ bpf invalid name  btf -22”错误。 
+但通常编译模块时，如果make bzImage 之后make clean 删掉vmlinux 后 编译模块时找不到vmlinux就不会BTF信息，通常还是可以正常使用的。
+但有的模块使用了 register_btf_kfunc_id_set 函数 向系统注册BTF函数的，这种一定要求BTF 信息的就不行了。
+
+反正这个BTF这个东西，自己编译第三方模块时最好就不要把BTF编译进去了，不然不同的内核小版本都没法兼容，即使同样的内核源码也是不行的。
+
+内核邮件有人讨论，好像没什么结论
+BTF compatibility issue across builds
+https://lkml.kernel.org/netdev/CAADnVQJ+OVPnBz8z3vNu8gKXX42jCUqfuvhWAyCQDu8N_yqqwQ@mail.gmail.com/T/ 
