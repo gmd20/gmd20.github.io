@@ -1,0 +1,11 @@
+发现tcpdump的 'host <ip>'  这样表达式有时不支持vlan 802.1q的包，如果网卡支持vlan硬件加速，那ip过滤的还能抓到吧。
+如果网卡不支持vlan硬件加速，__vlan_hwaccel_push_inside  处理过后改了包头的话， dev_queue_xmit_nit  -> deliver_skb PACKET_OUTGOING  ->packet_rcv 就处理不了这种带了vlan头的解析了。
+bpf那里不支持vlan 协议解析。
+```text
+__dev_queue_xmit  
+   validate_xmit_skb
+      validate_xmit_vlan
+          vlan_hw_offload_capable   网卡是否支持vlan 加速 
+              __vlan_hwaccel_push_inside  如果网卡不支持 “tx-vlan-offload” 把vlan直接插入包头，
+        skb_needs_linearize
+```
