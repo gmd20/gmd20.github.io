@@ -9,5 +9,8 @@ __dev_queue_xmit
       validate_xmit_vlan
           vlan_hw_offload_capable   网卡是否支持vlan 加速 
               __vlan_hwaccel_push_inside  如果网卡不支持 “tx-vlan-offload” 把vlan直接插入包头，
-        skb_needs_linearize
+      netif_needs_gso
+          skb_gso_segment
+      skb_needs_linearize
+          __skb_linearize
 ```
