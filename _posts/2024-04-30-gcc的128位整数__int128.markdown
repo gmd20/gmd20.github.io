@@ -1,0 +1,21 @@
+根据gcc的文档 https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/128-bit-integers.html
+是有扩展支持__int128类型的，但默认会用 64位的整数了模拟出来。
+
+参考下面这两篇文章：
+
+
+“GCC扩展中的int128相关运算在底层是如何实现的？”
+https://www.zhihu.com/question/311373755
+
+“__int128 的安全使用”
+https://zhuanlan.zhihu.com/p/375376949
+
+
+但 intel的 sse和 avx512是支持128位整数运算的，所以如果编译时使用 -march执行cpu目标 支持sse这些话，会编译为sse avx-512的汇编吧。
+但这些128的汇编指令要求内存地址是128位对齐的，地址不对齐就会程序崩溃， cpu指令非法吧。 所以__int128 的结构最好指定内存对齐属性。
+```c
+struct B {
+__int128 c;
+uint64_t d;
+} __attribute__((aligned (16)));
+```
