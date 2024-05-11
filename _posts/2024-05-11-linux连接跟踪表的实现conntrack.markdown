@@ -37,7 +37,8 @@ nft_ct_get_init   // nft ct 初始化，才通知系统 需要启动  ct 机制�
 
 nf_conntrack  有两个依赖，nf_defrag_ipv4 和 nf_defrag_ipv6  ， 这两个钩子 还在 ipv4_conntrack_in 函数之前运行的， 是把 分片包组装起来的吧、
 
-
+如果 不需要连接跟踪的，可以“nf_ct_set(skb, NULL, IP_CT_UNTRACKED); ”跟skb标记成IP_CT_UNTRACKED 的。
+ 
 
 
 这个文章写的挺好，一开始搜索到了，但没细看，里面写的还是挺清楚的。
