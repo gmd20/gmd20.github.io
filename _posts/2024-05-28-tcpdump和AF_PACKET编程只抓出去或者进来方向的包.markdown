@@ -168,6 +168,26 @@ linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
 ```
 google 开源的gopacket （https://github.com/google/gopacket/）应该是实现了这个  PACKET_RX_RING 的“af packet”
 
+具体的实现在：   
+https://github.com/google/gopacket/blob/32ee38206866f44a74a6033ec26aeeb474506804/afpacket/afpacket.go   
+https://github.com/google/gopacket/blob/master/afpacket/header.go
+
+ring buffer里面的也是有 sockaddr_ll 信息的吧
+https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/if_packet.h
+```c
+/*
+   Frame structure:
+
+   - Start. Frame must be aligned to TPACKET_ALIGNMENT=16
+   - struct tpacket_hdr
+   - pad to TPACKET_ALIGNMENT=16
+   - struct sockaddr_ll
+   - Gap, chosen so that packet data (Start+tp_net) alignes to TPACKET_ALIGNMENT=16
+   - Start+tp_mac: [ Optional MAC header ]
+   - Start+tp_net: Packet data, aligned to TPACKET_ALIGNMENT=16.
+   - Pad to align to TPACKET_ALIGNMENT=16
+ */
+```
 
 
 
