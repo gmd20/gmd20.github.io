@@ -157,3 +157,19 @@ linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
 
 ```
 
+这个af_packet 抓包要高性能，还是要mmap 内存映射  和 PACKET_RX_RING. 在内核和用户空间共享一块内存区域，一个传输多个包，减少数据复制和系统调用吧。
+详细说明参见 https://www.kernel.org/doc/html/latest/networking/packet_mmap.html    
+
+内核源码里面 af_packet.c  的 tpacket_rcv 和 packet_rcv函数的区别 是否是否启用 packet ring buffer的区别吧
+```text
+ packet_set_ring
+		po->prot_hook.func = (po->rx_ring.pg_vec) ?
+						tpacket_rcv : packet_rcv;
+```
+google 开源的gopacket （https://github.com/google/gopacket/）应该是实现了这个  PACKET_RX_RING 的“af packet”
+
+
+
+
+
+
