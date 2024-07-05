@@ -201,8 +201,8 @@ linux 查看向网卡注册的主动地址
 cat /proc/net/igmp
 
 cat /proc/net/igmp6  | grep eth0
-2    eth0            ff0200000000000000000001ff000000     2 00000004 0
-2    eth0            ff0200000000000000000001ffe000b8     2 00000004 0    // addrconf 分配的ipv6地址 对应的  Solicited-Node Address
+2    eth0            ff0200000000000000000001ff000000     2 00000004 0    // 对方mac未知时的 "solicited-node multicast address"
+2    eth0            ff0200000000000000000001ffe000b8     2 00000004 0    // addrconf 分配的ipv6地址 对应的  "solicited-node multicast address"
 2    eth0            ff050000000000000000000000000002     1 00000004 0    // in6addr_sitelocal_allrouters
 2    eth0            ff010000000000000000000000000002     1 00000008 0    //  in6addr_interfacelocal_allrouters
 2    eth0            ff020000000000000000000000000002     1 00000004 0    //  in6addr_linklocal_allrouters
@@ -213,7 +213,7 @@ cat /proc/net/igmp6  | grep eth0
 ip  -6 neigh add proxy 2409:1a54:62d:ef10:9c6c:6a6:d94f:34bc dev eth0
 
 cat /proc/net/igmp6 | grep eth0
-2    eth0            ff0200000000000000000001ff4f34bc     1 00000004 0   // 新增加的proxy 对应的  Solicited-Node Address
+2    eth0            ff0200000000000000000001ff4f34bc     1 00000004 0   // 新增加的proxy 对应的   "solicited-node multicast address"
 2    eth0            ff0200000000000000000001ff000000     2 00000004 0
 2    eth0            ff0200000000000000000001ffe000b8     2 00000004 0
 2    eth0            ff050000000000000000000000000002     1 00000004 0
