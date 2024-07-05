@@ -187,14 +187,15 @@ static int e1000e_write_mc_addr_list(struct net_device *netdev)
 
 
 
-linux 查看向网卡注册的主动地址
-===================
+linux 查看向网卡注册的组播侦听地址
+=================================
 组播的目的mac地址
 都是根据组播ip地址关联映射的，所以本机监听某个组播地址时，需要要把这个mac地址下发到
 网卡的白名单里面去，网卡硬件才会把这个mac对应的包上传到内核层进行处理。不然网卡直接
 丢掉不想要的包吧。  linux系统会 根据上次应用的组播地址使用情况，自己管理网卡的mac白名单。
 还需要通过igmp3（ipv4） 和 MLDv2(ipv6) 协议维护组播侦听状态，向交换机或者邻居组播路由器
 报告本机的组播地址。
+
 
 
 ```text
@@ -222,6 +223,41 @@ cat /proc/net/igmp6 | grep eth0
 2    eth0            ff020000000000000000000000000001     1 0000000C 0
 2    eth0            ff010000000000000000000000000001     1 00000008 0
 
+```
+
+刚发现 有一个 ip maddress 命令可以管理网卡上的组播地址的。
+```teext
+       ip-maddress - multicast addresses management
+
+SYNOPSIS
+       ip [ OPTIONS ] maddress  { COMMAND | help }
+
+       ip maddress [ add | del ] MULTIADDR dev NAME
+
+       ip maddress show [ dev NAME ]
+
+ 
+# ip maddress show dev enp0s8
+3:      enp0s8
+        link  01:00:5e:00:00:01
+        link  33:33:00:00:00:01
+        link  33:33:ff:79:78:a2
+        inet  224.0.0.1
+        inet6 ff02::1:ff79:78a2 users 2
+        inet6 ff02::1
+        inet6 ff01::1
+
+# ip maddress add 33:33:00:00:00:16 dev  enp0s8 
+# ip maddress show dev enp0s8
+3:      enp0s8
+        link  01:00:5e:00:00:01
+        link  33:33:00:00:00:01
+        link  33:33:ff:79:78:a2
+        link  33:33:00:00:00:16 static
+        inet  224.0.0.1
+        inet6 ff02::1:ff79:78a2 users 2
+        inet6 ff02::1
+        inet6 ff01::1
 ```
 
 
