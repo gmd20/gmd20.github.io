@@ -1,0 +1,161 @@
+# 参考
+ 
+https://wiki.archlinux.org/title/GRUB   
+https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface   
+https://wiki.archlinux.org/title/Partitioning#GUID_Partition_Table   
+https://wiki.archlinux.org/title/EFI_system_partition   
+
+
+# 1. 主板设置启动模式 UEFI模式
+ 
+
+   禁用 Compatibility Support Module (CSM)  兼容模式   
+   禁用 “Secure Boot” 吧
+
+# 2.  创建 "EFI 系统分区"
+ 
+EFI启动要用 GPT磁盘分区格式，"EFI 系统分区"是一个特殊类型FAT32分区，parted命令里面分区类型设置为esp就行吧
+
+```text
+dnf install dosfstools
+
+rpm -ql dosfstools
+/usr/sbin/dosfsck
+/usr/sbin/dosfslabel
+/usr/sbin/fatlabel
+/usr/sbin/fsck.fat
+/usr/sbin/fsck.msdos
+/usr/sbin/fsck.vfat
+/usr/sbin/mkdosfs
+/usr/sbin/mkfs.fat
+/usr/sbin/mkfs.msdos
+/usr/sbin/mkfs.vfat
+```
+
+GPT 磁盘分区的 FAT32文件系统的:
+
+```text
+	parted -a optimal -s ${DEV_NAME} -- mklabel gpt \
+		mkpart efi fat32 1MiB 513MiB \
+		mkpart home ext4 513MiB 1537MiB \
+		mkpart data ext4 1537MiB 100% \
+		set 1 esp on \
+		print
+
+mkfs.fat -F 32 /dev/sda1
+```
+
+# 3. 安装 grub 到磁盘的 "EFI 系统分区"
+ 
+FAT32分区，比如直接把 “UEFI Shell” https://github.com/tianocore/edk2 复制到
+/USB_drive_mointpoint/EFI/BOOT/BOOTx64.EFI就能启动
+
+EFI启动不需要MBR，UEFI方式启动时会主动搜索分区上efi可执行文件吧。
+
+```text
+dnf install grub2-efi-x64 grub2-efi-x64-cdboot grub2-efi-x64-modules
+[root@localhost initramfs]# rpm -ql grub2-efi-x64
+/boot/efi/EFI/rocky/grub.cfg
+/boot/efi/EFI/rocky/grubx64.efi
+/boot/grub2/fonts
+/boot/grub2/fonts/unicode.pf2
+/boot/grub2/grub.cfg
+/boot/grub2/grubenv
+/boot/loader/entries
+/etc/dnf/protected.d/grub2-efi-x64.conf
+/etc/grub2-efi.cfg
+/etc/grub2.cfg
+```
+/mnt是 EFI系统分区挂载点, --boot-directory是grub设置文件的安装位置
+下面的命令会把安装 grubx64.efi 文件到 esp/EFI/GRUB/ 和模块到 /boot/grub/x86_64-efi/
+
+```text
+# mount /dev/sdb1 /mnt
+# grub2-install  --target=x86_64-efi --efi-directory=/mnt --boot-directory=/mnt/boot --bootloader-id= --force
+```
+
+加上--removable 参数会安装到/mnt/EFI/BOOT/BOOTX64.EFI 而不是 grubx64.efi,
+  这样跨机器启动菜单兼容性更好，主板默认识别 “为esp/EFI/BOOT/BOOTX64.EFI”这
+  个文件吧。
+```text
+# grub2-install  --target=x86_64-efi --efi-directory=/mnt --boot-directory=/mnt/boot --bootloader-id=linux --removable --force
+```
+
+# 4. grub的配置例子
+
+```text
+menuentry 'Linux'  --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option 'linux' {
+	load_video
+	set gfxpayload=1024x768x24,1024x768
+	insmod gzio
+	insmod part_msdos
+	insmod part_gpt
+	insmod fat
+	insmod ext2
+	if [ "$grub_platform" = "efi" ]; then
+		set root='hd0,gpt2'
+	else
+		set root='hd0,msdos2'
+	fi
+	if [ x$feature_platform_search_hint = xy ]; then
+		search --no-floppy --label --set=root --hint-bios=hd0,msdos2 --hint-efi=hd0,gpt2 --hint-baremetal=ahci0,msdos2 --hint='hd0,msdos2' os
+	else
+		search --no-floppy --label --set=root os
+                                ## search --no-floppy --file --set=root /boot/initramfs.img
+	fi
+	linux /boot/vmlinuz ro rhgb quiet logo.nologo console=tty0 console=ttyS0,115200n8 LANG=en_US.UTF-8 nopti nospectre_v2 random.trust_cpu=on softlockup_panic=1 test
+	initrd /boot/initramfs.img
+}
+```
+
+# 5. 生成iso启动盘的iso文件
+
+默认生成的应该是支持BIOS（MBR）和UEFI（EFI分区）两种启动引导模式
+```text
+
+[root@localhost initramfs]# find iso/
+iso/
+iso/boot
+iso/boot/vmlinuz
+iso/boot/initramfs.img
+iso/boot/grub
+iso/boot/grub/grub.cfg
+
+grub2-mkrescue -o livecd.iso iso
+```
+
+ 
+
+# 6. efibootmgr 是管理主板EFI 启动项的命令
+ 
+ EFI启动的Linux会有 /sys/firmware/efi 目录，需要挂载efivars文件系统，efibootmgr才能正常运行
+```text
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+
+dnf install efibootmgr
+efibootmgr -c -w -L "linux" -d $DEV_NAME -p 1 -l \\EFI\\Boot\\bootx64.efi
+efibootmgr -b 7 -B 删除启动项
+efibootmgr -m 3 设置下一个启动项
+efibootmgr -o 3,1,2  修改启动顺序
+```
+
+
+# 7. uefi shell
+ 
+查看编辑文件命令和linux类似 rm mv 等等
+```text
+fs0:
+ls
+cd EFI\Boot
+BOOTX64.efi 直接执行可执行文件 就可以引导系统
+```
+
+修改启动项
+```text
+bcfg boot dump
+bcfg boot add 0 fs0:EFIOCOpenCore.efi "OpenCore Bootloader"
+bcfg boot mv 3 1 将第三个启动项移动到首位
+
+exit
+```
+
