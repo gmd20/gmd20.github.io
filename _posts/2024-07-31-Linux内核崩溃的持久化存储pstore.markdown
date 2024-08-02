@@ -35,9 +35,9 @@ https://www.cnblogs.com/dongxb/p/18011157
 https://www.ais.com/understanding-pstore-linux-kernel-persistent-storage-file-system/
 
 
-
-
-
+除了 ramoops 这个保存在内存和 blk保存在磁盘分区的backend，还有一个 efi pstore是保存在UEFI的变量里面（主板上的NVRAM）
+https://elixir.bootlin.com/linux/v6.10.2/source/drivers/firmware/efi/efi-pstore.c
+echo N > /sys/moduels/efi_pstore/parametes/pstore_disable
 
 
 systemd的 man pstore.conf
