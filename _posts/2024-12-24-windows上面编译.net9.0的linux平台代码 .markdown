@@ -1,0 +1,10 @@
+1. 安装.net 9.0 sdk 
+2. visual stuio code 安装 c# 和 .net 的扩展
+3. dotnet.exe build -c Release
+4. dotnet publish -c Release -f net9.0 -r linux-x64 --self-contained true
+
+参考：   
+https://learn.microsoft.com/zh-cn/dotnet/core/tools/dotnet-publish   
+https://learn.microsoft.com/zh-cn/dotnet/core/deploying/deploy-with-cli   
+https://learn.microsoft.com/zh-cn/dotnet/standard/frameworks   
+https://learn.microsoft.com/zh-cn/dotnet/core/rid-catalog   
