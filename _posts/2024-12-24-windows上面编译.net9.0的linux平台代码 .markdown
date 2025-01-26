@@ -5,7 +5,8 @@
    [project_file_folder]/bin/[configuration]/[framework]/[runtime]/publish/   
    生成的publish目录下面的文件 拿到linux就能运行
 
-要在项目文件 *.csproj  里面配置PublishTrimmed  PublishSingleFile ，打包时才会精简和打包为单独一个文件。
+要在项目文件 *.csproj  里面配置  PublishSingleFile ，打包时才会精简和打包为单独一个文件。
+但 PublishTrimmed 会有告警，设置了可能运行不起来
  ```text
   <PropertyGroup>
     <OutputType>Exe</OutputType>
