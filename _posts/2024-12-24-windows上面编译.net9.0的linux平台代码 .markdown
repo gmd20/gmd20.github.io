@@ -1,7 +1,7 @@
 1. 安装.net 9.0 sdk 
 2. visual stuio code 安装 c# 和 .net 的扩展
 3. dotnet.exe build -c Release
-4. dotnet publish -c Release -f net9.0 -r linux-x64 --self-contained true
+4. dotnet publish -c Release -f net9.0 -r linux-x64 -p:PublishSingleFile=true  --self-contained true
    [project_file_folder]/bin/[configuration]/[framework]/[runtime]/publish/   
    生成的publish目录下面的文件 拿到linux就能运行
 
