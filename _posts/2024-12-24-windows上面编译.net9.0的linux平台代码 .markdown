@@ -4,6 +4,18 @@
 4. dotnet publish -c Release -f net9.0 -r linux-x64 --self-contained true
    [project_file_folder]/bin/[configuration]/[framework]/[runtime]/publish/   
    生成的publish目录下面的文件 拿到linux就能运行
+
+要在项目文件 *.csproj  里面配置PublishTrimmed  PublishSingleFile ，打包时才会精简和打包为单独一个文件。
+ ```text
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>13</LangVersion>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+````
    
 参考：   
 https://learn.microsoft.com/zh-cn/dotnet/core/tools/dotnet-publish   
