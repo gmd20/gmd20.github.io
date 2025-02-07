@@ -1,4 +1,10 @@
 ```c
+int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+if (sockfd < 0) {
+    perror("socket");
+    exit(1);
+}
+
 struct sockaddr_in local_addr;
 memset(&local_addr, 0, sizeof(local_addr));
 local_addr.sin_family = AF_INET;
