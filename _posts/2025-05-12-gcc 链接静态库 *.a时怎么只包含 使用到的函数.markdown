@@ -1,0 +1,43 @@
+在使用 GCC 链接静态库 `.a` 时，若希望只包含实际使用到的函数，可以通过以下步骤实现：
+
+### 1. **编译静态库时启用函数分段**
+在编译静态库的源文件时，使用 `-ffunction-sections` 和 `-fdata-sections` 选项，将每个函数和数据分配到独立的段（section）：
+```bash
+gcc -c -ffunction-sections -fdata-sections lib_source1.c -o lib_source1.o
+gcc -c -ffunction-sections -fdata-sections lib_source2.c -o lib_source2.o
+```
+然后打包为静态库：
+```bash
+ar rcs libmylib.a lib_source1.o lib_source2.o
+```
+
+### 2. **链接时启用段垃圾回收**
+在链接应用程序时，传递 `-Wl,--gc-sections` 给链接器，以移除未使用的段：
+```bash
+gcc -o app main.o -Wl,--gc-sections -L. -lmylib
+```
+
+### 关键说明：
+- **静态库结构优化**：确保每个源文件（如 `lib_source1.c`）仅包含一个函数。这样，链接器可以仅链接包含被调用函数的 `.o` 文件，避免引入冗余代码。
+- **段垃圾回收**：`--gc-sections` 会移除未被引用的段，配合 `-ffunction-sections` 和 `-fdata-sections` 确保每个函数/数据独立，从而精准清理。
+- **重新编译库的必要性**：若静态库未按上述方式编译，需重新编译以支持此优化。否则，链接器会按 `.o` 文件整体链接，导致冗余。
+
+### 示例流程：
+1. **编译库**：
+   ```bash
+   # 每个函数单独一个源文件
+   gcc -c -ffunction-sections -fdata-sections func1.c -o func1.o
+   gcc -c -ffunction-sections -fdata-sections func2.c -o func2.o
+   ar rcs libmylib.a func1.o func2.o
+   ```
+
+2. **编译主程序并链接**：
+   ```bash
+   gcc -c main.c -o main.o
+   gcc -o app main.o -Wl,--gc-sections -L. -lmylib
+   ```
+
+### 验证：
+使用工具如 `nm` 检查生成的可执行文件，确认是否仅包含所需的函数。
+
+通过上述步骤，GCC 将仅链接被实际调用的函数，显著减少可执行文件体积。
