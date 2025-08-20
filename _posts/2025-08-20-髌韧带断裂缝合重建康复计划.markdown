@@ -1,0 +1,1234 @@
+让 AI 翻译几篇医学康复指南
+=========================
+
+
+
+# 髌腱修复术后康复方案
+
+以下为髌腱修复术后患者的康复方案。本方案的主要目标是在保护手术修复部位的同时，逐步恢复功能，最终达到术前活动水平。请注意，此方案仅为**指导性建议**。若患者同时接受其他手术（如副韧带修复、半月板修复等），康复进度可能有所不同。**应更重视各阶段的达标标准，而非时间表**。若患者在康复过程中出现疼痛或肿胀加重、关节活动度下降等情况，应立即减少活动量，待问题解决后再继续。
+
+---
+
+## 术后第1–14天
+
+- **伤口护理**：
+  - 术后第1天（POD 1）：拆除部分敷料
+  - 术后第2天（POD 2）：更换敷料，保持伤口覆盖
+  - 术后第7–10天：拆除缝线，当关节积液消退后，停止使用抗血栓弹力袜（TED hose）
+
+- **支具使用**：共8周，**行走时锁定在伸直位**
+- **拐杖辅助**：部分负重（PWB）
+- **髌骨活动训练**
+- **小腿泵运动**（预防血栓）
+- **主动辅助活动度训练（AAROM）**：0–45°（被动伸直，主动屈曲，脚跟滑动）
+- **被动伸直训练**：足跟垫高仰卧或俯卧悬吊
+- **电刺激治疗**：亚最大强度股四头肌等长收缩（用于肌肉再教育）
+- **股四头肌等长收缩（Quad sets）、股四头肌与腘绳肌共收缩**
+- **直腿抬高（SLR）**：站立位，4次/组（佩戴支具）
+- **轻柔腘绳肌拉伸**
+- **冰敷**：每次训练后，将冰袋置于膝关节完全伸直位
+
+### 目标
+- 获得完全被动伸直
+- 良好的股四头肌控制能力
+- 疼痛与关节积液得到有效控制
+
+---
+
+## 第2–4周
+
+- **支具使用**：8周，行走时仍锁定在伸直位
+- **拐杖辅助**：逐步过渡至**可耐受负重（WBAT）**，当步态正常后可停用拐杖
+- 继续进行前期合适的训练
+- **AAROM**：0–70°（被动伸直，主动屈曲）
+- **仰卧位直腿抬高（SLR）**：4次/组（佩戴支具）
+- **腘绳肌屈曲训练**：使用器械，0–45°，轻阻力
+- **双侧脚跟抬起训练**（提踵）
+- **本体感觉训练**（佩戴支具）：
+  - 在平行杠内单腿站立
+  - 双腿使用BAPS板进行重心转移训练
+- **拉伸训练**：腘绳肌、髂胫束（ITB）
+
+### 目标
+- 关节活动度（ROM）：0–70°
+- 无伸膝滞后（无伸肌力量滞后）
+
+---
+
+## 第4–6周
+
+- **支具使用**：8周，行走时锁定在 **0–30° 范围内**
+- 继续进行前期合适的训练
+- **AAROM**：0–90°（被动伸直，主动屈曲）
+- **站立位直腿抬高（SLR）**：4次/组（佩戴支具），双侧使用弹力带（Theraband）
+- **腘绳肌屈曲训练**：使用器械，0–90°，轻阻力
+- **前向、侧向、后向下台阶训练**（在平行杠内，佩戴支具，屈膝不超过45°）
+  - 注意：使用小台阶，避免屈膝超过45°
+- **单腿脚跟抬起训练**（可在或不在支具中进行）
+- **椭圆机训练**（佩戴支具）
+
+### 目标
+- 步态正常
+- 关节活动度（ROM）：0–90°
+
+---
+
+## 第6–8周
+
+- **支具使用**：8周，逐步放开至可活动范围
+- 继续进行前期合适的训练
+- **AAROM / AROM**：全范围活动
+- **无负重主动伸膝训练**（不佩戴支具）
+- **仰卧位直腿抬高（SLR）**：4次/组，膝下加轻重量（不佩戴支具）
+- **腿推举训练**：0–60°，轻阻力（不佩戴支具）
+- **迷你深蹲、靠墙深蹲**：0–60°（不佩戴支具）
+- **本体感觉训练**（佩戴支具）：单腿BAPS板、抛接球、Body Blade训练
+- **固定自行车训练**（不佩戴支具）：逐步增加阻力和时间
+- **跑步机训练**：向前及向后行走（佩戴支具）
+- **水中康复训练**：髋部主导的蛙泳踢腿（保持膝关节伸直）
+
+### 目标
+- 关节活动度（ROM）：0–110°
+
+---
+
+## 第8–12周
+
+- **停止使用支具**
+- 继续前期合适的训练，以下训练均**不佩戴支具**
+- **被动活动度（PROM）、主动辅助活动度（AAROM）、主动活动度（AROM）**：争取恢复完全活动范围
+- **短弧股四头肌训练**（Short Arc Quads）
+- **腘绳肌器械训练**：全范围，轻至中等阻力
+- **腿推举训练**：0–90°，轻至中等阻力
+- **髋部器械训练**：双侧，4组
+- **健身球训练**（Fitter）
+- **滑板训练**（Slide Board）
+- **跑步机训练**：步行进阶计划
+
+### 目标
+- 获得**完全关节活动度（Full ROM）**
+- 可以以 **15分钟/英里** 的速度步行 **2英里（约3.2公里）**
+
+---
+
+## 第3–4个月
+
+- 继续进行前期合适的训练
+- **膝关节伸展器械训练**：轻至中等阻力
+- **功能性训练**：8字走、缓弯绕行、大Z字形移动
+- **跑步机训练**：步行进阶计划
+
+### 目标
+- 大腿围度与健侧相等
+- 俯卧位腘绳肌柔韧性与健侧对称（脚跟贴近臀部）
+- 可轻松完成 **2英里跑步**
+
+---
+
+## 第4–6个月
+
+- 继续进行前期合适的训练
+- **敏捷性训练 / 增强式训练**（Plyometrics）
+- **仰卧起坐进阶训练**
+- **爬楼机训练**（Stairmaster）
+- **跑步进阶训练**，逐步过渡至跑道
+- **过渡至家庭或健身房自主训练计划**
+
+### 目标
+- **恢复所有日常及运动活动**
+
+> ⚠️ **重要提示**：**术后6个月内禁止参与任何对抗性运动！**
+
+---
+
+**修订日期：2019年4月**
+
+---
+
+
+
+
+[原文](https://www.massgeneral.org/assets/mgh/pdf/orthopaedics/sports-medicine/physical-therapy/rehabilitation-protocol-for-patella-quad-tendon.pdf)
+```text
+Patella Tendon Repair
+Post-surgical Rehabilitation Protocol
+The following is a protocol for post-operative patients following patella tendon repair. The primary goal of this
+protocol is to protect the repair while steadily progressing towards and ultimately achieving pre-injury level of
+activity. Please note this protocol is a guideline. Patients with additional surgery (i.e. collateral ligament repair,
+meniscal repair) will progress at different rates. Achieving the criteria of each phase should be emphasized more
+than the approximate duration. If a patient should develop an increase in pain or swelling or decrease in motion at
+any time, activity should be decreased until problems are resolved.
+Post-op Days 1 – 14
+• Dressing:
+- POD 1: Debulk dressing
+- POD 2: Change dressing, keep wound covered
+- POD 7-10: Sutures out, D/C TED hose when effusion resolved
+• Brace x 8 weeks – Locked in extension for ambulation.
+• Crutches – Partial weight bearing (PWB)
+• Patella mobilization
+• Calf pumping
+• AAROM 0-45 degrees (passive extension, active flexion, heel slides)
+• Passive extension with heel on bolster or prone hangs
+• Electrical stimulation – sub-maximal quad sets for muscle re-education
+• Quad sets, Co-contractions quads / hamstrings
+• Standing straight leg raise (SLR) x 4 (in brace)
+• Gentle hamstring stretch
+• Ice pack with knee in full extension after exercise
+Goals
+• Full passive extension
+• Good quad control
+• Pain / effusion controlled
+Weeks 2– 4
+• Brace x8 weeks – Locked in extension for ambulation
+• Crutches – Weight bearing as tolerated (WBAT), D/C when gait is normal
+• Continue appropriate previous exercises
+• AAROM 0-70 degrees (passive extension, active flexion)
+• SLR x4 on mat (in brace)
+• Hamstring curls 0-45 degrees on weight machine with light resistance
+• Double leg heel raises
+• Proprioceptive training (in brace)
+- Single leg standing in parallel bars
+- Double leg BAPS for weight shift
+• Stretches – Hamstring , ITB
+Matthew D. Collard, D.O.
+Worker’s Compensation
+Arthroscopy/Sports Medicine
+Extremity Trauma
+Joint Replacement Surgery
+2325 Dougherty Ferry Rd, Ste. 100
+St. Louis, MO 63122
+(314) 909-1359 Fax (314) 909-1370
+www.stlorthospecialists.com
+2
+Goals
+• ROM 0 – 70 degrees
+• No extensor lag
+Weeks 4 - 6
+• Brace x 8 weeks – Locked at 0-30 degrees for ambulation
+• Continue appropriate previous exercises
+• AAROM 0-90 degrees (passive extension, active flexion)
+• Standing SLR x 4 (in brace) with Theraband bilaterally
+• Hamstring curls 0-90 degrees on weight machine with light resistance
+• Forward, lateral, and retro step downs in parallel bars (in brace 0-45 degrees)
+- No knee flexion past 45 degrees (small step)
+• Single leg heel raises (in or out of brace)
+• Elliptical trainer (in brace)
+Goals
+• Normal gait
+• ROM 0-90 degrees
+Weeks 6 - 8
+• Brace x 8 weeks – Gradually open to available range
+• Continue appropriate previous exercises
+• AAROM, AROM through full range
+• Active knee extension without weight (no brace)
+• SLR x4 on mat with light weight below the knee (no brace)
+• Leg press 0-60 degrees – Light resistance (no brace)
+• Mini squats, wall squats 0-60 degrees (no brace)
+• Proprioceptive training (in brace) – Single leg BAPS, ball toss and body blade
+• Stationary bike (no brace) – Progressive resistance and time
+• Treadmill – Forwards and backwards walking (in brace)
+• Pool therapy (flutter kicks from hip with knee in extension
+Goal
+• ROM 0-110 degrees
+Weeks 8 - 12
+• D/C brace
+• Continue appropriate previous exercises and following ex without brace
+• PROM, AAROM, AROM to regain full motion
+• Short arc quads
+• Hamstring curls on machine through full range – Light to moderate resistance
+• Leg Press 0-90 degrees – Light to moderate resistance
+• Hip weight machine x4 bilaterally
+• Fitter
+• Slide Board
+• Treadmill – Walking progression program
+Goals
+• Full ROM
+• Walk 2 miles at 15 min/mile pace
+3
+Months 3 – 4
+• Continue appropriate previous exercises
+• Knee extension weight machine with light to moderate resistance
+• Functional activities – Figure 8’s, gentle loops, large zigzags
+• Treadmill – Walking progressive program
+Goals
+• Equal thigh girth
+• Equal quad flexibility in prone (heels to buttocks)
+• Run 2 miles at easy pace
+Months 4 – 6
+• Continue appropriate previous exercises
+• Agility drills / Plyometrics
+• Sit-up progression
+• Stairmaster
+• Running progression to track
+• Transition to home / gym program
+Goal
+• Return to all activities
+*NO CONTACT SPORTS UNTIL 6 MONTHS POST-OP*
+Revised 4/2019
+```
+
+
+
+
+
+
+# 髌腱/股四头肌腱修复术后康复方案  
+**麻省总医院布里格姆运动医学中心（Massachusetts General Brigham Sports Medicine）**
+
+本方案旨在为临床医生提供髌腱/股四头肌腱修复术后的康复指导。该方案基于**时间进程**（依赖组织愈合）和**达标标准**双重原则制定。具体干预措施应根据患者个体需求进行调整，并结合查体结果与临床判断。本指南中所列预期恢复时间可能因主刀医生偏好、是否合并其他手术或术后并发症等因素而有所不同。若临床医生在术后患者康复进展中遇到困难，应咨询转诊外科医生。
+
+本方案所列治疗干预**并非详尽清单**，实际治疗应根据患者恢复情况由临床医生灵活增减和调整。
+
+---
+
+## 术后髌腱/股四头肌腱康复注意事项
+
+多种因素影响术后康复效果，包括**组织质量**和**修复强度**。建议临床医生与转诊医师密切沟通，了解修复的完整性及是否需要调整康复计划。
+
+### 术后注意事项
+如出现以下症状，请立即联系医生：
+- 发热
+- 小腿剧烈疼痛
+- 切口处异常渗液
+- 疼痛无法控制
+- 其他令您担忧的症状
+
+---
+
+## 第一阶段：术后早期（术后 0–14 天）
+
+### 康复目标
+- 保护修复部位
+- 减轻术后疼痛
+- 控制术后水肿
+- 预防长期制动引起的并发症
+- 预防并早期识别感染迹象
+
+### 注意事项
+- **铰链式膝关节支具**必须**锁定在伸直位**，并**全天佩戴**（行走、睡眠、站立等）
+- **禁止主动膝关节伸展**
+- **禁止被动膝关节屈曲超过 60°** — 此阶段不得强行增加活动度
+
+### 负重情况
+- **可耐受负重（Weight Bearing as Tolerated）**，佩戴支具并锁定在伸直位
+
+### 干预措施
+
+#### 消肿管理
+- 冰敷、加压、抬高患肢
+- 向心性按摩（retrograde massage）
+- 踝泵运动
+
+#### 关节活动度 / 活动性训练
+- 被动活动度（PROM）
+- 毛巾辅助脚跟滑动
+- 低强度、长时间伸直拉伸：俯卧悬吊、足跟垫高
+- 坐位腘绳肌 / 小腿拉伸
+- 轻柔髌股关节松动术
+
+#### 肌力训练
+- 提踵（小腿抬高）
+- 股四头肌等长收缩（Quad sets）
+- 臀肌收缩（Glute set）
+
+### 进入下一阶段标准
+- 术后满 2 周
+- 膝关节被动伸直至 0°（完全伸直）
+
+---
+
+## 第二阶段：术后中期（术后 2–6 周）
+
+### 康复目标
+- 继续减轻术后疼痛与水肿
+- 逐步增加膝关节被动屈曲活动度
+- 过渡至**完全负重**状态（佩戴锁定支具）
+- 开始近端（髋、腰背、腹部）与远端（踝）肌群的强化训练
+
+### 负重情况
+- 可耐受负重，佩戴支具锁定在伸直位  
+  → **目标在第6周前实现完全负重（FWB）**
+
+### 注意事项
+- **被动膝屈活动度（PROM）从第2周开始，起始目标为 50°**
+  - 仅允许轻柔加压进行PROM
+  - 每周增加约 10°，直至达到 90°：
+    - 第2周末：≤ 60°
+    - 第3周末：≤ 70°
+    - 第4周末：≤ 80°
+    - 第5周末：≤ 90°
+- 支具在**站立、行走、睡眠时保持锁定在伸直位**
+  - 夜间佩戴支具至第6周，除非外科医生另有指示
+  - 坐位或卧位时可解锁支具（角度不超过当前PROM范围）
+- 根据需要使用助行器具
+
+### 干预措施（*继续第一阶段内容*）
+
+#### 关节活动度 / 活动性训练
+- 髌股关节松动术
+- 逐步增加被动屈曲（轻柔加压）
+- 被动伸直（必要时加压）
+- 脚跟滑动
+- 坐位膝关节屈曲（超过当前ROM）
+- 足跟垫高拉伸
+
+#### 心肺训练
+- 上肢功率车（Upper body ergometer）
+
+#### 肌力训练
+- 直腿抬高（SLR）—— **要求无伸膝滞后**
+- 侧卧髋外展/内收、俯卧直腿抬高
+- 站立位髋外展/内收/后伸
+- 臀桥（双腿伸直，脚抬高置于椅子上）
+- 提踵训练
+- 核心训练：平板支撑（以不引起膝部不适为前提），腹横肌激活进阶
+
+#### 平衡 / 本体感觉训练
+- 站立位重心转移
+
+### 进入下一阶段标准
+- 被动膝伸直至 0°（完全伸直）
+- 被动膝屈达 90°
+- 在支具保护下完全负重且无痛
+- 主动伸膝至 0°（配合股四头肌收缩）
+
+---
+
+## 第三阶段：术后晚期（术后 6–15 周）
+
+### 康复目标
+- 逐步停用助行器具（如仍在使用）
+- 恢复膝关节完全主动/被动屈曲活动度
+- 在条件允许时开始固定自行车训练
+- 开始渐进性股四头肌负荷与抗阻训练
+- 恢复静态单腿平衡能力
+- 继续加强近端与远端肌群力量
+
+### 负重情况
+- **铰链支具解锁用于行走（0–60°活动范围）**，前提是患者在站立相中表现出足够的股四头肌控制，防止膝关节打软
+  - 支具使用至**第8周**，除非外科医生另有指示
+  - 停用支具前需确认：股四头肌控制良好、负重耐受、单腿稳定性达标
+
+### 注意事项
+- **术后8周前禁止在屈膝 >90° 时负重**
+- 术后12周前，主动/被动活动度（A/PROM）**每周进展不超过10°**
+- 避免激进的股四头肌拉伸
+- **术后16周前禁止股四头肌最大自主收缩**（禁止徒手肌力测试或手持测力计测试）
+
+### 干预措施（*继续第一、二阶段内容*）
+
+#### 关节活动度 / 活动性训练
+- 髌股关节松动术
+- 被动屈曲（可加压）
+- 脚跟滑动
+- 坐位膝关节屈曲
+
+#### 心肺训练
+- 上肢功率车
+- **固定自行车**：
+  - 初始：小幅度蹬车，低阻力
+  - 待获得全范围活动后，逐步增加时间与阻力
+- **椭圆机**：
+  - 可开始使用的条件：
+    - 主动膝屈 ≥ 120°
+    - 可完成10次无滞后直腿抬高
+    - 步态正常，无需助行器具
+
+#### 肌力训练
+> *逐步增加强度，避免引起膝前疼痛。以下多数训练需在8–10周或更晚开始*
+
+##### 健身房器械训练
+- 腿推举机
+- 坐姿腘绳肌屈曲机
+- 腿部内收/外展机
+- 髋伸展机
+- 罗马椅
+- 坐姿提踵机
+
+> *逐步提升训练强度（力量）与持续时间（耐力）*
+
+##### 功能性训练（强调近端稳定性与控制）
+- 坐姿深蹲（Squat to chair）
+- 侧向弓步（Lateral lunges）
+- 罗马尼亚硬拉（单/双侧）
+- 站立位三重伸展抗阻训练
+- 单腿进阶训练：
+  - 部分负重单腿推举
+  - 上台阶 + 抬腿
+  - 滑板弓步（前后、侧向）
+  - 侧向台阶
+  - 单腿深蹲
+  - 单腿靠墙滑行
+  - 侧向下台阶
+
+> **股四头肌伸展机（Knee Extension Machine）使用说明（术后16周起）**：  
+> 若股四头肌力量仍显著受限，影响康复进展，可在**无膝前疼痛或不适**的前提下开始使用。
+
+##### 近端肌群强化
+- 双腿臀桥
+- 脚放于平衡球上的臀桥
+- 单腿臀桥
+- 弹力带侧向行走（Lateral band walk）
+- 站立蚌式/狗狗抬腿（Clamshell/Fire hydrant）
+- 腘绳肌行走训练（Hamstring walkout）
+- 上肢/下肢协同的腹横肌激活训练（TA brace progression）
+
+#### 平衡 / 本体感觉训练
+- 单腿站立进阶训练（包括扰动训练）
+
+### 进入下一阶段标准
+- 股四头肌力量良好恢复：
+  - 可完成 **10次单腿深蹲至60°**
+  - 手持测力计测量股四头肌力量 ≥ 健侧 **70%**（若按标准时间线且修复无延迟，可在第16周测试）
+  - 或股四头肌等长收缩压力 ≥ 健侧100%（使用血压计测量，单位 mmHg）¹
+- 被动膝屈 ≥ 120°
+- 患侧单腿站立 ≥ 30秒，无明显代偿动作
+- 步态对称，无需助行器具
+- 上下楼梯对称，无需上肢辅助
+
+---
+
+## 第四阶段：过渡期（术后 4–6 个月）
+
+### 康复目标
+- 恢复股四头肌全长与全范围活动度
+- 恢复股四头肌力量（推荐使用“股四头肌指数”评估）
+- 恢复单腿动态平衡与离心控制能力（推荐Y平衡测试）
+- 在耐受情况下启动慢跑/跑步康复计划
+- 恢复近端与远端肌群力量，达到双侧对称
+
+### 注意事项
+- 避免运动中或运动后出现**超出延迟性肌肉酸痛（DOMS）范围的疼痛**，尤其是膝前部/伸膝装置区域
+
+### 干预措施（*继续第一至三阶段内容*）
+- 开始**矢状面为主的亚最大运动专项训练**
+- 从**双侧部分负重增强式训练**逐步过渡至**完全负重增强式训练**
+- 进入**增强式与敏捷性训练计划**（如处方使用功能性支具，则佩戴使用）
+
+#### 增强式与敏捷性训练
+- 间歇跑训练计划
+- **慢跑回归计划（Return to Running Program）启动条件**：
+  - 全范围活动度
+  - 肿胀已消退
+  - 行走无痛
+  - 手持测力计测量下肢力量对称性 ≥ 80%
+  - 可完成单腿跳跃（SL hop）且动作标准
+
+### 进入下一阶段标准
+- **股四头肌指数 ≥ 90%**（首选手持测力计；若无，可用血压计替代，但建议转至具备测力设备的诊所进行测试）
+  > *等速测力计测试应推迟至术后6个月，仅用于需高水平重返运动者*
+- 腘绳肌与髋部肌群力量对称（推荐测力计评估）
+- Y平衡测试 ≥ 健侧90%
+- 慢跑时步态对称
+
+---
+
+## 第五阶段：渐进式重返运动（术后 6–8 个月）
+
+### 康复目标
+- 推进跑步/冲刺训练
+- 提升多方向动态动作能力及加减速控制
+- 增强增强式训练中的爆发力与落地控制
+- 恢复完全股四头肌力量
+- 以最低再损伤风险重返运动或比赛
+
+### 干预措施（*继续第二至四阶段内容*）
+- 根据患者目标运动项目加入**专项训练**
+  - 如参与**变向/冲刺类运动**，应加强快速加减速训练与变向练习，逐步提高训练强度与不可预测性
+
+### 重返运动标准
+- 通过 **MGB 下肢重返运动功能性测试** 全部项目
+- **股四头肌指数 ≥ 90%**（测力计测量，等速测力计为首选）
+
+---
+
+> **修订日期：2021年10月**
+
+---
+
+## 联系方式
+如有本方案相关问题，请发送邮件至：  
+📧 [MGHSportsPhysicalTherapy@partners.org](mailto:MGHSportsPhysicalTherapy@partners.org)
+
+---
+
+## 参考文献
+1. Mondin D, et al. Front Physiol. 2018;9:1702. doi:10.3389/fphys.2018.01702  
+2. Sinacore JA, et al. J Orthop Sports Phys Ther. 2017;47(2):97-107. doi:10.2519/jospt.2017.6651  
+3. Seo D, et al. Reliability of the one-repetition maximum test...  
+4. Kongsgaard M, et al. Acta Physiol. 2007;191(2):111-121.  
+5. Couppé C, et al. J Appl Physiol. 2008;105(3):805-810. doi:10.1152/japplphysiol.90361.2008  
+6. Verdano MA, et al. :7.  
+7. Bhargava SP, et al. Injury. 2004;35(1):76-79. doi:10.1016/S0020-1383(03)00069-X  
+8. Bushnell B, et al. J Knee Surg. 2010;21(02):122-129. doi:10.1055/s0030-1247806  
+9. Mille F, et al. Eur J Orthop Surg Traumatol. 2016;26(1):85-92. doi:10.1007/s00590-015-1710-6  
+10. EL-Zahaar MS. J Nuerol Orthop Med Surg. 1995;16:132-136.  
+11. Puranik GS, Faraj A. Acta Orthop Belg. 2006;72:3.  
+12. Veselko M, Kastelec M. JBJS Essent Surg Tech. 2005;os87(1_suppl_1):113-121. doi:10.2106/JBJS.D.02631  
+13. El-Desouky I, et al. J Knee Surg. 2013;27(03):207-214. doi:10.1055/s-0033-1360655  
+14. Reidler JS, et al. In: Operative Techniques: Knee Surgery. Elsevier, 2018.  
+15. Marder RA, Timmerman LA. Am J Sports Med. 1999;27(3):304-307. doi:10.1177/03635465990270030601  
+16. Belhaj K, et al. Ann Phys Rehabil Med. 2017;60(4):244-248. doi:10.1016/j.rehab.2016.10.003  
+17. Langenhan R, et al. Knee Surg Sports Traumatol Arthrosc. 2012;20(11):2275-2278. doi:10.1007/s00167-012-1887-8  
+18. Konrath GA, et al. J Orthop Trauma. 1998;12(4):273-279. doi:10.1097/00005131-199805000-00010  
+19. Serino J, et al. Injury. 2017;48(12):2793-2799. doi:10.1016/j.injury.2017.10.013  
+20. West JL, et al. Am J Sports Med. 2008;36(2):316-323. doi:10.1177/0363546507308192  
+
+> ¹ 股四头肌等长收缩压力测试方法：使用血压计袖带包裹股四头肌，患者最大等长收缩时记录压力值（mmHg），与健侧对比。
+
+
+[原文](https://www.massgeneral.org/assets/mgh/pdf/orthopaedics/sports-medicine/physical-therapy/rehabilitation-protocol-for-patella-quad-tendon.pdf)
+
+
+```text
+
+Massachusetts General Brigham Sports Medicine
+
+Rehabilitation Protocol for Patella/Quad Tendon Repairs
+This protocol is intended to guide clinicians through the post-operative course for Patella/Quad Tendon repairs. This
+protocol is time based (dependent on tissue healing) as well as criterion based. Specific intervention should be based on
+the needs of the individual and should consider exam findings and clinical decision making. The timeframes for expected
+outcomes contained within this guideline may vary based on surgeon’s preference, additional procedures performed,
+and/or complications. If a clinician requires assistance in the progression of a post-operative patient, they should consult
+with the referring surgeon.
+The interventions included within this protocol are not intended to be an inclusive list. Therapeutic interventions should
+be included and modified based on the progress of the patient and under the discretion of the clinician.
+Considerations for the Post-operative Patella/Quad Tendon
+Many different factors influence the post-operative patella/quad tendon rehabilitation outcomes, including tissue
+quality and strength of repair. It is recommended that clinicians collaborate closely with the referring physician
+regarding integrity of repair and any changes to protocol.
+Post-operative considerations
+Post-operative considerations If you develop a fever, intense calf pain, excessive drainage from the incision,
+uncontrolled pain or any other symptoms you have concerns about you should call your doctor.
+PHASE I: IMMEDIATE POST-OP (0-14 DAYS AFTER SURGERY)
+Rehabilitation
+Goals
+• Protect repair
+• Minimize post-operative pain
+• Minimize post-operative edema
+• Prevent complications from prolonged immobilization
+• Prevent and recognize early signs of infection
+Precautions • Hinged knee brace should be locked in extension and worn at all times (ambulating, sleeping,
+standing, etc.)
+• No active knee extension
+• No passive knee flexion beyond 60 degrees- Do not push motion at this point
+Weight Bearing • Weight Bearing as tolerated with hinged knee brace locked in extension
+Intervention Swelling Management
+• Ice, compression, elevation
+• Retrograde massage
+• Ankle pumps
+Range of motion/Mobility
+• PROM
+• Heel slides with towel
+• Low intensity, long duration extension stretches: prone hang, heel prop
+• Seated hamstring/calf stretch
+• Gentle patellafemoral joint mobilization
+Strengthening
+• Calf raises
+• Quad sets
+• Glute set
+Massachusetts General Brigham Sports Medicine 2
+Criteria to
+Progress
+• 2 weeks post-op
+• Knee extension to 0 deg
+PHASE II: INTERMEDIATE POST-OP (2-6 WEEKS AFTER SURGERY)
+Rehabilitation
+Goals
+• Continued minimization of post-operative pain/edema
+• Progress knee flexion PROM
+• Progress to full weight bearing status with use of locked brace
+• Initiate proximal/distal strengthening (hip, back, abdominals, ankle)
+Weight Bearing • Weight Bearing as tolerated with hinged knee brace locked in extension, should be full weight
+bearing by 6 weeks
+Precautions • Knee flexion PROM starts at 50 degrees week 2
+o Light overpressure only for PROM
+• Progress 10 degrees/week until 90 degrees achieved
+o 60 degree maximum end of week 2
+o 70 degree maximum end of week 3
+o 80 degree maximum end of week 4
+o 90 degree maximum end of week 5
+• Hinged brace locked in extension for standing/walking/sleeping
+o Brace worn at night until week 6 unless otherwise specified by surgeon
+o Can unlock for sitting/laying (brace angle can be unlocked to available PROM,
+but not to exceed PROM progression noted above)
+• Assistive device for ambulation as needed
+Additional
+Intervention
+*Continue with
+Phase I
+interventions
+Range of motion/Mobility
+• Patellofemoral Joint Mobilization
+• Gradual flexion PROM with light overpressure per above
+• Extension PROM with overpressure as needed
+• Heel Slide
+• Sitting knee flexion to above ROM
+• Heel prop
+Cardio
+• Upper body ergometer
+Strengthening
+• Straight leg raise *without lag
+• Side lying hip abduction and adduction, prone leg extension
+• Standing hip abduction, adduction and extension
+• Glute bridge with legs straight elevated on a chair
+• Calf raise
+• Core strengthening: Plank as able without discomfort in knee, TA brace progression
+Balance/proprioception
+• Standing weight shifts
+Criteria to
+Progress
+• Full passive knee extension PROM
+• Passive knee flexion to 90 degrees
+• FWB in brace with no pain
+• Active knee extension to 0 degrees with quad set
+PHASE III: LATE POST-OP (6-15 WEEKS AFTER SURGERY)
+Rehabilitation
+Goals
+• Wean assistive devices if any are still used
+• Restore full A/PROM of knee flexion
+• Begin stationary bike when able
+• Initiate progressive quadriceps loading/resistance exercises
+• Restore static single leg balance
+• Continue to progress proximal/distal strengthening
+Massachusetts General Brigham Sports Medicine 3
+Weight Bearing • Hinged brace unlocked for ambulation (0-60 degrees) provided patient demonstrates
+sufficient quad control during stance to prevent buckling
+o Use brace until week 8 unless otherwise specified by surgeon
+o Patient should demonstrate sufficient quad control, weight bearing tolerance and single
+limb stability prior to discharge of brace.
+Precautions • No weight bearing with flexion >90 deg until after 8 weeks
+• A/PROM should be cautioned not to progress faster than 10 degrees per week before 12 weeks
+post-op
+• Avoid aggressive quad stretching
+• No maximal voluntary contraction of the quadriceps until week 16 (No manual muscle test or
+handheld dynamometer testing).
+Additional
+Intervention
+*Continue with
+Phase I-II
+Interventions
+Range of motion/Mobility
+• Patellofemoral Joint Mobilization
+• Flexion PROM with overpressure
+• Heel Slide
+• Sitting knee flexion
+Cardio
+• Upper body ergometer
+• Stationary bicycle- Begin with partial rotations minimal resistance and gradually progress time
+and resistance once full motion is achieved.
+• Elliptical- may begin once active knee flexion motion reaches at least 120 degrees, able to
+perform 10 straight leg raises without lag, and gait is normalized without assistive device
+Strengthening
+*Progress strength gradually as appropriate avoiding anterior knee pain, many of the below exercises will
+not begin until 8-10 weeks or later
+• Gym equipment: leg press machine, seated hamstring curl machine and hamstring curl
+machine, hip abductor and adductor machine, hip extension machine, roman chair, seated
+calf machine
+Progress intensity (strength) and duration (endurance) of exercises as appropriate
+*The following exercises to focus on proper control with emphasis on good proximal stability
+• Squat to chair
+• Lateral lunges
+• Romanian deadlift (single and double leg)
+• Resisted triple extension in standing
+• Single leg progression: partial weight bearing single leg press, step ups and step ups with
+march, slide board lunges: retro and lateral, lateral step-ups, single leg squats, single leg wall
+slides, lateral step down
+o Knee Extension machine at 16 weeks: If quad strength continues to be significantly limited,
+limiting further progression, may begin using knee extension machine as long as there is no
+anterior knee discomfort or pain
+• Proximal Strengthening: Double leg bridge, bridge with feet on physioball, single leg bridge,
+lateral band walk, standing clamshell/fire hydrant, hamstring walkout, TA brace with UE and
+LE progression
+Balance/proprioception
+• Progress single limb balance including perturbation training
+Massachusetts General Brigham Sports Medicine 4
+Criteria to
+Progress
+• Good recovery of quadriceps strength
+o Ability to perform 10 single leg squats to 60 degrees
+o Quad strength of at least 70% on handheld dynamometer: If following standard timeline,
+and timeline not delayed due to integrity of repair, can test quad strength at week 16
+o Or 100% quad set compared to contralateral side (measured by sphygmomanometer in
+mmHg)1
+• Knee flexion PROM to at least 120 degrees
+• Single leg stance to 30 seconds on involved side with no significant compensatory pattern
+• Symmetrical gait pattern without use of assistive device
+• Symmetrical stair negotiation without reliance on UE
+PHASE IV: TRANSITIONAL (4-6 MONTHS AFTER SURGERY)
+Rehabilitation
+Goals
+• Restore full ROM and muscle length of quadriceps
+• Restore quadriceps strength (quad index preferred)
+• Restore single leg dynamic balance/eccentric control (Y balance preferred)
+• Initiate return to jog/run protocol as tolerated
+• Restore proximal/distal strength to symmetry with contralateral side
+Precautions • Avoid pain more than delayed onset muscle soreness (DOMS) during or following exercise
+especially in the anterior knee/extensor mechanism
+Additional
+Interventions
+*Continue with
+Phase I-III
+interventions
+• Begin sub-max sport specific training in the sagittal plane
+• Bilateral PWB plyometrics progressed to FWB plyometrics
+Progress to plyometric and agility program (with functional brace if prescribed)
+• Agility and Plyometric Program
+Interval running program
+• Return to Running Program
+• Must have full ROM, resolved swelling, no pain with walking, at least 80% limb
+symmetry on handheld dynamometer, and ability to perform SL hop with good form
+prior to initiating jogging progression
+Criteria to
+Progress
+• Quad index of at least 90% (handheld dynamometry preferred, if not sphygmomanometer is
+acceptable, but consider referring to clinic with dynamometry available for testing)
+o Isokinetic dynamometry should be held until 6 months and reserved for cases where
+advanced return to sport/activity is needed
+• Symmetrical strength measures in hamstrings and hip (dynamometry preferred)
+• Y balance test within 90% of contralateral side
+• Symmetry in gait while jogging
+PHASE V: PROGRESISVE RETURN TO SPORT (6-8 MONTHS AFTER SURGERY)
+Rehabilitation
+Goals
+• Progress running/sprinting program
+• Improve multidirectional dynamic movements and control of acceleration/deceleration
+• Improve power in plyometrics and landing mechanics
+• Restore full quadriceps strength
+• Return to sport/competition with minimal risk of re-injury
+Additional
+Interventions
+*Continue with
+Phase II-IV
+interventions
+• Add sport specific exercises based on patient’s desired sport goals
+o If participating in a cutting/sprinting sport, increased focus on rapid
+acceleration/deceleration activities and change of direction drills gradually increasing
+demand and predictability of drill
+Criteria to
+Progress
+• Pass all criteria of the MGB Lower Extremity Return to Sport Functional Testing
+• Quad index of at least 90% (measured by dynamometry, isokinetic preferred)
+Revised 10/2021
+Massachusetts General Brigham Sports Medicine 5
+Contact Please email MGHSportsPhysicalTherapy@partners.org with questions specific to this protocol
+References:
+Mondin D, Owen JA, Negro M, D’Antona G. Validity and Reliability of a Non-invasive Test to Assess Quadriceps and Hamstrings Strength in Athletes. Front
+Physiol. 2018;9:1702. doi:10.3389/fphys.2018.01702
+Sinacore JA, Evans AM, Lynch BN, Joreitz RE, Irrgang JJ, Lynch AD. Diagnostic Accuracy of Handheld Dynamometry and 1-Repetition-Maximum Tests for
+Identifying Meaningful Quadriceps Strength Asymmetries. J Orthop Sports Phys Ther. 2017;47(2):97-107. doi:10.2519/jospt.2017.6651
+Seo D, Kim E, Fahs CA, Rossow L, Young K, Fergu SL. Reliability of the one-repetition maximum test based on muscle group and gender. :5.
+Kongsgaard M, Reitelseder S, Pedersen TG, et al. Region specific patellar tendon hypertrophy in humans following resistance training. Acta Physiol.
+2007;191(2):111-121.
+Couppé C, Kongsgaard M, Aagaard P, et al. Habitual loading results in tendon hypertrophy and increased stiffness of the human patellar tendon. J Appl Physiol.
+2008;105(3):805-810. doi:10.1152/japplphysiol.90361.2008
+Verdano MA, Zanelli M, Aliani D, Corsini T, Pellegrini A, Ceccarelli F. Quadriceps tendon tear rupture in healthy patients treated with patellar drilling holes:
+clinical and ultrasonographic analysis after 36 months of follow-up. :7.
+Bhargava SP, Hynes MC, Dowell JK. Traumatic patella tendon rupture: early mobilisation following surgical repair. Injury. 2004;35(1):76-79.
+doi:10.1016/S0020-1383(03)00069-X
+13. Bushnell B, Tennant J, Rubright J, Creighton R. Repair of Patellar Tendon Rupture Using Suture Anchors. J Knee Surg. 2010;21(02):122-129. doi:10.1055/s0030-1247806
+Mille F, Adam A, Aubry S, et al. Prospective multicentre study of the clinical and functional outcomes following quadriceps tendon repair with suture anchors.
+Eur J Orthop Surg Traumatol. 2016;26(1):85-92. doi:10.1007/s00590-015-1710-6
+EL-Zahaar, MS. Spontaneous Rupture of the Quadriceps Tendon: Ten Case Reports and a Review of the Literature with a Hypothesis of a New Classification of
+Causes. J Nuerol Orthop Med Surg. 1995; 16: 132-136.
+Puranik GS, Faraj A. Outcome of quadriceps tendon repair. Acta Orthop Belg. 2006;72:3.
+Veselko M, Kastelec M. Inferior Patellar Pole Avulsion Fractures: Osteosynthesis Compared with Pole Resection. JBJS Essent Surg Tech. 2005;os87(1_suppl_1):113-121. doi:10.2106/JBJS.D.02631
+El-Desouky I, Mohamed M, Al Assassi M. Primary Repair of Ruptured Patellar Tendon Augmented by Semitendinosus. J Knee Surg. 2013;27(03):207-214.
+doi:10.1055/s-0033-1360655
+Reidler, J. S., Tanaka, M. J., & Cosgarea, A. J. (2018). Quadriceps tendon repair. In Operative Techniques: Knee Surgery: Second Edition (pp. 254-261). Elsevier
+Inc.. https://doi.org/10.1016/B978-0-323-46292-1.00027-7
+Marder RA, Timmerman LA. Primary Repair of Patellar Tendon Rupture Without Augmentation. Am J Sports Med. 1999;27(3):304-307.
+doi:10.1177/03635465990270030601
+Belhaj K, El Hyaoui H, Tahir A, et al. Long-term functional outcomes after primary surgical repair of acute and chronic patellar tendon rupture: Series of 25
+patients. Ann Phys Rehabil Med. 2017;60(4):244-248. doi:10.1016/j.rehab.2016.10.003
+Langenhan R, Baumann M, Ricart P, et al. Postoperative functional rehabilitation after repair of quadriceps tendon ruptures: a comparison of two different
+protocols. Knee Surg Sports Traumatol Arthrosc Off ESSKA. 2012;20(11):2275-2278. doi:10.1007/s00167-012-1887-8
+Konrath GA, Chen D, Lock T, et al. Outcomes following repair of quadriceps tendon ruptures. J Orthop Trauma. 1998;12(4):273-279. doi:10.1097/00005131-
+199805000-00010
+Serino J, Mohamadi A, Orman S, et al. Comparison of adverse events and postoperative mobilization following knee extensor mechanism rupture repair: A
+systematic review and network meta-analysis. Injury. 2017;48(12):2793-2799. doi:10.1016/j.injury.2017.10.013
+West JL, Keene JS, Kaplan LD. Early motion after quadriceps and patellar tendon repairs: outcomes with single-suture augmentation. Am J Sports Med.
+2008;36(2):316-323. doi:10.1177/0363546507308192
+```
+ 
+
+
+
+
+# 髌腱修复术后康复指南  
+**三军联合术后康复指南（Tri-Service Post-Operative Rehabilitation Guidelines）**  
+**2020年5月发布**
+
+---
+
+## 资助与声明
+
+本工作由**统一服务大学**（Uniformed Services University）  
+**物理医学与康复科**  
+**作战准备肌肉骨骼损伤康复研究项目**（MIRROR, HU00011920011）资助。
+
+文中所述观点和主张仅代表作者，**不代表统一服务大学或美国国防部**的官方政策或立场。
+
+---
+
+## 批准人
+
+| 姓名 | 军衔 | 军种 | 职务 |
+|------|------|------|------|
+| B. KYLE POTTER | 上校，军医（COL, MC） | 陆军 | 陆军骨科顾问 |
+| GEORGE P. NANOS III | 海军上校，军医（CAPT, MC） | 海军 | 海军骨科顾问 |
+| JOSEPH J. STUART | 空军中校，军医（Lt Col, MC） | 空军 | 空军骨科顾问 |
+| JASON L. SILVERNAIL | 上校，物理治疗师（COL, SP） | 陆军 | 陆军物理治疗顾问 |
+| LESLIE C. HAIR | 海军中校，医疗支援 corps（CDR, MSC） | 海军 | 海军物理治疗顾问 |
+| JAMES E. SHIELDS | 上校，生物医学科学 corps（Col, BSC） | 空军 | 空军物理治疗顾问 |
+
+---
+
+## 支持单位
+
+- **健康科学统一服务大学**  
+  F. Edward Hébert 医学院
+- **日内瓦基金会**  
+  军事骨科追踪损伤与结果网络（MOTION）
+
+---
+
+## 说明
+
+本指南旨在为髌腱修复术后的康复提供**框架性指导**。  
+⚠️ **本指南不能替代主刀外科医生与康复治疗团队之间通过共同决策所确定的具体限制或个性化要求**。
+
+---
+
+## 第一阶段：术后 0–6 周
+
+### 康复目标
+1. 保护手术修复部位  
+2. 减轻疼痛与肿胀  
+3. 激活股四头肌  
+4. 关节活动度（ROM）：0°–90°
+
+### 注意事项
+
+#### 关节活动度（ROM）
+- **第1–2周**：0°–30°  
+- **第3周起**：非负重（NWB），膝关节活动度 0°–60°，之后每周增加约 10°
+
+#### 负重（Weight Bearing）
+- 遵循骨科医生根据个体情况指定的负重限制
+
+### 支具使用
+- **行走时佩戴支具，并锁定在伸直位**
+- 康复训练期间可解锁或取下支具
+
+### 伤口护理
+- 术后敷料保持完整，直至**术后第3天**（约术后72小时）
+- **术后第4天起可淋浴**（无需覆盖切口）
+- **禁止将膝关节浸入水中**，除非骨科医生明确允许
+- 缝线拆除时间：术后 **10–14天**（依骨科医生安排）
+
+### 冷疗（Cryotherapy）
+- 使用**冰敷+加压+抬高**（如冰袋配合加压包扎）
+
+### 康复干预
+
+#### 第1–2周
+- 切口愈合、瘢痕形成后开始**瘢痕按摩**
+- 开始**髌骨松动术**
+- 股四头肌、臀肌、腘绳肌等长收缩训练（亚最大强度）；必要时使用电刺激（e-stim）
+- 多方向开链髋部肌群耐力训练
+- 弹力带辅助踝泵运动
+- 毛巾辅助脚跟滑动
+- 仰卧位被动伸直至 0°
+
+#### 第3–6周
+- 根据情况继续第1–2周训练内容
+- 逐步增加膝关节屈曲，**目标第6周达到 90°**
+- 增加阻力的多方向开链髋部肌群耐力训练
+- 渐进性足底屈肌（腓肠肌/比目鱼肌）强化
+- 短弧股四头肌训练（Short Arc Quads）
+- 下肢整体拉伸训练
+- 在活动度范围内使用**固定自行车**
+- 切口完全愈合后可开始**初级水中康复训练**，主要限于矢状面动作（**禁止蛙泳或鞭状踢腿**）
+
+### 随访安排
+- **康复治疗**：每周 2–3 次（监督下进行）
+- **物理治疗再评估**：每 1–2 周一次
+- **骨科医生再评估**：约术后第2周和第6周
+
+---
+
+## 第二阶段：术后 7–12 周
+
+### 康复目标
+1. 步态正常，可上下楼梯
+2. 股四头肌与腘绳肌力量恢复至健侧肢体的 **>80%**
+3. 获得**完全关节活动度**
+
+### 注意事项
+- 避免肌腱过度负荷（如深蹲、大幅度屈膝、弓步）
+- 上下楼梯或斜坡时需谨慎
+- **禁止跑步**
+- **禁止参与对抗性/碰撞类运动或军事训练学校**
+
+### 支具使用
+- 当**步态正常**且**膝关节屈曲达 120°** 时，可**停用支具与拐杖**
+
+### 康复干预  
+*（继续第一阶段训练，根据患者情况逐步进阶）*
+
+#### 第7–8周
+- 固定自行车或椭圆机用于心肺功能训练
+- 渐进性下肢强化训练，**缓慢增加伸膝动作负荷**（如深蹲、弓步、腿推举）
+- 步态训练（如绕锥行走、正步走、倒走、交叉步）
+- 前向、侧向、后向下台阶训练（起始台阶高度 2英寸，逐步增加）
+- 继续初级水中训练（禁止蛙泳或鞭状踢腿）
+
+#### 第9–10周
+- 继续并进阶第7–8周训练内容
+- 双腿平衡与本体感觉训练，逐步过渡至**单腿训练**
+- 下肢整体拉伸
+- 椭圆机与固定自行车联合用于心肺训练
+- 渐进性下肢肌力训练（如提踵、腿推举、0°–45°深蹲、腘绳肌屈曲、髋内外收肌）
+- 根据耐受情况逐步进阶水中训练计划
+
+#### 第11–12周
+- 继续进阶第9–10周训练
+- 在注意活动度限制和疼痛的前提下，逐步增加深蹲、腿推举等活动范围
+
+### 随访安排
+- **康复治疗**：每周 2–3 次（监督下进行）
+- **物理治疗再评估**：每 2–3 周一次
+- **骨科医生再评估**：约术后第12周
+
+---
+
+## 第三阶段：术后 3–6 个月
+
+### 康复目标
+1. 获得**完全关节活动度**
+2. 可**无痛慢跑**（自定速度与距离）
+3. 股四头肌与腘绳肌力量恢复至健侧的 **>90%**
+4. 单腿跳跃测试系列成绩达健侧 **>90%**（包括：  
+   - 跳远测试  
+   - 三步跳  
+   - 交叉跳  
+   - 6米计时跳）
+5. 在术后 **6–8个月** 达到职业岗位要求
+
+### 注意事项
+- 修复部位应**无或仅有轻微疼痛**
+
+### 康复干预  
+*（继续第二阶段训练，逐步增加强度）*
+
+#### 第13–16周
+- 开始**游泳训练**
+- 上台阶训练进阶
+- 渐进性股四头肌拉伸
+- 根据需要继续单腿平衡与本体感觉训练
+- 渐进性下肢肌力训练（如提踵、腿推举、0°–60°深蹲、腘绳肌屈曲、髋内外收肌）
+
+#### 第16–20周
+- 在密切监测症状的前提下，逐步加强股四头肌训练
+- 开始**下台阶训练进阶**
+- 启动**步行至慢跑过渡计划**
+
+#### 第20–26周
+- 开始**速度与敏捷性训练**（起始强度 25–50%，逐步增加）  
+  包括：跳跃、单脚跳、变向跑、交叉步、侧向滑步
+- **跳跃训练（Plyometrics）在术后24周后开始**
+
+### 随访安排
+- **康复治疗**：每周 1–2 次（监督下进行）
+- **物理治疗再评估**：每月一次
+- **骨科医生再评估**：约术后第6个月
+
+---
+
+## 其他说明
+
+- **术后6个月后**，继续第三阶段训练，并根据耐受情况**逐步增加强度与持续时间**
+- **9–10个月时**应通过军种体能测试
+- 根据患者的**功能表现与耐力**，逐步恢复运动、对抗性项目或高强度军事训练（如空降学校）
+- 具体时间由**骨科医生与物理治疗师共同决定**
+- **完全解除限制可能需要 9–12 个月**
+
+---
+
+## 参考文献
+
+- Myer GD, Paterno MV, Ford KR, Quatman CE, Hewett TE.  
+  *Rehabilitation after anterior cruciate ligament reconstruction: criteria-based progression through the return-to-sport phase.*  
+  Journal of Orthopedic Sports Physical Therapy. 2006; 36(6): 385-402.
+
+- Myer GD, Paterno MV, Hewett TE.  
+  *Back in the game: a four-phase return-to-sport program for athletes with problem ACLs.*  
+  Rehab Management. 2004; 17(8): 30-33.
+
+---
+
+> **发布日期：2020年5月**  
+> 本指南适用于美军三军（陆军、海军、空军）医疗与康复团队，旨在标准化髌腱修复术后康复流程，提升作战人员重返岗位的能力。
+
+[原文](https://www.somos.org/assets/RehabilitationGuidelines/Patellar%20Tendon%20Repair%20Rehabilitation%20%28MAY%202020%29%20-%20Final.pdf)
+
+```text
+This work was supported by the Uniformed Services University, Department of Physical Medicine & Rehabilitation,
+Musculoskeletal Injury Rehabilitation Research for Operational Readiness (MIRROR) (HU00011920011).
+The opinions and assertions expressed herein are those of the author(s) and do not necessarily reflect the official policy or
+position of the Uniformed Services University or the Department of Defense.
+Tri-Service Post-Operative Rehabilitation Guidelines
+May 2020
+Approved by:
+B. KYLE POTTER
+COL, MC, USA
+Army Orthopedics Consultant
+GEORGE P. NANOS III
+CAPT, MC, USN
+Navy Orthopedics Consultant
+JOSEPH J. STUART
+Lt Col, USAF, MC
+Air Force Orthopedics Consultant
+JASON L. SILVERNAIL
+COL, SP, USA
+Army Physical Therapy Consultant
+LESLIE C. HAIR
+CDR, MSC, USN
+Navy Physical Therapy Consultant
+JAMES E. SHIELDS
+Col, USAF, BSC
+Air Force Physical Therapy Consultant
+
+Created with support from:
+Uniformed Services University of the
+Health Sciences –
+F. Edward Hébert School of Medicine
+The Geneva Foundation Military Orthopaedics Tracking
+Injuries and Outcomes Network
+(MOTION)
+Patellar Tendon Repair Rehabilitation
+These guidelines were created as a framework for the post-operative rehabilitation program. They DO
+NOT substitute for any specific restrictions or requirements that are determined through the necessary
+shared decision-making and collaboration between the operating surgeon and treating rehabilitation
+team.
+PHASE 1: Generally 0-6 Weeks Post-Op
+GOALS: 1) Protect surgical repair
+2) Minimize pain and swelling
+3) Activation of the quad muscle
+4) ROM: 0°- 90°
+PRECAUTIONS: - ROM
+ Weeks 1-2: 0°- 30°
+ Week 3: NWB, knee ROM 0°- 60°; progress by 10° each week
+- Follow WB restrictions at discretion of Ortho
+BRACE: - Wear brace locked in extension for ambulation
+- May unlock or remove for rehab
+WOUND: - Post-op dressing remains intact until post-op day #3 (~72 hours after
+surgery)
+- Shower after post-op day #4 (no need to cover incision site)
+- DO NOT SUBMERGE knee in water until authorized to do so by Ortho
+- Suture removal @ 10-14 days post-op per Ortho
+CRYOTHERAPY: - Cold with compression/elevation (ice with compression wrap)
+REHABILITATION: - Begin scar massage after incision has healed and scar is formed
+- Begin patellar mobilizations
+~Weeks 1-2 - Quad, glute and HS isometrics (submaximal contraction intensity); use estim if needed
+- Multi-directional open chain hip muscle endurance exercises
+- Calf pumps with theraband
+- Heel slides (assisted as needed)
+- Supine passive extension to 0°
+~Weeks 3-6 - Continue exercises from weeks 1-2 as appropriate
+- Gradually increase knee flexion to goal of 90 degrees by Week 6
+- Multi-directional open chain hip muscle endurance exercises with
+increased resistance
+- Progressive PF strengthening
+- Short arc quads
+- General LE stretching
+- Stationary bike within limits of ROM
+- Beginner level pool exercises when incisions are fully healed; primarily in
+the sagittal plane (i.e. no breaststroke or whip kick motion)
+FOLLOW-UP: - Supervised rehab: 2-3x per week
+- PT re-eval: every 1-2 weeks
+- Ortho re-eval: ~2 and ~6 weeks
+PHASE 2: Generally 7-12 Weeks Post-Op
+GOALS: 1) Normal gait and stair ambulation
+2) > 80% quad and HS strength relative to uninvolved limb
+3) Full ROM
+PRECAUTIONS: - Avoid tendon overload (i.e. squatting, deep knee bends, and lunges)
+- Be careful walking up/down steps or inclined surfaces
+- NO RUNNING
+- NO PARTICIPATION in contact/collision sports or military schools
+BRACE: - D/C brace & crutches when gait is normal and 120° knee flexion is
+achieved
+REHABILITATION: - Continue Phase 1 exercises as needed
+- Progress to the following exercises and increase intensity gradually when
+patient is ready (i.e. no increase in knee pain or effusion since the
+previous exercise session)
+~Weeks 7-8 - Stationary bicycle or elliptical for conditioning
+- General LE strengthening with very gradual increase on loading of knee
+extension exercises (i.e. squats, lunges, and leg press)
+- Gait training as needed (i.e. cone walking, marching, retrowalking, and
+cariocas)
+- Forward, lateral, and retro step-ups (start with 2" step and progress as
+tolerated)
+- Continue beginner level pool exercises (i.e. no breaststroke or whip kick
+motion)
+~Weeks 9-10 - Continue progressing exercises from Weeks 7-8 as appropriate
+- DL balance and proprioceptive exercises; progress to SL
+- General LE stretching
+- Elliptical: add gradually with stationary bike for conditioning
+- Progressive LE strengthening (i.e. calf press, leg press, squats 0°- 45°, HS
+curls, and hip abductors/adductors)
+- Progressive pool program as tolerated
+~Weeks 11-12 - Continue progressing exercises from Weeks 9-10 as appropriate
+- Progress ROM of squats, leg press, etc. while being mindful of ROM
+restrictions and pain
+FOLLOW-UP: - Supervised rehab: 2-3x per week
+- PT re-eval: every 2-3 weeks
+- Ortho re-eval: ~12 weeks post-op
+PHASE 3: Generally 3-6 Months Post-Op
+GOALS: 1) Full ROM
+2) Jog at own pace and distance without pain
+3) > 90% quad and HS strength return
+4) > 90% of uninvolved limb on hop test battery (i.e. hop for distance, triple
+hop, crossover hop, and 6-meter timed hop)
+5) Meet occupational requirements at 6-8 months
+PRECAUTIONS: - Minimal to no pain at the repair site
+REHABILITATION: - Continue Phase 2 exercises as needed
+- Progress to the following exercises and increase intensity gradually when
+patient is ready (i.e. no increase in knee pain or effusion since the
+previous exercise session)
+- Build up resistance and repetitions gradually
+~Weeks 13-16 - Swimming
+- Step-up progression
+- Gradual quad stretching
+- Progressive SL balance and proprioceptive training as needed
+- Progressive LE strengthening (i.e. calf press, leg press, squats 0°- 60°, HS
+curls, and hip abductors/adductors)
+~Weeks 16-20 - Progressive strengthening of quads while monitoring symptoms closely
+- Step-down progression
+- Initiate walk to jog progression
+~Weeks 20-26 - Progressive speed/agility training beginning at 25-50% intensity and
+progress gradually (i.e. jumping, hopping, directional jogging, cariocas,
+and shuffles)
+- Jump training initiated after 24 weeks
+FOLLOW-UP: - Supervised rehab: 1-2x per week
+- PT re-eval: monthly
+- Ortho re-eval: ~6 months post-op
+MISCELLANEOUS: - After 6 months post-op, Phase 3 exercises are continued and gradually
+increased in intensity and duration as tolerated
+- Pass Service fitness test at 9-10 months
+- Progress activities for return to sport/collision sports or aggressive
+military training (i.e. airborne school) based on the patient’s functional
+performance and endurance. This time period will be directed by the
+Ortho Surgeon and the Physical Therapist. This may require between 9-12
+months before cleared without restrictions.
+References:
+ Myer GD, Paterno MV, Ford KR, Quatman CE, Hewett TE. Rehabilitation after anterior cruciate
+ligament reconstruction: criteria-based progression through the return-to-sport phase. Journal
+of Orthopedic Sports Physical Therapy. 2006; 36(6): 385-402.
+ Myer, GD, Paterno MV, Hewett TE. Back in the game: a four-phase return-to-sport program for
+athletes with problem ACLs. Rehab Management. 2004; 17(8): 30-33.
+
+```
+
+
