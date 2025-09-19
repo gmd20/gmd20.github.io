@@ -1,0 +1,103 @@
+https://kernel-team.pages.debian.net/kernel-handbook/ch-common-tasks.html#s-common-official
+https://debian-handbook.info/browse/stable/sect.kernel-compilation.html
+https://www.debian.org/doc/manuals/debian-faq/kernel.zh-cn.html
+
+1. 安装构建依赖（自动安装编译所需包）
+====================================
+$ apt install build-essential
+$ apt-get build-dep linux
+
+
+2. 下载debian内核源码
+=====================
+
+/etc/apt/sources.list 中 deb-src 源默认已经启用了吧
+
+$ mkdir -p /home/ming/kernel-build && cd /home/ming/kernel-build
+$ # apt-get source linux-image-$(uname -r)
+$ sudo apt-get source linux
+
+此命令会下载源码包（.orig.tar.xz）、Debian 补丁（.debian.tar.xz）和控制文件（.dsc），并自动解压到 linux-<版本号> 目录
+debian/ 目录：这是 Debian 打包的核心目录，包含了所有构建 Debian 包所需的文件。
+debian/patches/：存储所有 Debian 官方补丁的地方。这些补丁通常会在构建过程中自动应用到上游源码上。
+debian/rules：构建软件包的主要脚本，类似于 Makefile。
+debian/control：声明软件包的依赖关系和信息。
+debian/changelog：记录软件包的变更历史。
+
+$ apt install quilt  # debian 使用 quilt 作为其标准的补丁管理工具
+$ quilt push -a      # 这个命令会应用 debian/patches/ 目录下的所有补丁。
+$ quilt series       # 列出所有可用的补丁文件
+$ quilt applied      # 显示已经应用的补丁
+$ quilt unapplied    # 显示尚未应用的补丁
+$ quilt pop          # 撤销最近应用的一个补丁
+$ quilt diff         # 显示当前补丁相对于原始代码的修改内容
+
+新补丁
+$ quilt new my-fix.patch
+$ quilt add path/to/file/to/modify
+$ vim 修改文件
+$ quilt refresh   # 当你完成修改后，使用 refresh 命令将你的更改更新到新补丁文件中
+
+debian官方补丁工具
+$ apt-get install devscripts
+$ debian/bin/test-patches ../fix-bug123456.patch ../add-foo-driver.patch
+
+
+3. 使用当前内核配置
+====================
+$ cd linux-version
+$ cp /boot/config-$(uname -r) .config
+$ make olddefconfig
+$ make menuconfig
+
+禁用模块签名 (不能做这个  编译出来的 module_layout 符号不匹配加载不了)
+$ scripts/config --disable MODULE_SIG)
+$ scripts/config --set-str MODULE_SIG_KEY certs/signing_key.pem  # 自己的签名
+
+禁用调试符号，会节省很多空间 (不能做这个  编译出来的 module_layout 符号不匹配加载不了)
+$ scripts/config --disable DEBUG_INFO
+$ scripts/config --disable DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+$ export DEB_BUILD_PROFILES='pkg.linux.nokerneldbg pkg.linux.nokerneldbginfo'
+
+
+
+4. 编译并打包
+=============
+$ export MAKEFLAGS=-j$(nproc)    # 并行编译
+$ cd /usr/src/kernel-build/linux-*/
+$ make clean
+$ make deb-pkg
+$ make bindeb-pkg  # 只编译二进制包
+
+$ make oldconfig
+$ make prepare
+$ make prepare scripts
+$ make modules_prepare  # 要执行这个，不然 make modules 会出错 ** No rule to make target 'scripts/module.lds'
+$ make -j4 bzImage
+$ make -j4 modules
+
+和对一下配置的内核没有引起module_layout符号变化，不然用这个内核编译的模块早 debian官方系统加载不了
+ming@ming:~/kernel-build/linux-6.12.43$ grep module_layout /usr/lib/modules/`uname -r`/build/Module.symvers
+0xbf1981cb	module_layout	vmlinux	EXPORT_SYMBOL	
+ming@ming:~/kernel-build/linux-6.12.43$ grep module_layout vmlinux.symvers
+0xbf1981cb	module_layout	vmlinux	EXPORT_SYMBOL	
+ming@ming:~/kernel-build/linux-6.12.43$ grep module_layout Module.symvers
+0xbf1981cb	module_layout	vmlinux	EXPORT_SYMBOL	
+
+5. 安装编译好的内核 .deb 包
+===========================
+$ dpkg -i ../linux-image-amd64_*.deb
+
+
+6. 卸载旧的内核软件包
+=====================
+# 列出所有已安装的内核镜像包
+$ dpkg --list | grep linux-image
+
+# 卸载特定的旧内核包（将 <OLD_VERSION> 替换为具体的版本号）
+$ apt purge linux-image-<OLD_VERSION>
+$ dpkg --purge linux-image-NNN （请将 NNN 替换为您的内核版本号和修订版本号）
+
+# 再次更新 GRUB
+$ update-grub2
+$ grub-mkconfig -o /boot/grub/grub.cfg
