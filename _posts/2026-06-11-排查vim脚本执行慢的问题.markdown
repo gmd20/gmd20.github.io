@@ -1,0 +1,6 @@
+```text
+:profile file *
+:profile func *
+:profile start /tmp/vim_profile.log
+:profile stop
+```
