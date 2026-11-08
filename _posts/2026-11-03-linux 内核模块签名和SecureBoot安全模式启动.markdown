@@ -114,3 +114,22 @@ sudo mv /boot/vmlinuz-$(uname -r).tmp /boot/vmlinuz-$(uname -r)
 # 5. Secureboot 证书链
 
 shim -> grub -> linux 发行版
+
+```bash
+sudo find /boot/efi/EFI/BOOT
+/boot/efi/
+/boot/efi/EFI
+/boot/efi/EFI/debian
+/boot/efi/EFI/debian/shimx64.efi   # shimx64.efi  
+/boot/efi/EFI/debian/grubx64.efi   #  签名过的被 shim 信任的 grub
+/boot/efi/EFI/debian/mmx64.efi     #  MokManager（管理 MOK 的界面）
+/boot/efi/EFI/debian/fbx64.efi
+/boot/efi/EFI/debian/BOOTX64.CSV
+/boot/efi/EFI/debian/grub.cfg
+/boot/efi/EFI/BOOT
+/boot/efi/EFI/BOOT/BOOTX64.EFI    # shimx64.efi  
+/boot/efi/EFI/BOOT/grubx64.efi    #  签名过的被 shim 信任的 grub
+/boot/efi/EFI/BOOT/mmx64.efi      # MokManager（导入 / 删除 MOK 的界面）
+/boot/efi/EFI/BOOT/fbx64.efi
+``
+ 
