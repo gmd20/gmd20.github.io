@@ -67,7 +67,7 @@ sudo mokutil --sb-state          # 应输出：SecureBoot enabled
 
 注册密钥
 ```bash
-sudo mokutil --import MOK_public.pem
+sudo mokutil --import MOK_public.der
 # 会提示输入 8-16 位一次性密码，记住它
 ```bash
 
